@@ -1,0 +1,22 @@
+{
+  "name" : "ThingJS",
+  "vendor" : "rpiontik",
+  "version" : 1,
+  "subversion" : 0,
+  "patch" : 0,
+  "description" : {
+    "ru" : "Приложение рабочего стола от ThingJS",
+    "en" : "The launcher application by ThingJS"
+  },
+  "components" : {
+    "launcher" : {
+      "source" : "index.js",
+      "intent_filter" : [
+        {
+          "action"    : "thingjs.intent.action.MAIN",
+          "category"  : "thingjs.intent.category.LAUNCHER"
+        }
+      ]
+    }
+  }
+}
