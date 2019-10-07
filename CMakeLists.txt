@@ -1,5 +1,5 @@
 # Project body
-message(">>>>>>>>>>>>>>> I AM <<<<<<<<<<<<<<<<<<<")
+message(">>>>>>>>>>>>>>> ThingJS frontend included <<<<<<<<<<<<<<<<<<<")
 
 idf_component_register(
         EMBED_TXTFILES "dist/platform.gz"
