@@ -20,9 +20,11 @@
     }
   },
   "scripts": {
-    "entry": "scheduler",
+    "entry": "blink",
+    "subscriptions" : ["blink"],
     "modules": {
-      "scheduler": {
+      "blink": {
+        "hot_reload": true,
         "source": "scripts/blink.js",
         "optimize": false
       }
@@ -32,7 +34,8 @@
     "interfaces" : {
       "blink" : {
         "type" : "bit_port",
-        "default" : [0],
+        "required" : true,
+        "default" : [2],
         "description" : {
           "ru" : "LED индикатор",
           "en" : "LED indicator"

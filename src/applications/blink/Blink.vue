@@ -10,7 +10,7 @@ export default {
   watch: {
     blink_state (state) {
       // Send event to script
-      this.$bus.$emit(consts.EVENTS.UBUS_MESSAGE, 'blink', state);
+      this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'blink', state);
     }
   },
   data () {

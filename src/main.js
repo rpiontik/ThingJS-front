@@ -11,8 +11,8 @@ import Axios from 'axios';
 import Cookie from 'vue-cookie';
 
 if (process.env.NODE_ENV === 'production') {
-  console.info('%cThingJS%c(c)', 'color: #1976d2; font-size: 40px;', 'color: #1976d2; font-size: 10px; vertical-align: top;')
-  console.info('%cЕсли ты васько, сюда не ласько ;)', 'color: #1976d2; font-size: 16px;')
+  console.info('%cThingJS%c(c)', 'color: #1976d2; font-size: 40px;', 'color: #1976d2; font-size: 10px; vertical-align: top;');
+  console.info('%cЕсли ты васько, сюда не ласько ;)', 'color: #1976d2; font-size: 16px;');
   console.info(process.env.BUILD_MOMENT);
 }
 
