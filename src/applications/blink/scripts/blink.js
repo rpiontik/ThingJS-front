@@ -2,7 +2,6 @@ let active = true;
 let state = true;
 
 debugger;
-
 // Run background process
 setTimeout(function () {
   if (active) {

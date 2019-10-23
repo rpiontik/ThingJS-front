@@ -22,6 +22,10 @@
 <script>
 import consts from 'consts';
 
+if (process.env.NODE_ENV !== 'production') {
+  import('../build/_hot-reload');
+}
+
 export default {
   name: 'ThingJSCore',
   mounted () {
@@ -36,10 +40,6 @@ export default {
     setTimeout(() => {
       window.$bus.$emit(consts.EVENTS.CORE_IS_LOADED);
     }, 50);
-
-    if (process.env.NODE_ENV !== 'production') {
-      import('../build/_hot-reload');
-    }
   },
   beforeDestroy () {
     if (typeof window !== 'undefined') {
