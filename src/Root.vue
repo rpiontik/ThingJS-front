@@ -23,7 +23,7 @@
 import consts from 'consts';
 
 if (process.env.NODE_ENV !== 'production') {
-  import('../build/_hot-reload');
+  require('../build/_hot-reload');
 }
 
 export default {
