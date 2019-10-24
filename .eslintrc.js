@@ -35,6 +35,7 @@ module.exports = {
     "$includeLang": "readonly",
     "$consts": "readonly",
     "$store": "readonly",
+    "$bus": "readonly",
     "$axios": "readonly",
     "Vue": "readonly",
   }

@@ -14,7 +14,7 @@ setTimeout(function () {
 
 // Event listener
 // $core - system core interface
-$core.listener(function (event, content, data) {
+$bus.on(function (event, content, data) {
   if (event === 'blink') {
     active = !!data;
   }
