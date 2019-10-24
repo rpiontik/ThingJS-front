@@ -1,16 +1,15 @@
 let active = true;
 let state = true;
 
-debugger;
-
 // Run background process
-setTimeout(function () {
+setInterval(function () {
+  print('Current blink status ', state);
   if (active) {
     // $res - is container with required resources
     $res.blink.set(state);
     state = !state;
   }
-}, 5000);
+}, 1000);
 
 // Event listener
 // $core - system core interface
