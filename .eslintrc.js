@@ -33,6 +33,7 @@ module.exports = {
     "$exportComponent": "readonly",
     "$requireComponent": "readonly",
     "$includeLang": "readonly",
+    "$getComponentBy": "readonly",
     "$consts": "readonly",
     "$store": "readonly",
     "$bus": "readonly",
