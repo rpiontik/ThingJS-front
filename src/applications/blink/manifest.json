@@ -14,7 +14,7 @@
       "intent_filter": [
         {
           "action": "thingjs.intent.action.MAIN",
-          "category": "thingjs.intent.category.PREFERENCE"
+          "category": "thingjs.intent.category.LAUNCH"
         }
       ]
     }

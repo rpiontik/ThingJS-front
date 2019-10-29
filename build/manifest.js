@@ -55,8 +55,8 @@ module.exports = {
             manifest.favicon    = 'data:image/png;base64,'
                 + new Buffer(fs.readFileSync(path.resolve(app_path, "favicon.png"))).toString('base64');
         } else if(fs.existsSync(path.resolve(app_path, "favicon.svg"))) {
-            manifest.favicon    = 'data:image/svg+xml;utf8,'
-                + fs.readFileSync(path.resolve(app_path, "favicon.svg"));
+            manifest.favicon    = 'data:image/svg+xml;base64,'
+                + fs.readFileSync(path.resolve(app_path, "favicon.svg")).toString('base64')
         }
 
         if(app in global.components){

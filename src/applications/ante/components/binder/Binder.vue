@@ -90,7 +90,7 @@ export default {
       if (!this.manifest) { return; }
       this.binded = null;
       this.reqTree = null;
-      this.requiredTree();
+      this.requiredTree;
       this.rebind();
     }
   },
