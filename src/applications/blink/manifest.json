@@ -35,7 +35,7 @@
       "blink" : {
         "type" : "bit_port",
         "required" : true,
-        "default" : [2],
+        "default" : 2,
         "description" : {
           "ru" : "LED индикатор",
           "en" : "LED indicator"
