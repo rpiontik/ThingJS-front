@@ -23,11 +23,11 @@ export default {
   },
 
   // Return registered components by category or category & action
-  getComponentBy: function (category, action) {
+  getComponentBy: function (category, action, producer) {
     let result = [];
 
-    for (let appid in window.$store.state.apps.manifest) {
-      let profile = window.$store.state.apps.manifest[appid];
+    for (let appName in window.$store.state.apps.manifest) {
+      let profile = window.$store.state.apps.manifest[appName];
       for (let name in profile.components) {
         let component = profile.components[name];
         if (component.intent_filter) {
@@ -44,7 +44,7 @@ export default {
                 )
               )
             ) {
-              result.push(name);
+              result.push(producer ? producer(name, component, profile) : name);
             }
           }
         }
@@ -65,7 +65,7 @@ export default {
           console.error(e);
           window.$bus.$emit(consts.EVENTS.ALERT, consts.ALERT_TYPE.ERROR, Vue.filter('lang')('ERROR_LOAD_APP'));
         }
-      })
+      });
       window.$resolvers_components[component] = [];
     }
     window.$protocomponents[component] = object;

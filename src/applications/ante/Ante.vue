@@ -6,11 +6,11 @@
         <v-style v-if="theme=='dark'">
             body, html { background-color: #212121 !important; }
         </v-style>
-        <v-app  id="inspire" :light="theme=='light'" :dark="theme=='dark'">
+        <v-app id="inspire" :light="theme=='light'" :dark="theme=='dark'">
             <v-navigation-drawer id="mainmenu" clipped fixed v-model="drawer" app>
                 <v-list dense>
                     <router-link :to="{name:'Dashboard'}">
-                        <v-list-tile @click="">
+                        <v-list-tile>
                             <v-list-tile-action>
                                 <v-icon>dashboard</v-icon>
                             </v-list-tile-action>
@@ -20,7 +20,7 @@
                         </v-list-tile>
                     </router-link>
                     <router-link :to="{name:'Settings'}">
-                        <v-list-tile @click="">
+                        <v-list-tile>
                             <v-list-tile-action>
                                 <v-icon>settings</v-icon>
                             </v-list-tile-action>
@@ -34,6 +34,8 @@
             <v-toolbar app fixed clipped-left>
                 <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
                 <v-toolbar-title>ThingJS</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-icon v-if="currentApplication" @click="closeApplication" style="cursor: pointer">close</v-icon>
             </v-toolbar>
             <v-content>
                 <router-view/>
@@ -68,10 +70,10 @@
             </v-progress-linear>
 
             <v-alert v-if="alerts.length"
-                    :type="alerts[0].type"
-                    :value="true"
-                    transition="scale-transition"
-                    style="position: fixed; right: 16px; top: 16px; width: 400px; max-width: 80%; z-index: 20000"
+                     :type="alerts[0].type"
+                     :value="true"
+                     transition="scale-transition"
+                     style="position: fixed; right: 16px; top: 16px; width: 400px; max-width: 80%; z-index: 20000"
             >
 
                 <v-layout row>
@@ -95,137 +97,142 @@
 </template>
 
 <script>
-    import consts from 'consts';
-    import ConfigHelper from './components/ConfigHelper.vue';
-    import Settings from './components/Settings.vue';
-    import Dashboard from './components/Dashboard.vue';
+import ConfigHelper from './components/ConfigHelper.vue';
+import Settings from './components/Settings.vue';
+import Dashboard from './components/Dashboard.vue';
 
-    export default {
-        name: 'App',
-        components : {
-            'v-style' : {
-                render: function (createElement) {
-                    return createElement('style', this.$slots.default)
-                }
-            }
-        },
-        beforeCreate(){
-            if( /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent) ) {
-                var ww = (document.documentElement.clientWidth < window.screen.width ) ? document.documentElement.clientWidth : window.screen.width; //get proper width
-                var mw = 400; // min width of site
-                var ratio =  ww / mw; //calculate ratio
-                document.querySelector("meta[name=viewport]").setAttribute('content', 'initial-scale=' + ratio + ', user-scalable=yes, width=400');
-            }
-
-            this.$router.addRoutes([
-                {
-                    path: '/config_helper',
-                    name: 'ConfigHelper',
-                    component: ConfigHelper
-                },
-                {
-                    path: '/settings',
-                    name: 'Settings',
-                    component: Settings
-                },
-                {
-                    path: '/dashboard',
-                    name: 'Dashboard',
-                    component: Dashboard
-                },
-                {
-                    path: '/',
-                    name: 'Root',
-                    component: Dashboard
-                }
-            ]);
-        },
-        mounted(){
-            //Detect first enter
-            if(this.$router.currentRoute.path == '/') {
-                if($store.state.user.first_enter) {
-                    $store.commit('setUserFirstEnter', false);
-                    this.$router.push('/config_helper');
-                } else {
-                    this.$router.push('/dashboard');
-                }
-            }
-
-            if(process.env.NODE_ENV !== 'production') {
-                //Debugger starter
-                this.$bus.$on(consts.EVENTS.UBUS_MESSAGE, (type, messages) => {
-                    if(type == consts.UBUS.DEBUGGER_REQUEST)
-                        this.alerts.push({
-                            type : consts.ALERT_TYPE.WARNING,
-                            message : Vue.filter('lang')('DETECTED_DEBUGGER_REQUEST')
-                                        .replace("%appname%", JSON.parse(messages).app)
-                                        .replace("%url%", this.debuggerUrl)
-                            });
-                });
-            }
-
-            //Loading available access points
-            this.$bus.$on(consts.EVENTS.ALERT, (type, messages) => {
-                this.alerts.push({
-                    type : type,
-                    message : messages
-                });
-            });
-
-            this.$bus.$on(consts.EVENTS.APP_IS_LOADED, (messages) => {
-
-                setTimeout(()=>{
-                   this.is_app_ready = true;
-                }, 50);
-
-            });
-
-        },
-        computed: {
-            debuggerUrl(){
-                return process.env.NODE_ENV !== 'production' ? `/debugger.html?url=${process.env.HW_DEVICE_URL}` : null;
-            },
-            theme(){
-                let bg_color = this.$store.state.display.theme == 'light' ? '#f5f5f5' : '#212121';
-                ['theme-color', 'msapplication-navbutton-color', 'apple-mobile-web-app-status-bar-style'].map((item)=> {
-                    let meta = document.querySelector(`meta[name=${item}]`);
-                    if(!meta) {
-                        meta = document.createElement('meta');
-                        meta.setAttribute('name', item);
-                        meta.setAttribute('content', bg_color);
-                        document.getElementsByTagName('head')[0].appendChild(meta);
-                    } else
-                        meta.setAttribute('content', bg_color);
-                });
-                return this.$store.state.display.theme;
-            },
-            currentTime(){
-                return this.getFormattedDate(this.hwDateTime, this.$store.state.display.lang)
-                        + ' ' + this.getFormattedTime(this.hwDateTime,  this.$store.state.display.lang);
-            },
-            isNetPending(){
-                return this.$store.state.is_net_pending;
-            },
-            lang(){
-                return this.$store.state.display.lang;
-            }
-        },
-        watch : {
-            drawer(val){
-
-                setTimeout(function(){
-                    this.$bus.$emit(consts.EVENTS.DO_SCREEN_REBUILD);
-                }, 150)
-
-            }
-        },
-        data(){
-            return {
-                drawer: null,
-                alerts : []
-            }
-        }
+export default {
+  name: 'App',
+  components: {
+    'v-style': {
+      render: function (createElement) {
+        return createElement('style', this.$slots.default);
+      }
     }
+  },
+  beforeCreate () {
+    if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+      var ww = (document.documentElement.clientWidth < window.screen.width) ? document.documentElement.clientWidth : window.screen.width; // get proper width
+      var mw = 400; // min width of site
+      var ratio = ww / mw; // calculate ratio
+      document.querySelector('meta[name=viewport]').setAttribute('content', 'initial-scale=' + ratio + ', user-scalable=yes, width=400');
+    }
+
+    this.$router.addRoutes([
+      {
+        path: '/config_helper',
+        name: 'ConfigHelper',
+        component: ConfigHelper
+      },
+      {
+        path: '/settings',
+        name: 'Settings',
+        component: Settings
+      },
+      {
+        path: '/dashboard',
+        name: 'Dashboard',
+        component: Dashboard
+      },
+      {
+        path: '/',
+        name: 'Root',
+        component: Dashboard
+      }
+    ]);
+
+    this.$store.registerModule('$launcher', require('./storages/storage').default);
+  },
+  methods: {
+    closeApplication () {
+      // Close all active applications
+      this.$store.dispatch('$launcher/closeCurrentApplication');
+    }
+  },
+  mounted () {
+    // Detect first enter
+    if (this.$router.currentRoute.path === '/') {
+      if (this.$store.state.user.first_enter) {
+        this.$store.commit('setUserFirstEnter', false);
+        this.$router.push('/config_helper');
+      } else {
+        this.$router.push('/dashboard');
+      }
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+      // Debugger starter
+      this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, messages) => {
+        if (type === $consts.UBUS.DEBUGGER_REQUEST) {
+          this.alerts.push({
+            type: $consts.ALERT_TYPE.WARNING,
+            message: Vue.filter('lang')('DETECTED_DEBUGGER_REQUEST')
+              .replace('%appname%', JSON.parse(messages).app)
+              .replace('%url%', this.debuggerUrl)
+          });
+        }
+      });
+    }
+
+    // Loading available access points
+    this.$bus.$on($consts.EVENTS.ALERT, (type, messages) => {
+      this.alerts.push({
+        type: type,
+        message: messages
+      });
+    });
+
+    this.$bus.$on($consts.EVENTS.APP_IS_LOADED, (messages) => {
+      setTimeout(() => {
+        this.is_app_ready = true;
+      }, 50);
+    });
+  },
+  computed: {
+    currentApplication () {
+      return this.$store.state.$launcher.currentApplication;
+    },
+    debuggerUrl () {
+      return process.env.NODE_ENV !== 'production' ? `/debugger.html?url=${process.env.HW_DEVICE_URL}` : null;
+    },
+    theme () {
+      let bgColor = this.$store.state.display.theme === 'light' ? '#f5f5f5' : '#212121';
+      ['theme-color', 'msapplication-navbutton-color', 'apple-mobile-web-app-status-bar-style'].map((item) => {
+        let meta = document.querySelector(`meta[name=${item}]`);
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.setAttribute('name', item);
+          meta.setAttribute('content', bgColor);
+          document.getElementsByTagName('head')[0].appendChild(meta);
+        } else { meta.setAttribute('content', bgColor); }
+      });
+      return this.$store.state.display.theme;
+    },
+    currentTime () {
+      return this.getFormattedDate(this.hwDateTime, this.$store.state.display.lang) +
+                    ' ' + this.getFormattedTime(this.hwDateTime, this.$store.state.display.lang);
+    },
+    isNetPending () {
+      return this.$store.state.is_net_pending;
+    },
+    lang () {
+      return this.$store.state.display.lang;
+    }
+  },
+  watch: {
+    drawer (val) {
+      setTimeout(function () {
+        this.$bus.$emit($consts.EVENTS.DO_SCREEN_REBUILD);
+      }, 150);
+    }
+  },
+  data () {
+    return {
+      drawer: null,
+      alerts: []
+    };
+  }
+};
 </script>
 
 <style>
@@ -246,7 +253,7 @@
         text-decoration: none;
     }
 
-    .cpr:before{
+    .cpr:before {
         font-size: 10px;
         line-height: 12px;
         vertical-align: top;
@@ -269,14 +276,14 @@
         color: #fff;
     }
 
-    .theme--light .list__tile{
-        color: rgba(0,0,0,.87);
+    .theme--light .list__tile {
+        color: rgba(0, 0, 0, .87);
     }
 
     .theme--light .card {
         -webkit-box-shadow: none !important;
         box-shadow: none !important;
-        border: solid 1px rgba(0,0,0,.1);
+        border: solid 1px rgba(0, 0, 0, .1);
         border-radius: 4px;
     }
 

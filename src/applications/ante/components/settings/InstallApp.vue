@@ -6,17 +6,18 @@
                 <v-layout row wrap>
                     <v-flex xs12>
                         <label class="label-file">
-                            <v-icon class="app-ico" v-if="!manifest || !manifest.favicon" color="grey" large>extension</v-icon>
-                            <img v-else class="app-ico" :src="manifest.favicon">
+                            <v-icon class="app-ico" color="grey" large v-if="!manifest || !manifest.favicon">extension
+                            </v-icon>
+                            <img :src="manifest.favicon" class="app-ico" v-else>
                             <div class="app-caption">
-                                <span v-if="!manifest" v-html="htmlFileCaption"></span>
+                                <span v-html="htmlFileCaption" v-if="!manifest"></span>
                                 <h2 v-else>{{manifest.name}}</h2>
                             </div>
                             <input
-                                    type="file"
+                                    @change="readFile"
                                     accept=".smt"
                                     style="position: absolute; width: 0.1px; height: 0.1px; z-index: -1; opacity: 0; overflow: hidden;"
-                                    @change="readFile"
+                                    type="file"
                             />
                         </label>
                     </v-flex>
@@ -40,15 +41,16 @@
                             </tr>
                         </table>
                     </v-flex>
-                    <v-flex xs12 style="margin-bottom: 36px; max-height: 200px; overflow-y: auto; overflow-x: hidden;">
-                        <binder :manifest="manifest" v-model="config" style="width: 100%; margin-bottom: 24px;"></binder>
+                    <v-flex style="margin-bottom: 36px; max-height: 200px; overflow-y: auto; overflow-x: hidden;" xs12>
+                        <binder :manifest="manifest" style="width: 100%; margin-bottom: 24px;"
+                                v-model="config"></binder>
                     </v-flex>
                 </v-layout>
             </v-container>
         </template>
         <template slot="actions">
             <v-btn @click="$emit('onclose')">{{'CANCEL' | lang }}</v-btn>
-            <v-btn @click="doInstall" flat :disabled="!manifest">{{'INSTALL' | lang }}</v-btn>
+            <v-btn :disabled="!manifest" @click="doInstall" flat>{{'INSTALL' | lang }}</v-btn>
             <block-screen v-if="installing"></block-screen>
         </template>
     </modal>
@@ -56,131 +58,127 @@
 
 <script>
 
-    import modal from './../Modal.vue'
-    import blockScreen from './../BlockScreen.vue';
-    import utils from './../../utils';
-    import binder from '../binder/Binder.vue';
+import modal from './../Modal.vue';
+import blockScreen from './../BlockScreen.vue';
+import utils from './../../utils';
+import binder from '../binder/Binder.vue';
 
-    const consts = window.$consts;
+const consts = window.$consts;
 
-    export default {
-        name: 'InstallApplication',
-        components : {
-            modal,
-            'block-screen' : blockScreen,
-            'binder' : binder
-        },
-        methods: {
-            doInstall(){
-                let formData = new FormData();
-                formData.append('data[]', new Blob([this.buffer]), 'bundle.smt');
-                formData.append('data[]', new Blob([JSON.stringify(this.config)]), 'config.json');
-                console.info('Append hw_resources.json');
-                this.$store.commit('incNetPending');
-                this.installing = true;
-                this.$axios.post( '/install',
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type' : 'multipart/form-data'
-                        }
-                    }
-                ).then(() => {
-                    this.$store.commit('decNetPending');
-                    document.location.reload(true);
-                })
-                .catch((e) => {
-                    console.error(e);
-                    this.installing = false;
-                    this.$store.commit('decNetPending');
-                    this.$bus.$emit(
-                        consts.EVENTS.ALERT,
-                        consts.ALERT_TYPE.ERROR,
-                        Vue.filter('lang')('ERROR_APP_INSTALL')
-                    );
-                });
-            },
-
-            readString(dataview, offset, length){
-
-                let result  = [];
-
-                for(let pos = offset, len = 0; len < length; len++, pos++ ){
-                    result.push(dataview.getInt8(pos));
-                }
-
-                return (new TextDecoder()).decode(new Uint8Array(result));
-
-            },
-
-            checkManifest(){
-                for(let appid in this.$store.state.apps.manifest){
-                    let app = this.$store.state.apps.manifest[appid];
-                    if(app.name == this.manifest.name) {
-                        this.$bus.$emit(
-                            consts.EVENTS.ALERT,
-                            consts.ALERT_TYPE.INFO,
-                            Vue.filter('lang')('INFO_APP_ALREADY_INSTALLED') + utils.getStrVersion(app)
-                        );
-                    }
-                }
-
-            },
-
-            readFile(evt){
-                let files = evt.target.files;
-                let file = files[0];
-                let reader = new FileReader();
-                this.manifest   = null;
-                this.size       = null;
-                this.buffer     = null;
-                reader.onload = (event) => {
-                    this.buffer = event.target.result;
-                    this.size   = this.buffer.byteLength;
-
-                    let dataview = new DataView(this.buffer);
-
-                    if(this.readString(dataview, 0, 6) !== 'SMTB02'){
-                        this.$bus.$emit(
-                            consts.EVENTS.ALERT,
-                            consts.ALERT_TYPE.ERROR,
-                            Vue.filter('lang')('ERROR_APP_BUNDLE_FORMAT')
-                        );
-                        return;
-                    }
-
-                    let name_len = dataview.getUint32(6, true);
-                    let manifest_len = dataview.getUint32(10 + name_len, true);
-                    this.manifest = JSON.parse(this.readString(dataview, 14 + name_len, manifest_len));
-
-                    this.checkManifest();
-                }
-                if(file)
-                    reader.readAsArrayBuffer(file);
-            }
-        },
-        computed: {
-            version(){
-                return utils.getStrVersion(this.manifest);
-            },
-            htmlFileCaption(){
-                return Vue.filter('lang')('DO_SELECT_APP');
-            },
-            description(){
-                return !this.manifest ? '' : utils.getDescription(this.manifest);
-            }
-        },
-        data() {
-            return {
-                manifest : null,
-                config : null,
-                size : null,
-                file : null,
-                buffer : null,
-                installing : false,
-            }
+export default {
+  name: 'InstallApplication',
+  components: {
+    modal,
+    'block-screen': blockScreen,
+    'binder': binder
+  },
+  methods: {
+    doInstall () {
+      let formData = new FormData();
+      formData.append('data[]', new Blob([this.buffer]), 'bundle.smt');
+      formData.append('data[]', new Blob([JSON.stringify(this.config)]), 'config.json');
+      console.info('Append hw_resources.json');
+      this.$store.commit('incNetPending');
+      this.installing = true;
+      this.$axios.post('/install',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
         }
+      ).then(() => {
+        this.$store.commit('decNetPending');
+        document.location.reload(true);
+      })
+        .catch((e) => {
+          console.error(e);
+          this.installing = false;
+          this.$store.commit('decNetPending');
+          this.$bus.$emit(
+            consts.EVENTS.ALERT,
+            consts.ALERT_TYPE.ERROR,
+            Vue.filter('lang')('ERROR_APP_INSTALL')
+          );
+        });
+    },
+
+    readString (dataview, offset, length) {
+      let result = [];
+
+      for (let pos = offset, len = 0; len < length; len++, pos++) {
+        result.push(dataview.getInt8(pos));
+      }
+
+      return (new TextDecoder()).decode(new Uint8Array(result));
+    },
+
+    checkManifest () {
+      for (let appid in this.$store.state.apps.manifest) {
+        let app = this.$store.state.apps.manifest[appid];
+        if (app.name === this.manifest.name) {
+          this.$bus.$emit(
+            consts.EVENTS.ALERT,
+            consts.ALERT_TYPE.INFO,
+            Vue.filter('lang')('INFO_APP_ALREADY_INSTALLED') + utils.getStrVersion(app)
+          );
+        }
+      }
+    },
+
+    readFile (evt) {
+      let files = evt.target.files;
+      let file = files[0];
+      let reader = new FileReader();
+      this.manifest = null;
+      this.size = null;
+      this.buffer = null;
+      reader.onload = (event) => {
+        this.buffer = event.target.result;
+        this.size = this.buffer.byteLength;
+
+        let dataview = new DataView(this.buffer);
+
+        if (this.readString(dataview, 0, 6) !== 'SMTB02') {
+          this.$bus.$emit(
+            consts.EVENTS.ALERT,
+            consts.ALERT_TYPE.ERROR,
+            Vue.filter('lang')('ERROR_APP_BUNDLE_FORMAT')
+          );
+          return;
+        }
+
+        let nameLen = dataview.getUint32(6, true);
+        let manifestLen = dataview.getUint32(10 + nameLen, true);
+        this.manifest = JSON.parse(this.readString(dataview, 14 + nameLen, manifestLen));
+
+        this.checkManifest();
+      };
+      if (file) { reader.readAsArrayBuffer(file); }
     }
+  },
+  computed: {
+    version () {
+      return utils.getStrVersion(this.manifest);
+    },
+    htmlFileCaption () {
+      return Vue.filter('lang')('DO_SELECT_APP');
+    },
+    description () {
+      return !this.manifest ? '' : utils.getDescription(this.manifest);
+    }
+  },
+  data () {
+    return {
+      manifest: null,
+      config: null,
+      size: null,
+      file: null,
+      buffer: null,
+      installing: false
+    };
+  }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
