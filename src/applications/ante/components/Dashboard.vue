@@ -1,10 +1,10 @@
 <template>
   <v-container style="min-height: 100%; position: relative">
-    <v-container v-if="!selectedApp" class="ante-applist">
+    <v-container v-if="!startedApp" class="ante-applist">
       <div
         class="ante-app-card"
         v-for="(app) in appList"
-        @click="setTargetApp(app)"
+        @click="runApplication(app)"
       >
         <img v-if="app.favicon && app.favicon.length" :src="app.favicon" class="ante-app-ico">
         <v-icon v-else class="ante-app-ico" color="grey" large>extension</v-icon>
@@ -12,8 +12,8 @@
       </div>
     </v-container>
     <component v-else
-               :is="selectedApp.componentName"
-               :key="selectedApp.componentName"
+               :is="startedApp.componentName"
+               :key="startedApp.componentName"
                :style="panelStyle"
     ></component>
   </v-container>
@@ -22,16 +22,17 @@
 <script>
 export default {
   name: 'ThingJS',
+  mounted () {
+    this.$bus.$on($consts.EVENTS.DO_CLOSE_APPLICATION, () => {
+      this.targetApp = null;
+    });
+  },
   computed: {
-    selectedApp () {
-      switch (this.appList.length) {
-        case 0:
-          return null;
-        case 1:
-          return this.appList[0];
-        default:
-          return this.targetApp;
+    startedApp () {
+      if (this.appList.length === 1) {
+        this.$store.dispatch('$launcher/registerCurrentApplication', this.appList[0]);
       }
+      return this.$store.state.$launcher.currentApplication;
     },
     appList () {
       let result = [];
@@ -57,13 +58,12 @@ export default {
     }
   },
   methods: {
-    setTargetApp (app) {
-      this.targetApp = app;
+    runApplication (app) {
+      this.$store.dispatch('$launcher/registerCurrentApplication', app);
     }
   },
   data () {
     return {
-      targetApp: null
     };
   }
 };

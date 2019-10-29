@@ -24,7 +24,8 @@ export default {
     WS_CLOSED: 'ws-closed',
     UBUS_MESSAGE: 'ubus-message',
     STORE_RELOADED: 'store-reloaded',
-    STORE_ERROR_RELOADED: 'store-error-reloaded'
+    STORE_ERROR_RELOADED: 'store-error-reloaded',
+    DO_CLOSE_APPLICATION: 'do-close-application'
   },
   ALERT_TYPE: {
     ERROR: 'error',

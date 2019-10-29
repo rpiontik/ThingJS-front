@@ -10,7 +10,7 @@
             <v-navigation-drawer id="mainmenu" clipped fixed v-model="drawer" app>
                 <v-list dense>
                     <router-link :to="{name:'Dashboard'}">
-                        <v-list-tile @click="">
+                        <v-list-tile>
                             <v-list-tile-action>
                                 <v-icon>dashboard</v-icon>
                             </v-list-tile-action>
@@ -20,7 +20,7 @@
                         </v-list-tile>
                     </router-link>
                     <router-link :to="{name:'Settings'}">
-                        <v-list-tile @click="">
+                        <v-list-tile>
                             <v-list-tile-action>
                                 <v-icon>settings</v-icon>
                             </v-list-tile-action>
@@ -34,6 +34,8 @@
             <v-toolbar app fixed clipped-left>
                 <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
                 <v-toolbar-title>ThingJS</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-icon v-if="currentApplication" @click="closeApplication" style="cursor: pointer">close</v-icon>
             </v-toolbar>
             <v-content>
                 <router-view/>
@@ -95,7 +97,6 @@
 </template>
 
 <script>
-import consts from 'consts';
 import ConfigHelper from './components/ConfigHelper.vue';
 import Settings from './components/Settings.vue';
 import Dashboard from './components/Dashboard.vue';
@@ -139,12 +140,20 @@ export default {
         component: Dashboard
       }
     ]);
+
+    this.$store.registerModule('$launcher', require('./storages/storage').default);
+  },
+  methods: {
+    closeApplication () {
+      // Close all active applications
+      this.$store.dispatch('$launcher/closeCurrentApplication');
+    }
   },
   mounted () {
     // Detect first enter
-    if (this.$router.currentRoute.path == '/') {
-      if ($store.state.user.first_enter) {
-        $store.commit('setUserFirstEnter', false);
+    if (this.$router.currentRoute.path === '/') {
+      if (this.$store.state.user.first_enter) {
+        this.$store.commit('setUserFirstEnter', false);
         this.$router.push('/config_helper');
       } else {
         this.$router.push('/dashboard');
@@ -153,10 +162,10 @@ export default {
 
     if (process.env.NODE_ENV !== 'production') {
       // Debugger starter
-      this.$bus.$on(consts.EVENTS.UBUS_MESSAGE, (type, messages) => {
-        if (type === consts.UBUS.DEBUGGER_REQUEST) {
+      this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, messages) => {
+        if (type === $consts.UBUS.DEBUGGER_REQUEST) {
           this.alerts.push({
-            type: consts.ALERT_TYPE.WARNING,
+            type: $consts.ALERT_TYPE.WARNING,
             message: Vue.filter('lang')('DETECTED_DEBUGGER_REQUEST')
               .replace('%appname%', JSON.parse(messages).app)
               .replace('%url%', this.debuggerUrl)
@@ -166,25 +175,28 @@ export default {
     }
 
     // Loading available access points
-    this.$bus.$on(consts.EVENTS.ALERT, (type, messages) => {
+    this.$bus.$on($consts.EVENTS.ALERT, (type, messages) => {
       this.alerts.push({
         type: type,
         message: messages
       });
     });
 
-    this.$bus.$on(consts.EVENTS.APP_IS_LOADED, (messages) => {
+    this.$bus.$on($consts.EVENTS.APP_IS_LOADED, (messages) => {
       setTimeout(() => {
         this.is_app_ready = true;
       }, 50);
     });
   },
   computed: {
+    currentApplication () {
+      return this.$store.state.$launcher.currentApplication;
+    },
     debuggerUrl () {
       return process.env.NODE_ENV !== 'production' ? `/debugger.html?url=${process.env.HW_DEVICE_URL}` : null;
     },
     theme () {
-      let bgColor = this.$store.state.display.theme == 'light' ? '#f5f5f5' : '#212121';
+      let bgColor = this.$store.state.display.theme === 'light' ? '#f5f5f5' : '#212121';
       ['theme-color', 'msapplication-navbutton-color', 'apple-mobile-web-app-status-bar-style'].map((item) => {
         let meta = document.querySelector(`meta[name=${item}]`);
         if (!meta) {
@@ -210,7 +222,7 @@ export default {
   watch: {
     drawer (val) {
       setTimeout(function () {
-        this.$bus.$emit(consts.EVENTS.DO_SCREEN_REBUILD);
+        this.$bus.$emit($consts.EVENTS.DO_SCREEN_REBUILD);
       }, 150);
     }
   },
