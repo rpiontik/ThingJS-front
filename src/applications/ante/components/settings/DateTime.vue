@@ -46,6 +46,7 @@
 
 <script>
 
+import consts from '../../consts';
 import template from './Template.vue';
 
 export default {
@@ -72,7 +73,7 @@ export default {
     },
 
     timeZones () {
-      return $consts.TIME_ZONES;
+      return consts.TIME_ZONES;
     },
     ntp_sync: {
       get () {
@@ -90,8 +91,8 @@ export default {
 
         if (timeOffset === null) { timeOffset = -(new Date()).getTimezoneOffset(); }
 
-        for (let timezone in $consts.TIME_ZONES) {
-          if ((+$consts.TIME_ZONES[timezone].offset) == (+timeOffset)) { return $consts.TIME_ZONES[timezone].value; }
+        for (let timezone in consts.TIME_ZONES) {
+          if ((+consts.TIME_ZONES[timezone].offset) == (+timeOffset)) { return consts.TIME_ZONES[timezone].value; }
         }
 
         return null;
@@ -102,8 +103,8 @@ export default {
     },
 
     timezoneOffset () {
-      for (let timezone in $consts.TIME_ZONES) {
-        if ($consts.TIME_ZONES[timezone].value === this.timeZone) { return $consts.TIME_ZONES[timezone].offset; }
+      for (let timezone in consts.TIME_ZONES) {
+        if (consts.TIME_ZONES[timezone].value === this.timeZone) { return consts.TIME_ZONES[timezone].offset; }
       }
 
       return 0;
@@ -124,7 +125,7 @@ export default {
       let currentOffset = -(new Date()).getTimezoneOffset();
 
       for (let timezone in consts.TIME_ZONES) {
-        if ($consts.TIME_ZONES[timezone].offset == currentOffset) { this.new_timezone = $consts.TIME_ZONES[timezone].value; }
+        if (consts.TIME_ZONES[timezone].offset === currentOffset) { this.new_timezone = consts.TIME_ZONES[timezone].value; }
       }
     },
     reset () {
