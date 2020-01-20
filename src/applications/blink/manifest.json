@@ -32,6 +32,10 @@
   },
   "requires" : {
     "interfaces" : {
+      "timers" : {
+        "type" : "timers",
+        "required" : true
+      },
       "blink" : {
         "type" : "bit_port",
         "required" : true,
