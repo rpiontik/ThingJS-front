@@ -181,7 +181,9 @@ export default {
               bind: null
             });
           }
-        } else { node.pin_available = pinAvailableMap[0]; }
+        } else {
+          node.pin_available = !pinAvailableMap.length ? [] : pinAvailableMap[0];
+        }
 
         result.push(node);
       }
