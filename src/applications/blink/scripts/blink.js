@@ -24,7 +24,6 @@ $res.timers.setInterval(function () {
 // $bus - system bus interface
 $bus.on(function (event, content, data) {
   if (event === 'blink') {
-    debugger;
     active = !!JSON.parse(content);
   }
 }, null);

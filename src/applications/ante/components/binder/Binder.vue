@@ -155,7 +155,7 @@ export default {
             for (let i = 0; i < item.length; i++) {
               if (!pinAvailableMap[i]) { pinAvailableMap[i] = []; }
               (Array.isArray(item[i]) ? item[i] : [item[i]]).map((pin) => {
-                if (this.mapPins[pin].available) {
+                if ((this.mapPins[pin].available > 0) || (this.mapPins[pin].available === null)) {
                   pinAvailableMap[i].push({
                     id: pin,
                     name: this.mapPins[pin].name
