@@ -21,7 +21,7 @@
   },
   "scripts": {
     "entry": "blink",
-    "subscriptions" : ["$-script-restart", "blink"],
+    "subscriptions" : ["$-started", "$-script-restart", "blink"],
     "modules": {
       "blink": {
         "hot_reload": true,
