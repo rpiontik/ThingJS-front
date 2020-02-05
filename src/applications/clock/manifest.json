@@ -1,0 +1,53 @@
+{
+  "name": "Clock",
+  "vendor" : "rpiontik",
+  "version" : 1,
+  "subversion" : 0,
+  "patch" : 0,
+  "description": {
+    "ru": "Работа с часами",
+    "en": "The clock demo"
+  },
+  "components": {
+    "clock-app": {
+      "source": "clock.js",
+      "intent_filter": [
+        {
+          "action": "thingjs.intent.action.MAIN",
+          "category": "thingjs.intent.category.LAUNCH"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "entry": "clock",
+    "subscriptions" : ["$-started", "$-script-restart", "set-time"],
+    "modules": {
+      "clock": {
+        "hot_reload": true,
+        "source": "scripts/clock.js",
+        "optimize": false
+      }
+    }
+  },
+  "requires" : {
+    "interfaces" : {
+      "timers" : {
+        "type" : "timers",
+        "required" : true,
+        "description" : {
+          "ru" : "Таймеры системы",
+          "en" : "System timers"
+        }
+      },
+      "clock" : {
+        "type" : "clock",
+        "required" : true,
+        "description" : {
+          "ru" : "Системные часы",
+          "en" : "System clock"
+        }
+      }
+    }
+  }
+}
