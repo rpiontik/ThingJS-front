@@ -178,6 +178,7 @@ let execute = function (reset) {
   }
 };
 
+
 // Force restart execution
 function restartExecution () {
   execute(1);
@@ -198,12 +199,12 @@ $bus.on(function (event, content, data) {
   }
 }, null);
 
+print('MJS', 'Init config');
+config = getConfig();
+
 // Initialization
 print('MJS', 'HW init');
 hw_init();
-
-print('MJS', 'Init config');
-config = getConfig();
 
 print('MJS', 'Restart execution');
 restartExecution();
