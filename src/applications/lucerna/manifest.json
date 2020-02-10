@@ -181,119 +181,22 @@
           "en" : "1wire sensors"
         }
       },
-      "ledc0" : {
-        "type" : "ledc",
-        "required" : true,
-        "default" : 33,
-        "description" : {
-          "ru" : "Канал №1",
-          "en" : "channel 1"
-        }
-      },
       "ledc1" : {
         "type" : "ledc",
-        "default" : 32,
+        "required" : true,
+        "default" : [],
         "description" : {
-          "ru" : "Канал №2",
-          "en" : "channel 2"
+          "ru" : "Основной LEDC драйвер",
+          "en" : "Main LEDC driver"
         }
       },
       "ledc2" : {
         "type" : "ledc",
+        "required" : false,
+        "default" : [],
         "description" : {
-          "ru" : "Канал №3",
-          "en" : "channel 3"
-        }
-      },
-      "ledc3" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №4",
-          "en" : "channel 4"
-        }
-      },
-      "ledc4" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №5",
-          "en" : "channel 5"
-        }
-      },
-      "ledc5" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №6",
-          "en" : "channel 6"
-        }
-      },
-      "ledc6" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №7",
-          "en" : "channel 7"
-        }
-      },
-      "ledc7" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №8",
-          "en" : "channel 8"
-        }
-      },
-      "ledc8" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №9",
-          "en" : "channel 9"
-        }
-      },
-      "ledc9" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №10",
-          "en" : "channel 10"
-        }
-      },
-      "ledc10" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №11",
-          "en" : "channel 11"
-        }
-      },
-      "ledc11" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №12",
-          "en" : "channel 12"
-        }
-      },
-      "ledc12" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №13",
-          "en" : "channel 13"
-        }
-      },
-      "ledc13" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №14",
-          "en" : "channel 14"
-        }
-      },
-      "ledc14" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №15",
-          "en" : "channel 15"
-        }
-      },
-      "ledc15" : {
-        "type" : "ledc",
-        "description" : {
-          "ru" : "Канал №16",
-          "en" : "channel 16"
+          "ru" : "Дополнительный LEDC драйвер",
+          "en" : "Extended LEDC driver"
         }
       }
     }
