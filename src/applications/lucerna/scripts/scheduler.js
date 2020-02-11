@@ -1,5 +1,9 @@
 print('MJS', 'Starting Lucerna script...', 1);
 
+// Max level
+let MAX_LEVEL = 32767;
+let RESOLUTION = 15;
+
 // Global channels array
 let channels = [];
 
@@ -15,7 +19,9 @@ function hw_init () {
   for (let i = 0; i < ledcDrivers.length; i++) {
     // Init the driver
     let driver = ledcDrivers[i];
-    driver.reconfig();
+    driver.reconfig({
+      'resolution': RESOLUTION
+    });
     for (let f = 0; f < driver.channels.length; f++) {
       let channel = driver.channels[f];
       if (channel) {
@@ -158,12 +164,9 @@ let execute = function (reset) {
       let channel = channels[i];
       if (reset) {
         print('     Reset channel ', i);
-        channel.reconfig({
-          'duty': 0
-        });
+        channel.fade(MAX_LEVEL * (transition.spectrum[i] / 100000), 100);
       }
-      debugger;
-      channel.fade(interval.stop.spectrum[i] / 10, exposition);
+      channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / 100000), exposition);
       print('     Executing channel ', i, ' from ', transition.spectrum[i], ' to ', interval.stop.spectrum[i]);
     }
 
@@ -177,7 +180,6 @@ let execute = function (reset) {
     print('No interval');
   }
 };
-
 
 // Force restart execution
 function restartExecution () {
