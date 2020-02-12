@@ -164,10 +164,12 @@ let execute = function (reset) {
       let channel = channels[i];
       if (reset) {
         print('     Reset channel ', i);
-        channel.fade(MAX_LEVEL * (transition.spectrum[i] / 100000), 100);
+        channel.fade(MAX_LEVEL * (transition.spectrum[i] / 100000), 0);
       }
-      channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / 100000), exposition);
-      print('     Executing channel ', i, ' from ', transition.spectrum[i], ' to ', interval.stop.spectrum[i]);
+      if (transition.start !== transition.stop) {
+        channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / 100000), exposition);
+        print('     Executing channel ', i, ' from ', transition.spectrum[i], ' to ', interval.stop.spectrum[i], ' exposition ', exposition);
+      }
     }
 
     timer = $res.timers.setTimeout(execute, exposition);
