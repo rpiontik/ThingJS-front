@@ -3,6 +3,7 @@ print('MJS', 'Starting Lucerna script...', 1);
 // Max level
 let MAX_LEVEL = 32767;
 let RESOLUTION = 15;
+let DIVIDER = 10000;
 
 // Global channels array
 let channels = [];
@@ -164,10 +165,10 @@ let execute = function (reset) {
       let channel = channels[i];
       if (reset) {
         print('     Reset channel ', i);
-        channel.fade(MAX_LEVEL * (transition.spectrum[i] / 100000), 0);
+        channel.fade(MAX_LEVEL * (transition.spectrum[i] / DIVIDER), 0);
       }
-      if (transition.start !== transition.stop) {
-        channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / 100000), exposition);
+      if (interval.start !== interval.stop) {
+        channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER), exposition);
         print('     Executing channel ', i, ' from ', transition.spectrum[i], ' to ', interval.stop.spectrum[i], ' exposition ', exposition);
       }
     }
