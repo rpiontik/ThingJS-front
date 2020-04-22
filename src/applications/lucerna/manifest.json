@@ -190,7 +190,7 @@
         }
       },
       "ledc1" : {
-        "type" : "ledc",
+        "type" : "SmartLED",
         "required" : true,
         "default" : [],
         "description" : {
@@ -199,7 +199,7 @@
         }
       },
       "ledc2" : {
-        "type" : "ledc",
+        "type" : "SmartLED",
         "required" : false,
         "default" : [],
         "description" : {
