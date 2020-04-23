@@ -18,7 +18,7 @@ $res.timers.setInterval(function () {
     // Do invert
     state = !state;
   }
-}, 1000);
+}, 500);
 
 // Event listener
 // $bus - system bus interface

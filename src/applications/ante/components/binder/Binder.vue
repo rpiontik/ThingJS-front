@@ -200,9 +200,17 @@ export default {
     getSortPins (items) {
       return items.slice().sort((a, b) => {
         if (!!this.bindedMap[a.id] === !!this.bindedMap[b.id]) {
-          if (a.id < b.id) { return -1; } else if (a.id > b.id) { return 1; }
+          if (a.id < b.id) {
+            return -1;
+          } else if (a.id > b.id) {
+            return 1;
+          }
           return 0;
-        } else if (!this.bindedMap[a.id] && this.bindedMap[b.id]) { return -1; } else if (this.bindedMap[a.id] && !this.bindedMap[b.id]) { return 1; }
+        } else if (!this.bindedMap[a.id] && this.bindedMap[b.id]) {
+          return -1;
+        } else if (this.bindedMap[a.id] && !this.bindedMap[b.id]) {
+          return 1;
+        }
         return 0;
       });
     },
@@ -260,6 +268,7 @@ export default {
         best: candidate.case_
       };
     },
+
     onOnOffRequire (require) {
       if (require.apply) {
         if (!this.bindedMap[require.old_bind]) {
@@ -273,15 +282,24 @@ export default {
       }
       this.forceUpdate();
     },
-    onChangePin (require) {
-      if (require.bind === require.old_bind) { return; }
 
-      if (this.bindedMap[require.bind]) {
+    isAvailableLimitToBind (pin) {
+      return (!this.bindedMap[pin]) || (this.mapPins[pin].pin_available !== null);
+    },
+
+    onChangePin (require) {
+      if (require.bind === require.old_bind) {
+        return;
+      }
+
+      if (this.bindedMap[require.bind] && this.mapPins[require.bind].available !== null) {
         this.bindedMap[require.bind].bind = null;
         this.bindedMap[require.bind].old_bind = null;
       }
       this.bindedMap[require.bind] = require;
-      if (require.old_bind) { this.bindedMap[require.old_bind] = null; }
+      if (require.old_bind && !this.isAvailableLimitToBind(require.old_bind)) {
+        this.bindedMap[require.old_bind] = null;
+      }
       require.old_bind = require.bind;
 
       // Cases validations
@@ -326,6 +344,8 @@ export default {
                             (workedOut.indexOf(index) >= 0)
           ) { return; }
 
+          debugger;
+
           switch (node.struct_type) {
             case 'set':
               if (mode.set) {
@@ -336,12 +356,12 @@ export default {
                     if (Array.isArray(case_[i])) {
                       for (let c = 0; c < case_[i].length; c++) {
                         if ((mode.action === 'default') && (case_[i][c] !== node.default[i])) { continue; }
-                        if (!this.bindedMap[case_[i][c]] && (choice.indexOf(case_[i][c]) < 0)) {
+                        if (this.isAvailableLimitToBind(case_[i][c]) && (choice.indexOf(case_[i][c]) < 0)) {
                           choice[i] = case_[i][c];
                           break;
                         }
                       }
-                    } else if (!this.bindedMap[case_[i]]) {
+                    } else if (this.isAvailableLimitToBind(case_[i])) {
                       if (mode.action === 'default') {
                         if (case_[i] === node.default[i]) { choice[i] = case_[i]; }
                       } else { choice[i] = case_[i]; }
@@ -364,7 +384,7 @@ export default {
                 for (let i = 0; i < node.pin_available.length; i++) {
                   let pin = node.pin_available[i];
                   if ((mode.action === 'default') && node.default !== pin.id) { continue; }
-                  if (!this.bindedMap[pin.id]) {
+                  if (this.isAvailableLimitToBind(pin.id)) {
                     this.bindedMap[pin.id] = node;
                     node.bind = pin.id;
                     node.old_bind = pin.id;
