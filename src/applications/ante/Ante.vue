@@ -237,6 +237,10 @@ export default {
 
 <style>
 
+    .container {
+        max-width:100%
+    }
+
     .status_label {
         display: block;
         float: left;

@@ -36,7 +36,7 @@
                                     class="color-packer"
                                     :style="{
                                         'background-color' : config.channels[i - 1].color,
-                                        'color' : getContrastYIQ(config.channels[i - 1].color)
+                                        'color' : getContrastColor(config.channels[i - 1].color)
                                     }"
                             >{{i}}
                                 <input
@@ -155,8 +155,8 @@
                 return result;
             },
 
-            getContrastYIQ(hexcolor){
-                return Utils.getContrastYIQ(hexcolor)
+            getContrastColor(hexcolor){
+                return Utils.getContrastColor(hexcolor)
             },
 
             reset(){
