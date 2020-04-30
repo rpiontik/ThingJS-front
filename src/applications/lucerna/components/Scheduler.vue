@@ -58,7 +58,7 @@
                         :y2="target.y"
                 />
                 <g class="grid-days">
-                    <rect class="axis-border" :width="chart.width - chart.offset.left-1" :height="chart.height"></rect>
+                    <rect class="axis-border" :width="chart.width - 1" :height="chart.height"></rect>
                     <g
                             v-for="percent in axisY"
                             :transform="['translate(0', percent.y + ')']"
@@ -350,7 +350,7 @@ export default {
         x: 0,
         y: 0
       },
-      width: 2000,
+      width: 1000,
       height: 700,
       local_dots: null,
       zoom: {
@@ -540,7 +540,6 @@ export default {
     },
 
     onDotMouseDown (dot) {
-      console.log('onDotMouseDown', dot);
       this.draggingDot.isDragging = true;
       this.draggingDot.offsetX = 0;
       this.draggingDot.offsetY = 0;
@@ -594,7 +593,6 @@ export default {
     },
 
     onMouseDown (event) {
-      console.log('onMouseDown', event);
       this.draggingDot.clientX = event.clientX;
       this.draggingDot.clientY = event.clientY;
 
@@ -706,7 +704,11 @@ export default {
     },
 
     rebaseOffset (offset) {
-      if (offset < 0) { offset = 0; } else if (offset > this.interval.width - this.exposition) { offset = this.interval.width - this.exposition; }
+      if (offset < 0) {
+        offset = 0;
+      } else if (offset > this.interval.width - this.exposition) {
+        offset = this.interval.width - this.exposition;
+      }
 
       return offset;
     },
@@ -776,13 +778,14 @@ export default {
 
     chart () {
       let offsetTop = this.dotRadius * 3;
+      let offsetLeft = this.isMobileScreen ? this.fontHeight * 1.2 : 60;
       return {
         showPercents: true,
         showTimes: true,
         height: this.height - this.fontSizeAxisX * 1.5 - this.toolbar.height,
-        width: this.width,
+        width: this.width - offsetLeft,
         offset: {
-          left: 60,
+          left: offsetLeft,
           top: offsetTop
         }
       };
@@ -803,7 +806,6 @@ export default {
 
     currentSpectrum () {
       let spectrum = {};
-      console.log('get current spectrum', this.theDot);
       this.channels.map((channel, index) => {
         channel.spectrum.map((wave) => {
           spectrum[wave.wave] = (spectrum[wave.wave] ? spectrum[wave.wave] : 0) +
