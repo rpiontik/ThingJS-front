@@ -4,15 +4,15 @@
 'use strict';
 
 exports.getContrastColor = function (hexcolor) {
-  if (hexcolor.indexOf('#') === 0) {
-    hexcolor = hexcolor.slice(1);
-  }
+    if (hexcolor.indexOf('#') === 0) {
+        hexcolor = hexcolor.slice(1);
+    }
 
-  let r = parseInt(hexcolor.slice(0, 2), 16);
-  let g = parseInt(hexcolor.slice(2, 4), 16);
-  let b = parseInt(hexcolor.slice(4, 6), 16);
+    let r = parseInt(hexcolor.slice(0, 2), 16);
+    let g = parseInt(hexcolor.slice(2, 4), 16);
+    let b = parseInt(hexcolor.slice(4, 6), 16);
 
-  return (r * 0.299 + g * 0.587 + b * 0.114) > 186 ? '#000000' : '#FFFFFF';
+    return (r * 0.299 + g * 0.587 + b * 0.114) > 186 ? '#000000' : '#FFFFFF';
 };
 
 /*
@@ -21,12 +21,26 @@ exports.getContrastColor = function (hexcolor) {
     return      - result dot structure
  */
 exports.calcLevelsByBrightness = function (dot, n_channels) {
-  let max = 0;
-  for (let channel = 0; channel < n_channels; channel++) {
-    if (dot.spectrum[channel] > max) { max = dot.spectrum[channel]; }
-  }
+    let max = 0;
+    for (let channel = 0; channel < n_channels; channel++) {
+        if (dot.spectrum[channel] > max) {
+            max = dot.spectrum[channel];
+        }
+    }
 
-  for (let channel = 0; channel < n_channels; channel++) { dot.spectrum[channel] = !max ? dot.brightness : dot.brightness * (dot.spectrum[channel] / max); }
+    for (let channel = 0; channel < n_channels; channel++) {
+        dot.spectrum[channel] = !max ? dot.brightness : dot.brightness * (dot.spectrum[channel] / max);
+    }
 
-  return dot;
+    return dot;
+};
+
+/*
+    Create worker from function
+ */
+exports.buildWorker = function (foo) {
+    let str = foo.toString()
+        .match(/^\s*function\s*\(\s*\)\s*\{(([\s\S](?!\}$))*[\s\S])/)[1];
+    return new Worker(window.URL.createObjectURL(
+        new Blob([str], {type: 'text/javascript'})));
 };

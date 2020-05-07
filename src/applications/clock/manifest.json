@@ -1,9 +1,9 @@
 {
   "name": "Clock",
-  "vendor" : "rpiontik",
-  "version" : 1,
-  "subversion" : 0,
-  "patch" : 0,
+  "vendor": "rpiontik",
+  "version": 1,
+  "subversion": 0,
+  "patch": 0,
   "description": {
     "ru": "Работа с часами",
     "en": "The clock demo"
@@ -21,7 +21,11 @@
   },
   "scripts": {
     "entry": "clock",
-    "subscriptions" : ["$-started", "$-script-restart", "set-time"],
+    "subscriptions": [
+      "$-started",
+      "$-script-restart",
+      "set-time"
+    ],
     "modules": {
       "clock": {
         "hot_reload": true,
@@ -30,22 +34,22 @@
       }
     }
   },
-  "requires" : {
-    "interfaces" : {
-      "timers" : {
-        "type" : "timers",
-        "required" : true,
-        "description" : {
-          "ru" : "Таймеры системы",
-          "en" : "System timers"
+  "requires": {
+    "interfaces": {
+      "timers": {
+        "type": "timers",
+        "required": true,
+        "description": {
+          "ru": "Таймеры системы",
+          "en": "System timers"
         }
       },
-      "clock" : {
-        "type" : "clock",
-        "required" : true,
-        "description" : {
-          "ru" : "Системные часы",
-          "en" : "System clock"
+      "clock": {
+        "type": "clock",
+        "required": true,
+        "description": {
+          "ru": "Системные часы",
+          "en": "System clock"
         }
       }
     }
