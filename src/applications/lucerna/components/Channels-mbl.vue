@@ -59,32 +59,37 @@ export default {
                 return this.channels[this.selectedChannel].level * 10000;
             },
             set (level) {
-                let newLevel = level / 10000;
-
-                if (newLevel === this.channels[this.selectedChannel].level) { return; }
-
-                let levels = JSON.parse((JSON.stringify(this.channels)));
-                levels[this.selectedChannel].level = newLevel;
-
-                let max = 0;
-
-                for (let channel = 1; channel < levels.length; channel++) {
-                    if (max < levels[channel].level) {
-                        max = levels[channel].level;
-                    }
+                if (this.vModelTimer) {
+                    clearTimeout(this.vModelTimer);
                 }
 
-                if (this.selectedChannel === 0) {
-                    let brightness = levels[0].level;
+                this.vModelTimer = setTimeout(() => {
+                    let newLevel = level / 10000;
+
+                    if (newLevel === this.channels[this.selectedChannel].level) { return; }
+
+                    let levels = JSON.parse((JSON.stringify(this.channels)));
+                    levels[this.selectedChannel].level = newLevel;
+
+                    let max = 0;
+
                     for (let channel = 1; channel < levels.length; channel++) {
-                        levels[channel].level = !max ? brightness : brightness * (levels[channel].level / max);
+                        if (max < levels[channel].level) {
+                            max = levels[channel].level;
+                        }
                     }
-                    max = brightness;
-                } else {
-                    levels[0].level = max;
-                }
 
-                this.$emit('input', levels);
+                    if (this.selectedChannel === 0) {
+                        let brightness = levels[0].level;
+                        for (let channel = 1; channel < levels.length; channel++) {
+                            levels[channel].level = !max ? brightness : brightness * (levels[channel].level / max);
+                        }
+                        max = brightness;
+                    } else {
+                        levels[0].level = max;
+                    }
+                    this.$emit('input', levels);
+                }, 10);
             }
         },
 
@@ -112,7 +117,8 @@ export default {
 
     data () {
         return {
-            selectedChannel: 0
+            selectedChannel: 0,
+            vModelTimer: null
         };
     }
 
