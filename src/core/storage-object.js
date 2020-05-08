@@ -1,6 +1,6 @@
 'use strict';
 
-const Binary = require('./storage-binary');
+const Binary = require('../../build/storage-binary');
 
 module.exports = {
     namespaced: true,
@@ -59,6 +59,7 @@ module.exports = {
             for (let index in $store.state.apps.manifest) {
                 if ($store.state.apps.manifest[index].name === context.state.$namespace) {
                     profile = $store.state.apps.manifest[index];
+                    break;
                 }
             }
 

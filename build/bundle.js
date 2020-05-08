@@ -9,7 +9,14 @@ module.exports = {
         this.appendName(bundle, manifest.name);
 
         //JSON manifest
-        let manifest_raw = new Buffer(JSON.stringify(manifest), 'UTF-8');
+        let exp_manifest = Object.assign({}, manifest);
+        for(let key in exp_manifest) {
+            if(key.charAt(0) === '$') {
+                delete exp_manifest[key];
+            }
+        }
+
+        let manifest_raw = new Buffer(JSON.stringify(exp_manifest), 'UTF-8');
         fs.appendFileSync(bundle, Buffer.from(new Uint32Array([manifest_raw.length]).buffer), "binary");
         fs.appendFileSync(bundle, manifest_raw);
 

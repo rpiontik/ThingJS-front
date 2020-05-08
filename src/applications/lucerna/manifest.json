@@ -49,14 +49,12 @@
         "source": "scripts/scheduler.js",
         "optimize": false
       },
-      "utils": {
-        "source": "scripts/utils.js",
-        "optimize": false
-      },
-      "migration": {
+      "spectrum": {
         "hot_reload": true,
-        "source": "scripts/migration.js",
-        "optimize": false
+        "source": "scripts/init.js",
+        "optimize": {
+          "uglify": false
+        }
       }
     }
   },
@@ -65,6 +63,7 @@
       "config": {
         "version": 1,
         "preload": true,
+        "default" : "data/config.json",
         "struct": {
           "interval": {
             "width": "double"
@@ -141,6 +140,7 @@
       "spectrum": {
         "version": 1,
         "preload": false,
+        "migration": "spectrum.js",
         "struct": {
           "channel": "int",
           "wave": "int",
@@ -149,7 +149,6 @@
       },
       "dots": {
         "version": 1,
-        "migration": "migration",
         "struct": {
           "time": "int",
           "brightness": "double",

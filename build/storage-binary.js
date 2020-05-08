@@ -1,6 +1,5 @@
 'use strict';
-const StorageBuilder = require('../../build/storage');
-const BundleStr = require('../../build/storage');
+const StorageBuilder = require('./storage');
 
 module.exports = {
 
@@ -72,15 +71,15 @@ module.exports = {
             }
 
             switch (field.type) {
-            case BundleStr.BIN_BLOCK_STORAGE_VERSION : {
+            case StorageBuilder.BIN_BLOCK_STORAGE_VERSION : {
                 state.version = field.name;
                 break;
             }
-            case BundleStr.BIN_BLOCK_STORAGE_MIGRATION : {
+            case StorageBuilder.BIN_BLOCK_STORAGE_MIGRATION : {
                 state.migration = field.name;
                 break;
             }
-            case BundleStr.BIN_BLOCK_STORAGE_TYPE_OBJECT : {
+            case StorageBuilder.BIN_BLOCK_STORAGE_TYPE_OBJECT : {
                 let obj = {
                     name: field.name,
                     substruct: []
@@ -90,7 +89,7 @@ module.exports = {
                 items = obj.substruct;
                 break;
             }
-            case BundleStr.BIN_BLOCK_STORAGE_TYPE_INT : {
+            case StorageBuilder.BIN_BLOCK_STORAGE_TYPE_INT : {
                 items.push({
                     name: field.name,
                     parser: this.parseBinaryInt32,
@@ -99,7 +98,7 @@ module.exports = {
                 state.row_size += 4;
                 break;
             }
-            case BundleStr.BIN_BLOCK_STORAGE_TYPE_DOUBLE : {
+            case StorageBuilder.BIN_BLOCK_STORAGE_TYPE_DOUBLE : {
                 items.push({
                     name: field.name,
                     parser: this.parseBinaryDouble64,
@@ -137,7 +136,7 @@ module.exports = {
     // Parsing object structure
     parseStructObject (data) {
         let state = {
-            part: BundleStr.BIN_BLOCK_STORAGE_VERSION,
+            part: StorageBuilder.BIN_BLOCK_STORAGE_VERSION,
             data: data,
             offset: 0
         };
@@ -192,7 +191,7 @@ module.exports = {
 
         // Convert binary header to array fields
         let state = {
-            part: BundleStr.BIN_BLOCK_STORAGE_VERSION,
+            part: StorageBuilder.BIN_BLOCK_STORAGE_VERSION,
             data: header.buffer,
             offset: 0
         };
