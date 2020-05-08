@@ -369,6 +369,11 @@ export default {
                 spectrum: {}
             },
 
+            // Touche data
+            eventsTouch: {
+                lastDistance: null
+            },
+
             clientWidth: null,
             clientHeight: null,
             event: {
@@ -402,7 +407,7 @@ export default {
             local_dots: null,
             zoom: {
                 value: 1, // Текущий зум
-                step: 1.1, // K преращение зума
+                step: 0.1, // K зума
                 // Возможные дискретности времени на оси Х
                 time_parts: [60, 300, 600, 1800, 3600, 7200, 14400, 43200, 86400],
                 max_parts: 9
@@ -503,9 +508,34 @@ export default {
             );
         },
 
+        calcDistance (touches) {
+            if (touches.length) {
+                let deltaX = Math.abs(touches[0].screenX - touches[1].screenX);
+                let deltaY = Math.abs(touches[0].screenY - touches[1].screenY);
+                return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            } else {
+                return 0;
+            }
+        },
+
         onTouch (evt) {
             evt.preventDefault();
-            if (evt.touches.length > 1 || (evt.type === 'touchend' && evt.touches.length > 0)) {
+            if (evt.touches.length > 1) {
+                switch (evt.type) {
+                case 'touchstart':
+                    this.eventsTouch.lastDistance = this.calcDistance(evt.targetTouches);
+                    break;
+                case 'touchmove':
+                    if (this.eventsTouch.lastDistance >= 0) {
+                        let newDist = this.calcDistance(evt.targetTouches);
+                        let targetMoment = this.interval.offset + this.exposition * (evt.targetTouches[0].screenX / this.chart.width);
+                        if (this.eventsTouch.lastDistance) {
+                            this.onZoom(Math.abs(newDist / this.eventsTouch.lastDistance), targetMoment);
+                        }
+                        this.eventsTouch.lastDistance = newDist;
+                    }
+                    break;
+                }
                 return;
             }
 
@@ -525,6 +555,7 @@ export default {
             case 'touchend':
                 type = 'mouseup';
                 touch = evt.changedTouches[0];
+                this.eventsTouch.lastDistance = null;
                 break;
             }
 
@@ -557,38 +588,34 @@ export default {
             this.height = this.clientWidth ? this.$el.clientHeight / this.clientWidth * this.width : 0;
         },
 
-        onZoom (delta, event) {
+        onZoom (zoom, targetMoment) {
             let oldExposition = this.exposition;
-
-            switch (delta) {
-            case -1:
-                this.zoom.value = this.rebaseZoom(this.zoom.value / this.zoom.step);
-                break;
-            case 1:
-                this.zoom.value = this.rebaseZoom(this.zoom.value * this.zoom.step);
-                break;
-            }
-
-            if (this.zoom.value <= 1) {
-                this.zoom.value = 1;
-            }
-
+            let zoomValue = this.rebaseZoom(this.zoom.value * zoom);
+            this.zoom.value = zoomValue < 1 ? 1 : zoomValue;
             this.interval.offset = this.rebaseOffset(
-                this.interval.offset +
-                    (oldExposition - this.exposition) *
-                    ((event.offsetX * this.koofScreenX - this.chart.offset.left) / this.chart.width)
+                this.interval.offset + (oldExposition - this.exposition) *
+                ((targetMoment - this.interval.offset) / this.exposition)
             );
         },
 
         // Первичный обработчик событий для реализации события zoom
         proxyScrollEvent (event) {
             let e = window.event || event;
-            let delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-
-            if (e.path.indexOf(this.$el) >= 0) {
-                this.onZoom(delta, e);
-                e.preventDefault();
+            let x = event.offsetX * this.koofScreenX;
+            if ((x < this.chart.offset.left) || (e.path && e.path.indexOf(this.$el) < 0)) {
+                return;
             }
+            let targetMoment = this.interval.offset +
+                (this.exposition * ((x - this.chart.offset.left) / this.chart.width));
+            switch (Math.max(-1, Math.min(1, (e.deltaY || -e.detail)))) {
+            case 1:
+                this.onZoom(1 - this.zoom.step, targetMoment);
+                break;
+            case -1:
+                this.onZoom(1 + this.zoom.step, targetMoment);
+                break;
+            }
+            e.preventDefault();
         },
 
         calcLevelsByBrightness (dot) {
@@ -1235,12 +1262,12 @@ export default {
 
         // Коэфициент преобразования реальных точек во внутренние по ширине
         koofScreenX () {
-            return (+this.clientWidth) !== 0 ? this.width / this.clientWidth : 0;
+            return (+this.clientWidth) !== 0 ? this.width / this.clientWidth : 1;
         },
 
         // Коэфициент преобразования реальных точек во внутренние по высоте
         koofScreenY () {
-            return (+this.clientHeight) !== 0 ? this.height / this.clientHeight : 0;
+            return (+this.clientHeight) !== 0 ? this.height / this.clientHeight : 1;
         },
 
         // Радиус точек на графике
