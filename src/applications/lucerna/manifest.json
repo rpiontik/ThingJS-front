@@ -48,13 +48,6 @@
       "scheduler": {
         "source": "scripts/scheduler.js",
         "optimize": false
-      },
-      "spectrum": {
-        "hot_reload": true,
-        "source": "scripts/init.js",
-        "optimize": {
-          "uglify": false
-        }
       }
     }
   },
