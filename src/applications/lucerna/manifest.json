@@ -140,6 +140,7 @@
       "spectrum": {
         "version": 1,
         "preload": false,
+        "default" : "data/spectrum.json",
         "migration": "spectrum.js",
         "struct": {
           "channel": "int",
