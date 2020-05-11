@@ -950,23 +950,23 @@ export default {
                 return result;
             },
             set (value) {
-                if (this.theDot) {
-                    if (this.animate.spectrumTimer) {
-                        clearTimeout(this.animate.spectrumTimer);
+                if (this.animate.spectrumTimer) {
+                    clearTimeout(this.animate.spectrumTimer);
+                }
+
+                this.animate.spectrumTimer = setTimeout(() => {
+                    if (this.theDot) {
+                        value.map((channel, index) => {
+                            if (!index) {
+                                this.theDot.brightness = channel.level;
+                            } else {
+                                this.theDot.spectrum[index - 1] = channel.level;
+                            }
+                        });
                     }
 
-                    this.animate.spectrumTimer = setTimeout(() => {
-                        this.animate.spectrumTimer = null;
-                    }, 250);
-
-                    value.map((channel, index) => {
-                        if (!index) {
-                            this.theDot.brightness = channel.level;
-                        } else {
-                            this.theDot.spectrum[index - 1] = channel.level;
-                        }
-                    });
-                }
+                    this.animate.spectrumTimer = null;
+                }, 5);
             }
         },
 
