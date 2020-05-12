@@ -12,12 +12,12 @@
  * Deploy applications on clear device (after full reset)
  */
 struct st_thingjs_ext_app {
-    char file[32];
+    char path[32];
     unsigned char * start;
     unsigned char * end;
 };
 
-// Get preinstalled application list
+// Return preinstalled application list
 //  list - list of external application
 //  size - size of list
 void thingjsGetPreinstalledApplications(struct st_thingjs_ext_app ** list, int * size);
