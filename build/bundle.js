@@ -33,15 +33,20 @@ module.exports = {
             fs.appendFileSync(bundle, Buffer.from(new Uint32Array([storage.length]).buffer), "binary");
             fs.appendFileSync(bundle, new Buffer(storage));
         }
+
+        //Files
+        Manifest.files(manifest).map((file) => {
+            this.appendFile(bundle, path.resolve(manifest.$src_path, file.src), file.dist);
+        });
     },
     appendName(bundle, name){
         fs.appendFileSync(bundle, Buffer.from(new Uint32Array([name.length]).buffer), "binary");
         fs.appendFileSync(bundle, name);
     },
-    appendFile(bundle, file) {
-        this.appendName(bundle, path.basename(file));
-        fs.appendFileSync(bundle, Buffer.from(new Uint32Array([fs.statSync(file).size]).buffer), "binary");
-        fs.appendFileSync(bundle, fs.readFileSync(file, 'binary'), "binary");
+    appendFile(bundle, source, dist) {
+        this.appendName(bundle, dist);
+        fs.appendFileSync(bundle, Buffer.from(new Uint32Array([fs.statSync(source).size]).buffer), "binary");
+        fs.appendFileSync(bundle, fs.readFileSync(source, 'binary'), "binary");
     },
     make(appname) {
         let bundle = `${appname}/${appname}.smt`;
@@ -52,7 +57,7 @@ module.exports = {
 
         fs.readdirSync(app_path).forEach(file => {
             if([`${appname}.smt`, 'manifest.json'].indexOf(path.basename(file)) < 0){
-                this.appendFile(bundle_path, path.resolve(app_path, file));
+                this.appendFile(bundle_path, path.resolve(app_path, file), path.basename(file));
             }
         });
 

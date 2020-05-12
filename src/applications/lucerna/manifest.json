@@ -51,6 +51,12 @@
       }
     }
   },
+  "files": [
+    {
+      "src": "cfg/config.json",
+      "dist": "config.json"
+    }
+  ],
   "storage": {
     "objects": {
       "config": {
@@ -143,6 +149,7 @@
       },
       "dots": {
         "version": 1,
+        "default" : "data/dots.json",
         "struct": {
           "time": "int",
           "brightness": "double",

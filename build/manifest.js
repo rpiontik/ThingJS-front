@@ -43,6 +43,15 @@ module.exports = {
                     throw new Error(`The ${manifest.name} application has error in storage structure [storage/objects/${object_name}/struct}]`);
             }
         }
+
+        if ('files' in manifest) {
+            manifest.files.map((file, index) => {
+                ['dist', 'src'].map((field) => {
+                    if (!(field in file))
+                        throw new Error(`The ${manifest.name} application has error in file structure [storage/files/${index}]. Not fount "${field}" field.`);
+                });
+            });
+        }
     },
 
     make(app) {
@@ -122,5 +131,9 @@ module.exports = {
         }
 
         return result;
+    },
+
+    files(manifest) {
+        return 'files' in manifest ? manifest.files : [];
     }
 }
