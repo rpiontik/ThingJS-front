@@ -6,10 +6,10 @@
              @mousemove.prevent="onMouseMove"
              @mouseup.prevent="onMouseUp"
              @mouseleave.prevent="onMouseUp"
-             @touchstart.prevent="onTouch"
-             @touchmove.prevent="onTouch"
-             @touchend.prevent="onTouch"
-             @touchcancel.prevent="onTouch"
+             @touchstart="onTouch"
+             @touchmove="onTouch"
+             @touchend="onTouch"
+             @touchcancel="onTouch"
         >
             <g :transform="['translate(' + chart.offset.left, chart.offset.top + ')']">
                 <g v-if="currentTimeX > 0">
@@ -371,6 +371,9 @@ export default {
 
             // Touche data
             eventsTouch: {
+                screenX: null,
+                screenY: null,
+                isDotTouch: false,
                 lastDistance: null
             },
 
@@ -509,35 +512,60 @@ export default {
         },
 
         calcDistance (touches) {
-            if (touches.length) {
-                let deltaX = Math.abs(touches[0].screenX - touches[1].screenX);
-                let deltaY = Math.abs(touches[0].screenY - touches[1].screenY);
-                return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-            } else {
-                return 0;
-            }
+            let deltaX = Math.abs(touches[0].screenX - touches[1].screenX);
+            let deltaY = Math.abs(touches[0].screenY - touches[1].screenY);
+            return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
         },
 
         onTouch (evt) {
-            evt.preventDefault();
             if (evt.touches.length > 1) {
+                evt.preventDefault();
+                this.eventsTouch.screenX = null;
+                this.eventsTouch.screenY = null;
                 switch (evt.type) {
                 case 'touchstart':
-                    this.eventsTouch.lastDistance = this.calcDistance(evt.targetTouches);
+                    this.eventsTouch.lastDistance = this.calcDistance(evt.touches);
                     break;
                 case 'touchmove':
-                    if (this.eventsTouch.lastDistance >= 0) {
-                        let newDist = this.calcDistance(evt.targetTouches);
-                        let targetMoment = this.interval.offset + this.exposition * (evt.targetTouches[0].screenX / this.chart.width);
+                    let newDist = this.calcDistance(evt.touches);
+                    if ((this.eventsTouch.lastDistance !== null) && newDist) {
+                        let targetMoment = this.interval.offset + this.exposition * (evt.touches[0].screenX / this.chart.width);
                         if (this.eventsTouch.lastDistance) {
                             this.onZoom(Math.abs(newDist / this.eventsTouch.lastDistance), targetMoment);
                         }
-                        this.eventsTouch.lastDistance = newDist;
                     }
+                    this.eventsTouch.lastDistance = newDist;
                     break;
                 }
                 return;
             }
+
+            let preventDefault = false;
+
+            switch (evt.type) {
+            case 'touchstart':
+                this.eventsTouch.isDotTouch = evt.target.tagName === 'circle';
+                this.eventsTouch.screenX = evt.targetTouches[0].screenX;
+                this.eventsTouch.screenY = evt.targetTouches[0].screenY;
+                break;
+            case 'touchmove':
+                if (!this.eventsTouch.isDotTouch) {
+                    preventDefault = Math.abs(evt.targetTouches[0].screenX - this.eventsTouch.screenX) >
+                        Math.abs(evt.targetTouches[0].screenY - this.eventsTouch.screenY);
+                    this.eventsTouch.screenX = evt.targetTouches[0].screenX;
+                    this.eventsTouch.screenY = evt.targetTouches[0].screenY;
+                } else {
+                    preventDefault = true;
+                }
+                break;
+            case 'touchend':
+                this.eventsTouch.isDotTouch = null;
+                this.eventsTouch.screenX = null;
+                this.eventsTouch.screenY = null;
+                break;
+            }
+
+            if (preventDefault) evt.preventDefault();
 
             let newEvt = document.createEvent('MouseEvents');
             let type = null;
