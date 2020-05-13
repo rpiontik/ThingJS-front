@@ -426,9 +426,10 @@ export default {
                 inertTimer: setInterval(() => {
                     if (Math.abs(this.scrolling.power) > 1) {
                         this.interval.offset = this.rebaseOffset(
-                            this.interval.offset + this.scrolling.power / this.dpi
+                            this.interval.offset +
+                            (this.isMobileScreen ? this.scrolling.power * this.dpi : this.scrolling.power / this.dpi)
                         );
-                        this.scrolling.power /= 1.04;
+                        this.scrolling.power /= 1.02;
                     }
                 }, 20),
                 clientX: 0
@@ -554,6 +555,8 @@ export default {
                         Math.abs(evt.targetTouches[0].screenY - this.eventsTouch.screenY);
                     this.eventsTouch.screenX = evt.targetTouches[0].screenX;
                     this.eventsTouch.screenY = evt.targetTouches[0].screenY;
+
+                    if (!preventDefault) { this.scrolling.power = 0; }
                 } else {
                     preventDefault = true;
                 }
@@ -621,8 +624,8 @@ export default {
             let zoomValue = this.rebaseZoom(this.zoom.value * zoom);
             this.zoom.value = zoomValue < 1 ? 1 : zoomValue;
             this.interval.offset = this.rebaseOffset(
-                this.interval.offset + (oldExposition - this.exposition) *
-                ((targetMoment - this.interval.offset) / this.exposition)
+                this.interval.offset + ((oldExposition - this.exposition) *
+                (targetMoment - this.interval.offset) / oldExposition)
             );
         },
 
@@ -633,8 +636,7 @@ export default {
             if ((x < this.chart.offset.left) || (e.path && e.path.indexOf(this.$el) < 0)) {
                 return;
             }
-            let targetMoment = this.interval.offset +
-                (this.exposition * ((x - this.chart.offset.left) / this.chart.width));
+            let targetMoment = this.interval.offset + (x - this.chart.offset.left) / this.dpi;
             switch (Math.max(-1, Math.min(1, (e.deltaY || -e.detail)))) {
             case 1:
                 this.onZoom(1 - this.zoom.step, targetMoment);
@@ -643,7 +645,6 @@ export default {
                 this.onZoom(1 + this.zoom.step, targetMoment);
                 break;
             }
-            e.preventDefault();
         },
 
         calcLevelsByBrightness (dot) {
