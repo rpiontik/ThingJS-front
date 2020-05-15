@@ -11,7 +11,7 @@ let channels = [];
 // The scheduler's timer
 let timer = null;
 
-function hw_init () {
+function hwInit () {
     // Make drivers array
     let ledcDrivers = [$res.ledc1];
     $res.ledc2 && ledcDrivers.push($res.ledc2);
@@ -51,10 +51,10 @@ function getConfig () {
         'channels': {}
     };
 
-    if ($storage.first(config)) {
-        result = $storage.get(config);
+    if (config.first()) {
+        result = config.get();
     }
-    $storage.close(config);
+    config.close();
 
     print('Interval=', result.interval.width, ' channelNumber=', result.channelNumber);
     return result;
@@ -70,8 +70,8 @@ function getCurrentInterval () {
     print('Current time is ', time);
 
     let dots = $storage.open('dots');
-    for (let found = $storage.first(dots); found; found = $storage.next(dots)) {
-        let dot = $storage.get(dots);
+    for (let found = dots.first(); found; found = dots.next()) {
+        let dot = dots.get();
         print('#', recScanned++, 'Dot time=', dot.time, 'brightness=', dot.brightness);
         if (dot.time < time) {
             prevDot = dot;
@@ -85,15 +85,15 @@ function getCurrentInterval () {
 
     if (prevDot && !nextDot) {
         print('Next dot is first dot');
-        $storage.first(dots);
-        nextDot = $storage.get(dots);
+        dots.first();
+        nextDot = dots.get();
     } else if (nextDot && !prevDot) {
         print('First dot is last dot');
-        $storage.last(dots);
-        prevDot = $storage.get(dots);
+        dots.last();
+        prevDot = dots.get();
     }
 
-    $storage.close(dots);
+    dots.close();
 
     return !prevDot ? null : {
         time: time,
@@ -209,7 +209,7 @@ config = getConfig();
 
 // Initialization
 print('MJS', 'HW init');
-hw_init();
+hwInit();
 
 print('MJS', 'Restart execution');
 restartExecution();
