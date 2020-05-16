@@ -1,16 +1,16 @@
 {
-  "name": "Blink",
+  "name": "Clock",
   "vendor": "rpiontik",
   "version": 1,
   "subversion": 0,
   "patch": 0,
   "description": {
-    "ru": "Мигание диодом",
-    "en": "Blink Example"
+    "ru": "Работа с часами",
+    "en": "The clock demo"
   },
   "components": {
-    "blink-app": {
-      "source": "blink.js",
+    "clock-app": {
+      "source": "clock.js",
       "intent_filter": [
         {
           "action": "thingjs.intent.action.MAIN",
@@ -20,16 +20,16 @@
     }
   },
   "scripts": {
-    "entry": "blink",
+    "entry": "clock",
     "subscriptions": [
       "$-started",
       "$-script-restart",
-      "blink"
+      "set-time"
     ],
     "modules": {
-      "blink": {
+      "clock": {
         "hot_reload": true,
-        "source": "scripts/blink.js",
+        "source": "scripts/clock.js",
         "optimize": false
       }
     }
@@ -38,15 +38,18 @@
     "interfaces": {
       "timers": {
         "type": "timers",
-        "required": true
-      },
-      "blink": {
-        "type": "bit_port",
         "required": true,
-        "default": 2,
         "description": {
-          "ru": "LED индикатор",
-          "en": "LED indicator"
+          "ru": "Таймеры системы",
+          "en": "System timers"
+        }
+      },
+      "clock": {
+        "type": "clock",
+        "required": true,
+        "description": {
+          "ru": "Системные часы",
+          "en": "System clock"
         }
       }
     }

@@ -66,118 +66,120 @@ import binder from '../binder/Binder.vue';
 const consts = window.$consts;
 
 export default {
-  name: 'InstallApplication',
-  components: {
-    modal,
-    'block-screen': blockScreen,
-    'binder': binder
-  },
-  methods: {
-    doInstall () {
-      let formData = new FormData();
-      formData.append('data[]', new Blob([this.buffer]), 'bundle.smt');
-      formData.append('data[]', new Blob([JSON.stringify(this.config)]), 'config.json');
-      console.info('Append hw_resources.json');
-      this.$store.commit('incNetPending');
-      this.installing = true;
-      this.$axios.post('/install',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      ).then(() => {
-        this.$store.commit('decNetPending');
-        document.location.reload(true);
-      })
-        .catch((e) => {
-          console.error(e);
-          this.installing = false;
-          this.$store.commit('decNetPending');
-          this.$bus.$emit(
-            consts.EVENTS.ALERT,
-            consts.ALERT_TYPE.ERROR,
-            Vue.filter('lang')('ERROR_APP_INSTALL')
-          );
-        });
+    name: 'InstallApplication',
+    components: {
+        modal,
+        'block-screen': blockScreen,
+        'binder': binder
     },
+    methods: {
+        doInstall () {
+            let formData = new FormData();
+            formData.append('data[]', new Blob([this.buffer]), 'bundle.smt');
+            formData.append('data[]', new Blob([JSON.stringify(this.config)]), 'config.json');
+            console.info('Append hw_resources.json');
+            this.$store.commit('incNetPending');
+            this.installing = true;
+            this.$axios.post('/install',
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            ).then(() => {
+                this.$store.commit('decNetPending');
+                document.location.reload(true);
+            })
+                .catch((e) => {
+                    console.error(e);
+                    this.installing = false;
+                    this.$store.commit('decNetPending');
+                    this.$bus.$emit(
+                        consts.EVENTS.ALERT,
+                        consts.ALERT_TYPE.ERROR,
+                        Vue.filter('lang')('ERROR_APP_INSTALL')
+                    );
+                });
+        },
 
-    readString (dataview, offset, length) {
-      let result = [];
+        readString (dataview, offset, length) {
+            let result = [];
 
-      for (let pos = offset, len = 0; len < length; len++, pos++) {
-        result.push(dataview.getInt8(pos));
-      }
+            for (let pos = offset, len = 0; len < length; len++, pos++) {
+                result.push(dataview.getInt8(pos));
+            }
 
-      return (new TextDecoder()).decode(new Uint8Array(result));
-    },
+            return (new TextDecoder()).decode(new Uint8Array(result));
+        },
 
-    checkManifest () {
-      for (let appid in this.$store.state.apps.manifest) {
-        let app = this.$store.state.apps.manifest[appid];
-        if (app.name === this.manifest.name) {
-          this.$bus.$emit(
-            consts.EVENTS.ALERT,
-            consts.ALERT_TYPE.INFO,
-            Vue.filter('lang')('INFO_APP_ALREADY_INSTALLED') + utils.getStrVersion(app)
-          );
+        checkManifest () {
+            for (let appid in this.$store.state.apps.manifest) {
+                let app = this.$store.state.apps.manifest[appid];
+                if (app.name === this.manifest.name) {
+                    this.$bus.$emit(
+                        consts.EVENTS.ALERT,
+                        consts.ALERT_TYPE.INFO,
+                        Vue.filter('lang')('INFO_APP_ALREADY_INSTALLED') + utils.getStrVersion(app)
+                    );
+                }
+            }
+        },
+
+        readFile (evt) {
+            let files = evt.target.files;
+            let file = files[0];
+            let reader = new FileReader();
+            this.manifest = null;
+            this.size = null;
+            this.buffer = null;
+            reader.onload = (event) => {
+                this.buffer = event.target.result;
+                this.size = this.buffer.byteLength;
+
+                let dataview = new DataView(this.buffer);
+
+                if (this.readString(dataview, 0, 6) !== 'SMTB02') {
+                    this.$bus.$emit(
+                        consts.EVENTS.ALERT,
+                        consts.ALERT_TYPE.ERROR,
+                        Vue.filter('lang')('ERROR_APP_BUNDLE_FORMAT')
+                    );
+                    return;
+                }
+
+                let nameLen = dataview.getUint32(6, true);
+                let manifestLen = dataview.getUint32(10 + nameLen, true);
+                this.manifest = JSON.parse(this.readString(dataview, 14 + nameLen, manifestLen));
+
+                this.checkManifest();
+            };
+            if (file) {
+                reader.readAsArrayBuffer(file);
+            }
         }
-      }
     },
-
-    readFile (evt) {
-      let files = evt.target.files;
-      let file = files[0];
-      let reader = new FileReader();
-      this.manifest = null;
-      this.size = null;
-      this.buffer = null;
-      reader.onload = (event) => {
-        this.buffer = event.target.result;
-        this.size = this.buffer.byteLength;
-
-        let dataview = new DataView(this.buffer);
-
-        if (this.readString(dataview, 0, 6) !== 'SMTB02') {
-          this.$bus.$emit(
-            consts.EVENTS.ALERT,
-            consts.ALERT_TYPE.ERROR,
-            Vue.filter('lang')('ERROR_APP_BUNDLE_FORMAT')
-          );
-          return;
+    computed: {
+        version () {
+            return utils.getStrVersion(this.manifest);
+        },
+        htmlFileCaption () {
+            return Vue.filter('lang')('DO_SELECT_APP');
+        },
+        description () {
+            return !this.manifest ? '' : utils.getDescription(this.manifest);
         }
-
-        let nameLen = dataview.getUint32(6, true);
-        let manifestLen = dataview.getUint32(10 + nameLen, true);
-        this.manifest = JSON.parse(this.readString(dataview, 14 + nameLen, manifestLen));
-
-        this.checkManifest();
-      };
-      if (file) { reader.readAsArrayBuffer(file); }
+    },
+    data () {
+        return {
+            manifest: null,
+            config: null,
+            size: null,
+            file: null,
+            buffer: null,
+            installing: false
+        };
     }
-  },
-  computed: {
-    version () {
-      return utils.getStrVersion(this.manifest);
-    },
-    htmlFileCaption () {
-      return Vue.filter('lang')('DO_SELECT_APP');
-    },
-    description () {
-      return !this.manifest ? '' : utils.getDescription(this.manifest);
-    }
-  },
-  data () {
-    return {
-      manifest: null,
-      config: null,
-      size: null,
-      file: null,
-      buffer: null,
-      installing: false
-    };
-  }
 };
 </script>
 
