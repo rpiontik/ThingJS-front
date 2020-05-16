@@ -24,36 +24,36 @@ import Applications from './settings/Applications.vue';
 import Firmware from './settings/Firmware.vue';
 
 export default {
-  name: 'Settings',
-  components: {
-    NetworkComponent: NetworkComponent,
-    DisplayComponent: DisplayComponent,
-    DateTimeComponent: DateTimeComponent,
-    Applications: Applications,
-    Firmware: Firmware
-  },
-  computed: {
-    customPrefs () {
-      return $getComponentBy('thingjs.intent.category.PREFERENCE', 'thingjs.intent.action.MAIN');
+    name: 'Settings',
+    components: {
+        NetworkComponent: NetworkComponent,
+        DisplayComponent: DisplayComponent,
+        DateTimeComponent: DateTimeComponent,
+        Applications: Applications,
+        Firmware: Firmware
     },
-    panelStyle () {
-      if (this.isMobileScreen) {
+    computed: {
+        customPrefs () {
+            return $getComponentBy('thingjs.intent.category.PREFERENCE', 'thingjs.intent.action.MAIN');
+        },
+        panelStyle () {
+            if (this.isMobileScreen) {
+                return {
+                    width: '100%'
+                };
+            } else {
+                return {
+                    // width   : this.panel_width + 'px'
+                };
+            }
+        }
+    },
+    data () {
         return {
-          width: '100%'
+            valid: false,
+            panel_width: 0
         };
-      } else {
-        return {
-          // width   : this.panel_width + 'px'
-        };
-      }
     }
-  },
-  data () {
-    return {
-      valid: false,
-      panel_width: 0
-    };
-  }
 };
 </script>
 
