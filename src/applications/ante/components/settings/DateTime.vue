@@ -50,131 +50,113 @@ import consts from '../../consts';
 import template from './Template.vue';
 
 export default {
-    name: 'SettingsDatetime',
-    extends: template,
-    computed: {
+  name: 'SettingsDatetime',
+  extends: template,
+  computed: {
 
-        currDate: {
-            get () {
-                if (this.custom_date) {
-                    return this.custom_date;
-                } else {
-                    return this.getFormattedDate(this.hwDateTime, 'vuetifyjs');
-                }
-            },
-            set (value) {
-                this.custom_date = value;
-            }
-        },
+    currDate: {
+      get () {
+        if (this.custom_date) { return this.custom_date; } else { return this.getFormattedDate(this.hwDateTime, 'vuetifyjs'); }
+      },
+      set (value) {
+        this.custom_date = value;
+      }
+    },
 
-        currTime: {
-            get () {
-                if (this.custom_time) {
-                    return this.custom_time;
-                } else {
-                    return this.getFormattedTime(this.hwDateTime, 'vuetifyjs');
-                }
-            },
-            set (value) {
-                this.custom_time = value;
-            }
-        },
+    currTime: {
+      get () {
+        if (this.custom_time) { return this.custom_time; } else { return this.getFormattedTime(this.hwDateTime, 'vuetifyjs'); }
+      },
+      set (value) {
+        this.custom_time = value;
+      }
+    },
 
-        timeZones () {
-            return consts.TIME_ZONES;
-        },
-        ntp_sync: {
-            get () {
-                return this.custom_ntp_sync !== null ? this.custom_ntp_sync : this.$store.state.net.sync_with_ntp;
-            },
-            set (value) {
-                this.custom_ntp_sync = value;
-            }
-        },
-        timeZone: {
-            get () {
-                if (this.new_timezone) {
-                    return this.new_timezone;
-                }
+    timeZones () {
+      return consts.TIME_ZONES;
+    },
+    ntp_sync: {
+      get () {
+        return this.custom_ntp_sync !== null ? this.custom_ntp_sync : this.$store.state.net.sync_with_ntp;
+      },
+      set (value) {
+        this.custom_ntp_sync = value;
+      }
+    },
+    timeZone: {
+      get () {
+        if (this.new_timezone) { return this.new_timezone; }
 
-                let timeOffset = this.$store.state.datetime.time_zone_offset;
+        let timeOffset = this.$store.state.datetime.time_zone_offset;
 
-                if (timeOffset === null) {
-                    timeOffset = -(new Date()).getTimezoneOffset();
-                }
+        if (timeOffset === null) { timeOffset = -(new Date()).getTimezoneOffset(); }
 
-                for (let timezone in consts.TIME_ZONES) {
-                    if ((+consts.TIME_ZONES[timezone].offset) == (+timeOffset)) {
-                        return consts.TIME_ZONES[timezone].value;
-                    }
-                }
-
-                return null;
-            },
-            set (value) {
-                this.new_timezone = value;
-            }
-        },
-
-        timezoneOffset () {
-            for (let timezone in consts.TIME_ZONES) {
-                if (consts.TIME_ZONES[timezone].value === this.timeZone) {
-                    return consts.TIME_ZONES[timezone].offset;
-                }
-            }
-
-            return 0;
+        for (let timezone in consts.TIME_ZONES) {
+          if ((+consts.TIME_ZONES[timezone].offset) == (+timeOffset)) { return consts.TIME_ZONES[timezone].value; }
         }
-    },
-    props: {
-        float: {
-            type: Boolean,
-            default: false
-        },
-        value: {}
-    },
-    methods: {
-        current () {
-            this.custom_date = this.getFormattedDate(new Date(), 'vuetifyjs');
-            this.custom_time = this.getFormattedTime(new Date(), 'vuetifyjs');
 
-            let currentOffset = -(new Date()).getTimezoneOffset();
-
-            for (let timezone in consts.TIME_ZONES) {
-                if (consts.TIME_ZONES[timezone].offset === currentOffset) {
-                    this.new_timezone = consts.TIME_ZONES[timezone].value;
-                }
-            }
-        },
-        reset () {
-            this.custom_date = null;
-            this.custom_time = null;
-            this.new_timezone = null;
-        },
-        submit () {
-            let currMoment = (new Date(this.currDate + ' ' + this.currTime));
-            currMoment = currMoment.getTime() - currMoment.getTimezoneOffset() * 60000;
-
-            this.$store.dispatch('putConfiguration', {
-                net: {
-                    sync_with_ntp: this.ntp_sync ? '1' : '0'
-                },
-                time: {
-                    current: '' + currMoment,
-                    offset: '' + this.timezoneOffset
-                }
-            });
-        }
+        return null;
+      },
+      set (value) {
+        this.new_timezone = value;
+      }
     },
 
-    data () {
-        return {
-            custom_date: null,
-            custom_time: null,
-            custom_ntp_sync: null,
-            new_timezone: null
-        };
+    timezoneOffset () {
+      for (let timezone in consts.TIME_ZONES) {
+        if (consts.TIME_ZONES[timezone].value === this.timeZone) { return consts.TIME_ZONES[timezone].offset; }
+      }
+
+      return 0;
     }
+  },
+  props: {
+    float: {
+      type: Boolean,
+      default: false
+    },
+    value: {}
+  },
+  methods: {
+    current () {
+      this.custom_date = this.getFormattedDate(new Date(), 'vuetifyjs');
+      this.custom_time = this.getFormattedTime(new Date(), 'vuetifyjs');
+
+      let currentOffset = -(new Date()).getTimezoneOffset();
+
+      for (let timezone in consts.TIME_ZONES) {
+        if (consts.TIME_ZONES[timezone].offset === currentOffset) { this.new_timezone = consts.TIME_ZONES[timezone].value; }
+      }
+    },
+    reset () {
+      this.custom_date = null;
+      this.custom_time = null;
+      this.new_timezone = null;
+    },
+    submit () {
+      let currMoment = (new Date(this.currDate + ' ' + this.currTime));
+      currMoment = currMoment.getTime() - currMoment.getTimezoneOffset() * 60000;
+
+      this.$store.dispatch('putConfiguration', {
+        net: {
+          sync_with_ntp: this.ntp_sync ? '1' : '0'
+        },
+        time: {
+          current: '' + currMoment,
+          offset: '' + this.timezoneOffset
+        }
+      });
+    }
+  },
+
+  data () {
+    return {
+      custom_date: null,
+      custom_time: null,
+      custom_ntp_sync: null,
+      new_timezone: null
+    };
+  }
 };
 </script>
 
