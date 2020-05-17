@@ -146,6 +146,7 @@ let execute = function (reset) {
     }
 
     let interval = getCurrentInterval();
+
     if (interval) {
         let transition = calcTransition(interval.time, interval.start, interval.stop);
 
