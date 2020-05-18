@@ -1,0 +1,44 @@
+{
+  "name": "HTTP",
+  "vendor": "rpiontik",
+  "version": 1,
+  "subversion": 0,
+  "patch": 0,
+  "description": {
+    "ru": "Пример HTTP запросов",
+    "en": "HTTP request example"
+  },
+  "components": {
+    "http-app": {
+      "source": "http.js",
+      "intent_filter": [
+        {
+          "action": "thingjs.intent.action.MAIN",
+          "category": "thingjs.intent.category.LAUNCH"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "entry": "http",
+    "subscriptions": [
+      "$-started",
+      "$-script-restart"
+    ],
+    "modules": {
+      "http": {
+        "hot_reload": true,
+        "source": "scripts/http.js",
+        "optimize": false
+      }
+    }
+  },
+  "requires": {
+    "interfaces": {
+      "http": {
+        "type": "http",
+        "required": true
+      }
+    }
+  }
+}
