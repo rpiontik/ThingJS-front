@@ -2,7 +2,7 @@
 $res.http.request({
     url: 'http://httpdump.io/dhaog',
     method: $res.http.M_POST,
-    content_type: $res.http.CT_FORM_URLENCODED,
+    content_type: $res.http.CT_JSON,
     // transfer_encoding: $res.http.TE_CHUNKED,
     headers: {
         'Test-Header': 'test header'
@@ -20,7 +20,8 @@ $res.http.request({
     index: 0,
     data: {
         variable1: 'test1',
-        variable2: 'test2'
+        variable2: 'test2',
+        variable3: 'test3'
     },
     data_: function () {
         this.index++;
