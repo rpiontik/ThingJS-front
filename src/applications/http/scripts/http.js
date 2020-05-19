@@ -1,12 +1,9 @@
 // http://ds1.tinyled.ru/api.php?action=getschedule&deviceid=C0RYHW9SQ2&version=1
-print('Try to http request');
-print('$res.http.M_POST=', $res.http.CT_FORM_URLENCODED);
-
 $res.http.request({
     url: 'http://httpdump.io/dhaog',
     method: $res.http.M_POST,
     content_type: $res.http.CT_FORM_URLENCODED,
-    transfer_encoding: $res.http.TE_CHUNKED,
+    // transfer_encoding: $res.http.TE_CHUNKED,
     headers: {
         'Test-Header': 'test header'
     },
@@ -21,12 +18,16 @@ $res.http.request({
         password: 'password'
     },
     index: 0,
-    data: function () {
+    data: {
+        variable1: 'test1',
+        variable2: 'test2'
+    },
+    data_: function () {
         this.index++;
         if (this.index < 3) {
             let result = '';
             for (let i = 1; i < 2; i++) {
-                result += 'test|1lksdjf l;ksdf;lkj s;djf ;lsdjf;lsjdf lskjdfl jds;l jf;sdl kjfsd;ljkslhdaslkjhdalsjkhdlaskjhdlakjshdkljash dlkas jkashdlkjah slkjdh laskjh dlk2345';
+                result += 'a=1&b=2';
             }
             return result;
         } else {
@@ -36,7 +37,6 @@ $res.http.request({
 }, function () {
     print('I AM!');
 });
-
 // Free memory
 gc(true);
 
