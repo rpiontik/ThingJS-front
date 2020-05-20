@@ -1,8 +1,8 @@
 // http://ds1.tinyled.ru/api.php?action=getschedule&deviceid=C0RYHW9SQ2&version=1
 $res.http.request({
-    url: 'http://httpdump.io/dhaog',
+    url: 'http://webhook.site/61b6d247-0c61-45d0-bf5e-5c47aa2f2847',
     method: $res.http.M_POST,
-    content_type: $res.http.CT_FORM_URLENCODED,
+    content_type: $res.http.CT_MULTIPART_FORM_DATA,
     transfer_encoding: $res.http.TE_CHUNKED,
     headers: {
         'Test-Header': 'test header'
@@ -18,11 +18,14 @@ $res.http.request({
         password: 'password'
     },
     index: 0,
-    data: 'test text',
-    data___: {
+    data___: function () {
+        return 'TEST';
+    },
+    data: {
         variable1: 'test1',
         variable2: 'test2',
-        variable3: 'test3'
+        variable3: 'test3',
+        variable4: 'test4'
     },
     data_: function () {
         this.index++;
