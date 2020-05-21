@@ -1,4 +1,43 @@
 // http://ds1.tinyled.ru/api.php?action=getschedule&deviceid=C0RYHW9SQ2&version=1
+$res.http.request('http://ds1.tinyled.ru/api.php?action=getschedule&deviceid=C0RYHW9SQ2&version=1',
+    function (response) {
+        print(response.data);
+    });
+
+/*
+$res.http.request({
+    url: 'http://webhook.site/61b6d247-0c61-45d0-bf5e-5c47aa2f2847',
+    method: $res.http.M_POST,
+    content_type: $res.http.CT_JSON,
+    params: {
+        param1: 'param1',
+        param2: 'param2'
+    }
+}, function (response) {
+    print(response.data);
+});
+*/
+
+$res.http.request({
+    url: 'http://webhook.site/61b6d247-0c61-45d0-bf5e-5c47aa2f2847',
+    method: $res.http.M_POST,
+    content_type: $res.http.CT_JSON,
+    transfer_encoding: $res.http.TE_CHUNKED,
+    index: 0,
+    data: function () {
+        this.index++;
+        print('index', this.index);
+        if (this.index < 10) {
+            return {index: this.index};
+        } else {
+            return;
+        }
+    }
+}, function (response) {
+    print(response.data);
+});
+
+/*
 $res.http.request({
     url: 'http://webhook.site/61b6d247-0c61-45d0-bf5e-5c47aa2f2847',
     method: $res.http.M_POST,
@@ -42,6 +81,8 @@ $res.http.request({
 }, function () {
     print('I AM!');
 });
+*/
+
 // Free memory
 gc(true);
 
