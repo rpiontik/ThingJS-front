@@ -183,6 +183,7 @@ let execute = function (reset) {
         }
         print('No interval');
     }
+    gc(true);
 };
 
 // Force restart execution

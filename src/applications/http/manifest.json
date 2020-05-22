@@ -38,6 +38,14 @@
       "http": {
         "type": "http",
         "required": true
+      },
+      "timers": {
+        "type": "timers",
+        "required": true,
+        "description": {
+          "ru": "Таймеры системы",
+          "en": "System timers"
+        }
       }
     }
   }

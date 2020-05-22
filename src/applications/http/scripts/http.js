@@ -1,8 +1,10 @@
 // http://ds1.tinyled.ru/api.php?action=getschedule&deviceid=C0RYHW9SQ2&version=1
-$res.http.request('http://ds1.tinyled.ru/api.php?action=getschedule&deviceid=C0RYHW9SQ2&version=1',
-    function (response) {
-        print(response.data);
-    });
+$res.timers.setInterval(function () {
+    $res.http.request('http://ds1.tinyled.ru/api.php?action=getschedule&deviceid=C0RYHW9SQ2&version=1',
+        function (response) {
+            print('response: [', response.data, ']');
+        });
+}, 3000);
 
 /*
 $res.http.request({
@@ -18,12 +20,12 @@ $res.http.request({
 });
 */
 
-
 $res.http.request({
-    url: 'http://webhook.site/61b6d247-0c61-45d0-bf5e-5c47aa2f2847',
+    url: 'http://httpdump.io/ylnm3',
     method: $res.http.M_POST,
     content_type: $res.http.CT_JSON,
-    transfer_encoding: $res.http.TE_CHUNKED,
+    // transfer_encoding: $res.http.TE_CHUNKED,
+    timeout: 10000,
     index: 0,
     data: function () {
         this.index++;
@@ -31,11 +33,18 @@ $res.http.request({
         if (this.index < 10) {
             return {index: this.index};
         } else {
-            return;
+
         }
+    },
+    onResponseProcess: function (response) {
+        print('status:', response.code);
+        print('headers:');
+        for (let header in response.headers) {
+            print('   [', header, ']: [', response.headers[header], ']');
+        }
+        print('data:');
+        print('[', JSON.stringify(response.data), ']');
     }
-}, function (response) {
-    print(response.data);
 });
 
 /*
