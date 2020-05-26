@@ -31,8 +31,9 @@ $res.http.request({
     url: 'http://webhook.site/61b6d247-0c61-45d0-bf5e-5c47aa2f2847',
     method: $res.http.M_POST,
     content_type: $res.http.CT_MULTIPART_FORM_DATA,
-    // transfer_encoding: $res.http.TE_CHUNKED,
+    //transfer_encoding: $res.http.TE_CHUNKED,
     index: 0,
+    index2: 0,
     data: {
         field1: 'field1',
         field2: function () {
@@ -40,7 +41,17 @@ $res.http.request({
             if (this.index < 10) {
                 return this.index;
             } else {
-                return;
+
+            }
+        },
+        file: {
+            headers: {
+                'Content-Disposition': 'form-data; name="file"; filename="sample.txt"',
+                'Content-Type': 'text/plain'
+            },
+            data: function () {
+                this.index2++;
+                if (this.index2 < 100) { return this.index2; }
             }
         }
     }
