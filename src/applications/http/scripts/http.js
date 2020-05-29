@@ -1,145 +1,33 @@
-// http://ds1.tinyled.ru/api.php?action=getschedule&deviceid=C0RYHW9SQ2&version=1
-
-$res.timers.setInterval(function () {
-    $res.http.request('http://ds1.tinyled.ru/api.php?action=getschedule&deviceid=C0RYHW9SQ2&version=1',
+function doRequest (url) {
+    print('URL:', url);
+    $res.http.request(url,
         function (response) {
             if (response.data) {
-                this.buffer = this.buffer ? (this.buffer + response.data) : response.data;
+                this.length = this.length ? (this.length + response.data.length) : response.data.length;
+                $bus.emit('http-req-proc', JSON.stringify({
+                    code: response.code, length: this.length
+                }));
             } else {
                 print('status:', response.code);
-                print('response: [', this.buffer, ']');
-            }
-        }
-    );
-}, 3000);
-
-/*
-$res.http.request({
-    url: 'http://webhook.site/61b6d247-0c61-45d0-bf5e-5c47aa2f2847',
-    method: $res.http.M_POST,
-    content_type: $res.http.CT_JSON,
-    params: {
-        param1: 'param1',
-        param2: 'param2'
-    }
-}, function (response) {
-    print(response.data);
-});
-*/
-$res.http.request({
-    url: 'https://webhook.site/61b6d247-0c61-45d0-bf5e-5c47aa2f2847',
-    method: $res.http.M_POST,
-    content_type: $res.http.CT_MULTIPART_FORM_DATA,
-    // transfer_encoding: $res.http.TE_CHUNKED,
-    index: 0,
-    index2: 0,
-    data: {
-        field1: 'field1',
-        field2: function () {
-            this.index++;
-            if (this.index < 10) {
-                return this.index;
-            } else {
-
+                print('length: [', this.length, ']');
+                $bus.emit('http-req-end', JSON.stringify({
+                    code: response.code, error: 'No any error'
+                }));
             }
         },
-        file: {
-            headers: {
-                'Content-Disposition': 'form-data; name="file"; filename="sample.txt"',
-                'Content-Type': 'text/plain'
-            },
-            data: function () {
-                this.index2++;
-                if (this.index2 < 100) {
-                    return this.index2;
-                }
-            }
+        function (error) {
+            print('Error code: [', error.code, '] message: [', error.message, ']');
+            $bus.emit('http-req-end', JSON.stringify({
+                error: error.code
+            }));
         }
-    }
-}, function (response) {
-    print('RESPONSE:', response.code);
-    return false;
-});
-
-/*
-$res.http.request({
-    url: 'http://httpdump.io/ylnm3',
-    method: $res.http.M_POST,
-    content_type: $res.http.CT_JSON,
-    // transfer_encoding: $res.http.TE_CHUNKED,
-    timeout: 10000,
-    index: 0,
-    data: function () {
-        this.index++;
-        print('index', this.index);
-        if (this.index < 10) {
-            return {index: this.index};
-        } else {
-
-        }
-    },
-    onResponseProcess: function (response) {
-        print('status:', response.code);
-        print('headers:');
-        for (let header in response.headers) {
-            print('   [', header, ']: [', response.headers[header], ']');
-        }
-        print('data:');
-        print('[', JSON.stringify(response.data), ']');
-    }
-
-});
-*/
-/*
-$res.http.request({
-    url: 'http://webhook.site/61b6d247-0c61-45d0-bf5e-5c47aa2f2847',
-    method: $res.http.M_POST,
-    content_type: $res.http.CT_MULTIPART_FORM_DATA,
-    transfer_encoding: $res.http.TE_CHUNKED,
-    headers: {
-        'Test-Header': 'test header'
-    },
-    params: {
-        action: 'getschedule',
-        deviceid: 'C0RYHW9SQ2',
-        version: 1
-    },
-    timeout: 999,
-    auth: {
-        username: 'username',
-        password: 'password'
-    },
-    index: 0,
-    data___: function () {
-        return 'TEST';
-    },
-    data: {
-        variable1: 'test1',
-        variable2: 'test2',
-        variable3: 'test3',
-        variable4: 'test4'
-    },
-    data_: function () {
-        this.index++;
-        if (this.index < 3) {
-            let result = '';
-            for (let i = 1; i < 2; i++) {
-                result += 'a=1&b=2';
-            }
-            return result;
-        } else {
-            return null;
-        }
-    }
-}, function () {
-    print('I AM!');
-});
-*/
-
-// Free memory
-gc(true);
+    );
+}
 
 // Event listener
 // $bus - system bus interface
-$bus.on(function (event, content, data) {
+$bus.on(function (event, url) {
+    if (event === 'do-http-req') {
+        doRequest(url);
+    }
 }, null);

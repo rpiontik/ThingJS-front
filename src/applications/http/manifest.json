@@ -22,8 +22,7 @@
   "scripts": {
     "entry": "http",
     "subscriptions": [
-      "$-started",
-      "$-script-restart"
+      "do-http-req"
     ],
     "modules": {
       "http": {
