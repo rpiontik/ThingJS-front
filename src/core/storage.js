@@ -23,7 +23,7 @@ export default {
             sta_ssid: null, // SSID for connect access point
             sta_password: null, // Password for connect access point
             ap_available: [], // Available access points list
-            is_reloading_ap_list: false, // Is processing reloading access points list
+            is_reloading_ap_list: false, // Is processing reloading acess points list
             client_ip: '0.0.0.0', // Own IP
             internet_status: 'DISCONNECTED', // Internet connection status
             sync_with_ntp: true // If true controller will try get time from NTP server
@@ -188,6 +188,7 @@ export default {
         updateCurrentTime (state, time) {
             state.datetime.curr_datetime = time;
         }
+
     },
 
     actions: {
