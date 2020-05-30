@@ -12,19 +12,19 @@ let state = true;
 $res.blink.direction($res.blink.DIR_MODE_OUTPUT);
 
 // Run background process
-$res.timers.setInterval(function () {
-    if (active) {
-        // $res - is container with required resources
-        $res.blink.set(state);
-        // Do invert
-        state = !state;
-    }
-}, 500);
+setInterval(function () {
+  if (active) {
+    // $res - is container with required resources
+    $res.blink.set(state);
+    // Do invert
+    state = !state;
+  }
+}, 1000);
 
 // Event listener
 // $bus - system bus interface
 $bus.on(function (event, content, data) {
-    if (event === 'blink') {
-        active = !!JSON.parse(content);
-    }
+  if (event === 'blink') {
+    active = !!JSON.parse(content);
+  }
 }, null);

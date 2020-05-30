@@ -1,9 +1,9 @@
 {
   "name": "Blink",
-  "vendor": "rpiontik",
-  "version": 1,
-  "subversion": 0,
-  "patch": 0,
+  "vendor" : "rpiontik",
+  "version" : 1,
+  "subversion" : 0,
+  "patch" : 0,
   "description": {
     "ru": "Мигание диодом",
     "en": "Blink Example"
@@ -21,11 +21,7 @@
   },
   "scripts": {
     "entry": "blink",
-    "subscriptions": [
-      "$-started",
-      "$-script-restart",
-      "blink"
-    ],
+    "subscriptions" : ["$-script-restart", "blink"],
     "modules": {
       "blink": {
         "hot_reload": true,
@@ -34,19 +30,15 @@
       }
     }
   },
-  "requires": {
-    "interfaces": {
-      "timers": {
-        "type": "timers",
-        "required": true
-      },
-      "blink": {
-        "type": "bit_port",
-        "required": true,
-        "default": 2,
-        "description": {
-          "ru": "LED индикатор",
-          "en": "LED indicator"
+  "requires" : {
+    "interfaces" : {
+      "blink" : {
+        "type" : "bit_port",
+        "required" : true,
+        "default" : 2,
+        "description" : {
+          "ru" : "LED индикатор",
+          "en" : "LED indicator"
         }
       }
     }

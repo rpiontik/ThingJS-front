@@ -1,159 +1,155 @@
 {
-  "name": "Lucerna",
-  "vendor": "rpiontik",
-  "version": 1,
-  "subversion": 0,
-  "patch": 0,
-  "description": {
-    "ru": "Приложение управления светильником для морского и пресноводного аквариума",
-    "en": "The application for lighting control of marine and freshwater aquariums"
+  "name" : "Lucerna",
+  "vendor" : "rpiontik",
+  "version" : 1,
+  "subversion" : 0,
+  "patch" : 0,
+  "description" : {
+    "ru" : "Приложение управления светильником для морского и пресноводного аквариума",
+    "en" : "The application for lighting control of marine and freshwater aquariums"
   },
-  "components": {
-    "lucerna-basis": {
-      "source": "basis.js"
+  "components" : {
+    "lucerna-basis" : {
+      "source" : "basis.js"
     },
-    "lucerna-app": {
-      "source": "scheduler.js",
-      "intent_filter": [
+    "lucerna-app" : {
+      "source" : "scheduler.js",
+      "intent_filter" : [
         {
-          "action": "thingjs.intent.action.MAIN",
-          "category": "thingjs.intent.category.LAUNCH"
+          "action"    : "thingjs.intent.action.MAIN",
+          "category"  : "thingjs.intent.category.LAUNCH"
         }
       ]
     },
-    "lucerna-scheduller": {
-      "source": "scheduler.js"
+    "lucerna-scheduller" : {
+      "source" : "scheduler.js"
     },
-    "lucerna-dot-inspector": {
-      "source": "scheduler.js"
+    "lucerna-dot-inspector" : {
+      "source" : "scheduler.js"
     },
-    "lucerna-preferences": {
-      "source": "prefs.js",
-      "intent_filter": [
+    "lucerna-preferences" : {
+      "source" : "prefs.js",
+      "intent_filter" : [
         {
-          "action": "thingjs.intent.action.MAIN",
-          "category": "thingjs.intent.category.PREFERENCE"
+          "action"    : "thingjs.intent.action.MAIN",
+          "category"  : "thingjs.intent.category.PREFERENCE"
         }
       ]
     }
   },
-  "scripts": {
-    "subscriptions": [
-      "$-storage-changed",
-      "$-started",
-      "$-current-time"
-    ],
-    "entry": "scheduler",
-    "modules": {
+  "scripts" : {
+    "subscriptions" : ["$-storage-changed", "$-started", "$-current-time"],
+    "entry" : "scheduler",
+    "modules" : {
       "scheduler": {
         "source": "scripts/scheduler.js",
+        "optimize": false
+      },
+      "utils": {
+        "source": "scripts/utils.js",
+        "optimize": false
+      },
+      "migration": {
+        "hot_reload": true,
+        "source": "scripts/migration.js",
         "optimize": false
       }
     }
   },
-  "files": [
-    {
-      "src": "cfg/config.json",
-      "dist": "config.json"
-    }
-  ],
-  "storage": {
-    "objects": {
-      "config": {
-        "version": 1,
-        "preload": true,
-        "default" : "data/config.json",
-        "struct": {
-          "interval": {
-            "width": "double"
+  "storage" : {
+    "objects" : {
+      "config" : {
+        "version" : 1,
+        "preload" : true,
+        "struct" : {
+          "interval" : {
+            "width" : "double"
           },
-          "channelNumber": "int",
-          "channels": {
+          "channelNumber" : "int",
+          "channels" : {
             "0": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "1": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "2": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "3": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "4": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "5": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "6": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "7": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "8": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "9": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "10": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "11": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "12": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "13": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "14": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             },
             "15": {
-              "color": "int",
-              "mw": "int"
+              "color" : "int",
+              "mw" : "int"
             }
           }
         }
       },
-      "spectrum": {
-        "version": 1,
-        "preload": false,
-        "default" : "data/spectrum.json",
-        "migration": "spectrum.js",
-        "struct": {
-          "channel": "int",
-          "wave": "int",
-          "value": "int"
+      "spectrum" : {
+        "version" : 1,
+        "preload" : false,
+        "struct" : {
+          "channel" : "int",
+          "wave" : "int",
+          "value" : "int"
         }
       },
-      "dots": {
-        "version": 1,
-        "default" : "data/dots.json",
-        "struct": {
-          "time": "int",
-          "brightness": "double",
-          "spectrum": {
+      "dots" : {
+        "version" : 1,
+        "migration" : "migration",
+        "struct" : {
+          "time" : "int",
+          "brightness" : "double",
+          "spectrum" : {
             "0": "int",
             "1": "int",
             "2": "int",
@@ -175,40 +171,129 @@
       }
     }
   },
-  "requires": {
-    "interfaces": {
-      "clock": {
-        "type": "clock",
-        "required": true,
-        "description": {
-          "ru": "Системные часы",
-          "en": "System clock"
+  "requires" : {
+    "interfaces" : {
+      "one_wire" : {
+        "type" : "1wire",
+        "default" : [16, 17],
+        "description" : {
+          "ru" : "Датчики 1wire",
+          "en" : "1wire sensors"
         }
       },
-      "timers": {
-        "type": "timers",
-        "required": true,
-        "description": {
-          "ru": "Таймеры системы",
-          "en": "System timers"
+      "ledc0" : {
+        "type" : "ledc",
+        "required" : true,
+        "default" : 33,
+        "description" : {
+          "ru" : "Канал №1",
+          "en" : "channel 1"
         }
       },
-      "ledc1": {
-        "type": "SmartLED",
-        "required": true,
-        "default": [],
-        "description": {
-          "ru": "Основной LEDC драйвер",
-          "en": "Main LEDC driver"
+      "ledc1" : {
+        "type" : "ledc",
+        "default" : 32,
+        "description" : {
+          "ru" : "Канал №2",
+          "en" : "channel 2"
         }
       },
-      "ledc2": {
-        "type": "SmartLED",
-        "required": false,
-        "default": [],
-        "description": {
-          "ru": "Дополнительный LEDC драйвер",
-          "en": "Extended LEDC driver"
+      "ledc2" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №3",
+          "en" : "channel 3"
+        }
+      },
+      "ledc3" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №4",
+          "en" : "channel 4"
+        }
+      },
+      "ledc4" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №5",
+          "en" : "channel 5"
+        }
+      },
+      "ledc5" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №6",
+          "en" : "channel 6"
+        }
+      },
+      "ledc6" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №7",
+          "en" : "channel 7"
+        }
+      },
+      "ledc7" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №8",
+          "en" : "channel 8"
+        }
+      },
+      "ledc8" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №9",
+          "en" : "channel 9"
+        }
+      },
+      "ledc9" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №10",
+          "en" : "channel 10"
+        }
+      },
+      "ledc10" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №11",
+          "en" : "channel 11"
+        }
+      },
+      "ledc11" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №12",
+          "en" : "channel 12"
+        }
+      },
+      "ledc12" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №13",
+          "en" : "channel 13"
+        }
+      },
+      "ledc13" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №14",
+          "en" : "channel 14"
+        }
+      },
+      "ledc14" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №15",
+          "en" : "channel 15"
+        }
+      },
+      "ledc15" : {
+        "type" : "ledc",
+        "description" : {
+          "ru" : "Канал №16",
+          "en" : "channel 16"
         }
       }
     }
