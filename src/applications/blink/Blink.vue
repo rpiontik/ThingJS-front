@@ -1,7 +1,19 @@
 <template>
-    <v-expansion-panel>
-        <v-checkbox v-bind:label="'BLINK_SATE' | lang" v-model="blink_state"></v-checkbox>
-    </v-expansion-panel>
+    <v-flex fill-height>
+        <h1>{{'TITLE'|lang}}</h1>
+        <v-container>
+            <v-layout>
+                <v-flex xs12 md12>
+                    {{'DESCRIPTION'|lang}}
+                </v-flex>
+            </v-layout>
+            <v-layout>
+                <v-flex xs12 md12>
+                    <v-checkbox v-bind:label="'BLINK_SATE' | lang" v-model="blink_state"></v-checkbox>
+                </v-flex>
+            </v-layout>
+        </v-container>
+    </v-flex>
 </template>
 
 <script>
