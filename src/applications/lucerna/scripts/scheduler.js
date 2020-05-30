@@ -1,117 +1,103 @@
-print('MJS', 'Starting Lucerna script...', 1);
+let listener = ffi('void listener(void (*)(char*, char*, userdata), userdata)');
+let emit = ffi('void emit(char*, char*)');
+let log = ffi('void log(char*, char*, int)');
+log('MJS', 'Starting Lucerna script...', 1);
 
-// Max level
-let MAX_LEVEL = 32767;
-let RESOLUTION = 15;
-let DIVIDER = 10000;
+let ledc_setDutyFadeToChannel = ffi('int ledc_setDutyFadeToChannel(int, int, int)');
+let ledc_setChanneltoGPIO = ffi('int ledc_setChanneltoGPIO(int, int)');
+let ledc_setTimersConfig = ffi('int ledc_setTimersConfig(int , int)');
 
-// Global channels array
-let channels = [];
+let channels_ids = [
+    "0", "1", "2",  "3",  "4",  "5",  "6",  "7",
+    "8", "9", "10", "11", "12", "13", "14", "15"
+];
 
-// The scheduler's timer
-let timer = null;
+let channels_gpio = [
+    32, 33, 26,  27,  14,  12,  13,  15,
+    2,  5,  18,  19,  21,  22,  23,  0
+];
 
-function hwInit () {
-    // Make drivers array
-    let ledcDrivers = [$res.ledc1];
-    $res.ledc2 && ledcDrivers.push($res.ledc2);
+let def_level = 10000;
+let config = null;
 
-    // Make channels array
-    for (let i = 0; i < ledcDrivers.length; i++) {
-        // Init the driver
-        let driver = ledcDrivers[i];
-        driver.reconfig({
-            'resolution': RESOLUTION
-        });
-        for (let f = 0; f < driver.channels.length; f++) {
-            let channel = driver.channels[f];
-            if (channel) {
-                // Init the channel
-                channel.reconfig({
-                    'duty': 0
-                });
-                // Channel level by percent
-                channel.level = 0;
-                channels.push(channel);
-            }
-        }
+function hw_init(){
+    ledc_setTimersConfig(2440, 15);
+    for(let f = 0; f < channels_gpio.length; f++){
+        ledc_setChanneltoGPIO(JSON.parse(channels_ids[f]), channels_gpio[f]);
     }
 }
 
-let config = null;
-
-// Configuration of application
-function getConfig () {
-    let config = $storage.open('config');
+function getConfig(){
+    let config = $storage.open("config");
     let result = {
-        'interval': {
-            'width': 86400
+        "interval" : {
+            "width" : 86400
         },
-        'channelNumber': 0,
-        'channels': {}
+        "channelNumber" : 0,
+        "channels" : {}
     };
-
-    if (config.first()) {
-        result = config.get();
+    for(let f = 0; f < channels_ids.length; f++){
+        result.channels[channels_ids[f]] = def_level;
     }
-    config.close();
 
-    print('Interval=', result.interval.width, ' channelNumber=', result.channelNumber);
+    if($storage.first(config))
+        result = $storage.get(config);
+    $storage.close(config);
+
+    print("Interval=", result.interval.width, " channelNumber=", result.channelNumber);
     return result;
 }
 
-// Return current (actual) interval between two points
-function getCurrentInterval () {
-    let time = $res.clock.getTime() % config.interval.width;
-    let prevDot = null;
-    let nextDot = null;
-    let recScanned = 0;
+function getCurrentInterval(){
+    let time = $core.time() % config.interval.width;
+    let prev_dot = null;
+    let next_dot = null;
+    let rec_scanned = 0;
 
     print('Current time is ', time);
 
-    let dots = $storage.open('dots');
-    for (let found = dots.first(); found; found = dots.next()) {
-        let dot = dots.get();
-        print('#', recScanned++, 'Dot time=', dot.time, 'brightness=', dot.brightness);
-        if (dot.time < time) {
-            prevDot = dot;
+    let dots = $storage.open("dots");
+    for(let found = $storage.first(dots); found ; found = $storage.next(dots)){
+        let dot = $storage.get(dots);
+        print("#", rec_scanned++, "Dot time=", dot.time, "brightness=", dot.brightness);
+        if(dot.time < time) {
+            prev_dot = dot;
         } else {
-            nextDot = dot;
+            next_dot = dot;
             break;
         }
     }
 
-    print('Records scanned ', recScanned);
+    print("Records scanned ", rec_scanned);
 
-    if (prevDot && !nextDot) {
-        print('Next dot is first dot');
-        dots.first();
-        nextDot = dots.get();
-    } else if (nextDot && !prevDot) {
-        print('First dot is last dot');
-        dots.last();
-        prevDot = dots.get();
+    if(prev_dot && !next_dot) {
+        print("Next dot is first dot");
+        $storage.first(dots);
+        next_dot = $storage.get(dots);
+    } else if(next_dot && !prev_dot) {
+        print("First dot is last dot");
+        $storage.last(dots);
+        prev_dot = $storage.get(dots);
     }
 
-    dots.close();
+    $storage.close(dots);
 
-    return !prevDot ? null : {
-        time: time,
-        start: prevDot,
-        stop: nextDot
+    return !prev_dot ? null : {
+        time : time,
+        start : prev_dot,
+        stop : next_dot
     };
 }
 
-function abs (r) {
+function abs(r){
     return r < 0 ? -r : r;
 }
 
-// Calculation transition levels
-function calcTransition (border, dot1, dot2) {
+function calcTransition(border, dot1, dot2){
     let leftShoulder = 0;
     let width = 0;
 
-    if (dot1.time < dot2.time) {
+    if(dot1.time < dot2.time) {
         leftShoulder = border - dot1.time;
         width = dot2.time - dot1.time;
     } else {
@@ -122,96 +108,101 @@ function calcTransition (border, dot1, dot2) {
     let koof = leftShoulder / width;
 
     let result = {
-        brightness: abs(dot1.brightness - (dot1.brightness - dot2.brightness) * koof),
-        spectrum: {}
+        brightness : abs(dot1.brightness - (dot1.brightness - dot2.brightness) * koof),
+        spectrum : {}
     };
 
-    print('Border=', border, ' dot1.brightness=', dot1.brightness, ' dot2.brightness=', dot2.brightness, ' avg=', result.brightness, ' k=', koof);
-    for (let channel = 0; channel < channels.length; channel++) {
-        result.spectrum[channel] = abs(
-            dot1.spectrum[channel] -
-            (dot1.spectrum[channel] - dot2.spectrum[channel]) *
-            koof
+    print("Border=", border, " dot1.brightness=", dot1.brightness, " dot2.brightness=", dot2.brightness, " avg=", result.brightness, " k=", koof);
+    for(let f = 0; f < config.channelNumber; f++) {
+        let channel = channels_ids[f];
+        result.spectrum[channel] =  abs(
+            dot1.spectrum[channel]
+            - (dot1.spectrum[channel] - dot2.spectrum[channel])
+            * koof
         );
     }
 
     return result;
 }
 
-// Main function of execute
-let execute = function (reset) {
-    if (timer) {
-        $res.timers.clearTimeout(timer);
+let timer = null;
+
+let execute = function(reset){
+    if(timer) {
+        clearTimeout(timer);
         timer = null;
     }
 
     let interval = getCurrentInterval();
-
-    if (interval) {
+    if(interval) {
         let transition = calcTransition(interval.time, interval.start, interval.stop);
 
         let exposition = 0;
-        if (interval.stop.time < interval.time) {
+        if(interval.stop.time < interval.time) {
             exposition = config.interval.width - interval.time + interval.stop.time;
         } else {
             exposition = interval.stop.time - interval.time;
         }
 
-        exposition *= 1000; // To ms
-        exposition += 10; // For exposition will be > 0
+        exposition *= 1000; //To ms
+        exposition += 10; //For exposition will be > 0
 
-        print('Interval is ', interval.start.time, '<>', interval.stop.time, ' exposition is ', exposition, 'ms');
+        print("Interval is ", interval.start.time, '<>', interval.stop.time, ' exposition is ', exposition, 'ms');
 
-        for (let i = 0; i < channels.length; i++) {
-            let channel = channels[i];
-            if (reset) {
-                print('     Reset channel ', i);
-                channel.fade(MAX_LEVEL * (transition.spectrum[i] / DIVIDER), 0);
+        for(let f = 0; f < config.channelNumber; f++) {
+            let channel = JSON.parse(channels_ids[f]);
+            if(reset) {
+                print("     Reset channel ", channel);
+                ledc_setDutyFadeToChannel(channel, transition.spectrum[channel] / 10, 0);
             }
-            if (interval.start !== interval.stop) {
-                channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER), exposition);
-                print('     Executing channel ', i, ' from ', transition.spectrum[i], ' to ', interval.stop.spectrum[i], ' exposition ', exposition);
-            }
+            ledc_setDutyFadeToChannel(channel, interval.stop.spectrum[channel] / 10, exposition);
+            print("     Executing channel ", channel, " from ", transition.spectrum[channel], " to ", interval.stop.spectrum[channel]);
         }
 
-        timer = $res.timers.setTimeout(execute, exposition);
+        timer = setTimeout(execute, exposition);
+
     } else {
-        for (let channel in channels) {
-            channel.reconfig({
-                'duty': 0
-            });
+        for(let f = 0; f < channels_ids.length; f++) {
+            let channel = JSON.parse(channels_ids[f]);
+            ledc_setDutyFadeToChannel(channel, 0, 0);
+            print("     turned off channel ", channel);
         }
-        print('No interval');
+        print("No interval");
     }
-    gc(true);
 };
 
-// Force restart execution
-function restartExecution () {
+function restartExecution(){
     execute(1);
 }
 
-// Event listener
-$bus.on(function (event, content, data) {
-    print('>>> EVENT: ', event, ';', content, ';', data, '<<<');
-    if (event === '$-storage-changed') {
-        if (content === 'Lucerna/config') {
+listener(function(event, content, data) {
+    print(">>> EVENT: ", event, ";", content, ";", data, "<<<");
+    if(event === "$-storage-changed") {
+        if(content === "Lucerna/config") {
             config = getConfig();
             restartExecution();
-        } else if (content === 'Lucerna/dots') {
+        } else if(content === "Lucerna/dots") {
             restartExecution();
         }
-    } else if (event === '$-current-time') {
+    } else if(event === "$-current-time") {
         restartExecution();
     }
 }, null);
 
-print('MJS', 'Init config');
+log('MJS', 'HW init', 1);
+hw_init();
+log('MJS', 'Init config', 1);
 config = getConfig();
-
-// Initialization
-print('MJS', 'HW init');
-hwInit();
-
-print('MJS', 'Restart execution');
+log('MJS', 'Restart execution', 1);
 restartExecution();
+/*
+log('MJS', 'Before call setDutyToChannelWithFade', 1);
+print("$res.ledc0.gpio=", $res.ledc0.gpio);
+print("Try to set $res.ledc0.gpio=321");
+$res.ledc0.gpio = 321;
+print("Result $res.ledc0.gpio=", $res.ledc0.gpio);
+$res.ledc0.setDutyToChannelWithFade(100, 200, 300);
+log('MJS', 'After call setDutyToChannelWithFade', 1);
+
+log('MJS', 'Lucerna script is stared.', 1);
+*/
