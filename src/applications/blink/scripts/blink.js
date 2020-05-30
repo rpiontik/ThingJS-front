@@ -3,12 +3,13 @@ let state = true;
 
 // Set port direction
 // Available (ESP32):
-//  DIR_MODE_DISABLE
-//  DIR_MODE_DEF_INPUT
-//  DIR_MODE_DEF_OUTPUT
-//  DIR_MODE_INPUT_OUTPUT_OD
-//  DIR_MODE_INPUT_OUTPUT
-$res.blink.direction($res.blink.DIR_MODE_DEF_OUTPUT);
+// DIR_MODE_DISABLE - disable input and output
+// DIR_MODE_INPUT - input only
+// DIR_MODE_OUTPUT - output only mode
+// DIR_MODE_OUTPUT_OD - output only with open-drain mode
+// DIR_MODE_INPUT_OUTPUT_OD - output and input with open-drain mode
+// DIR_MODE_INPUT_OUTPUT - output and input mode
+$res.blink.direction($res.blink.DIR_MODE_OUTPUT);
 
 // Run background process
 setInterval(function () {
