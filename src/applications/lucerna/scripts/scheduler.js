@@ -146,7 +146,6 @@ let execute = function (reset) {
     }
 
     let interval = getCurrentInterval();
-
     if (interval) {
         let transition = calcTransition(interval.time, interval.start, interval.stop);
 
@@ -183,7 +182,6 @@ let execute = function (reset) {
         }
         print('No interval');
     }
-    gc(true);
 };
 
 // Force restart execution
