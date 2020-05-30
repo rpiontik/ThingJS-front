@@ -156,7 +156,7 @@
     import consts from '../../consts'
     import utils from '../../utils'
     import Axios from 'axios';
-    import Binary from '../../../../src/core/storage-binary';
+    import Binary from '../../../storage-binary';
 
     export default {
         name: 'StorageEditor',

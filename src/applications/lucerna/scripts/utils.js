@@ -1,5 +1,5 @@
 let utils = {
-    test : function(){
-        return 5+6;
+    test: function () {
+        return 5 + 6;
     }
 }

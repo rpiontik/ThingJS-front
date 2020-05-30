@@ -24,65 +24,65 @@
 
 <script>
 
-import blockScreen from './../BlockScreen.vue';
-import template from './Template.vue';
+    import blockScreen from './../BlockScreen.vue';
+    import template from './Template.vue';
 
-export default {
-  name: 'Firmware',
-  extends: template,
-  components: {
-    'block-screen': blockScreen
-  },
-  methods: {
-    doFlashing () {
-      let formData = new FormData();
-      formData.append('data', new Blob([this.buffer]), 'firmware.bin');
-      this.$store.commit('incNetPending');
-      this.flashing = true;
-      this.$axios.post('/firmware',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+    export default {
+        name: 'Firmware',
+        extends: template,
+        components: {
+            'block-screen': blockScreen
+        },
+        methods: {
+            doFlashing() {
+                let formData = new FormData();
+                formData.append('data', new Blob([this.buffer]), 'firmware.bin');
+                this.$store.commit('incNetPending');
+                this.flashing = true;
+                this.$axios.post('/firmware',
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                ).then(() => {
+                    this.$store.commit('decNetPending');
+                    setTimeout(() => {
+                        document.location.reload(true);
+                    }, 5000);
+                })
+                    .catch((e) => {
+                        console.error(e);
+                        this.flashing = false;
+                        this.$store.commit('decNetPending');
+                        this.$bus.$emit(
+                            $consts.EVENTS.ALERT,
+                            $consts.ALERT_TYPE.ERROR,
+                            Vue.filter('lang')('ERROR_FIRMWARE')
+                        );
+                    });
+            },
+
+            readFile(evt) {
+                let files = evt.target.files;
+                let file = files[0];
+                let reader = new FileReader();
+                reader.onload = (event) => {
+                    this.buffer = event.target.result;
+                    this.size = this.buffer.byteLength;
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        },
+        data() {
+            return {
+                size: null,
+                buffer: null,
+                flashing: false
+            };
         }
-      ).then(() => {
-        this.$store.commit('decNetPending');
-        setTimeout(() => {
-          document.location.reload(true);
-        }, 5000);
-      })
-        .catch((e) => {
-          console.error(e);
-          this.flashing = false;
-          this.$store.commit('decNetPending');
-          this.$bus.$emit(
-            $consts.EVENTS.ALERT,
-            $consts.ALERT_TYPE.ERROR,
-            Vue.filter('lang')('ERROR_FIRMWARE')
-          );
-        });
-    },
-
-    readFile (evt) {
-      let files = evt.target.files;
-      let file = files[0];
-      let reader = new FileReader();
-      reader.onload = (event) => {
-        this.buffer = event.target.result;
-        this.size = this.buffer.byteLength;
-      };
-      reader.readAsArrayBuffer(file);
-    }
-  },
-  data () {
-    return {
-      size: null,
-      buffer: null,
-      flashing: false
     };
-  }
-};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

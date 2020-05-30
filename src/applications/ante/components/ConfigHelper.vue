@@ -2,19 +2,23 @@
     <v-container class="custom_container" fill-width>
         <v-stepper style="max-width: 1065px; margin: auto" v-model="step">
             <v-stepper-header>
-                <v-stepper-step :complete="step > 1" :style="step>1?{cursor: 'pointer'}:{}" @click.native="step>1 ? step=1:null;"
+                <v-stepper-step :complete="step > 1" :style="step>1?{cursor: 'pointer'}:{}"
+                                @click.native="step>1 ? step=1:null;"
                                 step="1">{{'INTRODUCTION' | lang}}
                 </v-stepper-step>
                 <v-divider></v-divider>
-                <v-stepper-step :complete="step > 2" :style="step>2?{cursor: 'pointer'}:{}" @click.native="step>2 ? step=2:null;"
+                <v-stepper-step :complete="step > 2" :style="step>2?{cursor: 'pointer'}:{}"
+                                @click.native="step>2 ? step=2:null;"
                                 step="2">{{'DATE_TIME' | lang}}
                 </v-stepper-step>
                 <v-divider></v-divider>
-                <v-stepper-step :complete="step > 3" :style="step>3?{cursor: 'pointer'}:{}" @click.native="step>3 ? step=3:null;"
+                <v-stepper-step :complete="step > 3" :style="step>3?{cursor: 'pointer'}:{}"
+                                @click.native="step>3 ? step=3:null;"
                                 step="3">{{'NETWORK' | lang}}
                 </v-stepper-step>
                 <v-divider></v-divider>
-                <v-stepper-step :complete="step > 4" :style="step>4?{cursor: 'pointer'}:{}" @click.native="step>4 ? step=4:null;"
+                <v-stepper-step :complete="step > 4" :style="step>4?{cursor: 'pointer'}:{}"
+                                @click.native="step>4 ? step=4:null;"
                                 step="4">{{'DISPLAY_TITLE' | lang}}
                 </v-stepper-step>
                 <v-divider></v-divider>
@@ -71,55 +75,57 @@
 
 <script>
 
-import NetworkComponent from './settings/Network.vue';
-import DisplayComponent from './settings/Display.vue';
-import DateTimeComponent from './settings/DateTime.vue';
+    import NetworkComponent from './settings/Network.vue';
+    import DisplayComponent from './settings/Display.vue';
+    import DateTimeComponent from './settings/DateTime.vue';
 
-export default {
-  name: 'Settings',
-  components: {
-    NetworkComponent: NetworkComponent,
-    DisplayComponent: DisplayComponent,
-    DateTimeComponent: DateTimeComponent
-  },
-  computed: {
-    htmlHello () {
-      return Vue.filter('lang')('CONFIG_HELPER_HELLO');
-    },
-    htmlDone () {
-      return Vue.filter('lang')('CONFIG_HELPER_READY');
-    },
-    lang: {
-      get () {
-        return this.$store.state.display.lang;
-      },
-      set (value) {
-        this.$store.commit('setLang', value);
-      }
-    }
-  },
-  methods: {
-    goToPage (thePage, step) {
-      if (thePage === 'lang') {
-        this.$store.dispatch('putConfiguration', {
-          display: {
-            lang: '' + this.$store.state.display.lang
-          }
-        });
-      } else if (thePage) { thePage.submit(); }
-      this.step = step;
-    },
-    submit () {
-    }
-  },
-  data () {
-    return {
-      step: 0,
-      languages: Vue.filter('lang')('AVAILABLE'),
-      is_valid_network: false
+    export default {
+        name: 'Settings',
+        components: {
+            NetworkComponent: NetworkComponent,
+            DisplayComponent: DisplayComponent,
+            DateTimeComponent: DateTimeComponent
+        },
+        computed: {
+            htmlHello() {
+                return Vue.filter('lang')('CONFIG_HELPER_HELLO');
+            },
+            htmlDone() {
+                return Vue.filter('lang')('CONFIG_HELPER_READY');
+            },
+            lang: {
+                get() {
+                    return this.$store.state.display.lang;
+                },
+                set(value) {
+                    this.$store.commit('setLang', value);
+                }
+            }
+        },
+        methods: {
+            goToPage(thePage, step) {
+                if (thePage === 'lang') {
+                    this.$store.dispatch('putConfiguration', {
+                        display: {
+                            lang: '' + this.$store.state.display.lang
+                        }
+                    });
+                } else if (thePage) {
+                    thePage.submit();
+                }
+                this.step = step;
+            },
+            submit() {
+            }
+        },
+        data() {
+            return {
+                step: 0,
+                languages: Vue.filter('lang')('AVAILABLE'),
+                is_valid_network: false
+            };
+        }
     };
-  }
-};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
