@@ -10,8 +10,7 @@
                         :class="{'item' : true, 'selected' : index === selectedChannel}"
                         :style="getChannelItemStyle(channel)"
                         @click="onSelectChannel(channel)"
-                >{{channel.level|percent}}
-                </div>
+                >{{channel.level|percent}}</div>
             </div>
         </div>
         <v-slider
@@ -24,108 +23,106 @@
 </template>
 
 <script>
-    import Utils from '../utils';
+import Utils from '../utils';
 
-    const CHANNEL_ITEM_WIDTH = 56;
-    const CHANNEL_ITEM_MARGIN = 4;
+const CHANNEL_ITEM_WIDTH = 56;
+const CHANNEL_ITEM_MARGIN = 4;
 
-    export default {
-        props: {
-            value: {
-                type: Array,
-                required: true
-            }
-        },
-        methods: {
-            onSelectChannel(channel) {
-                this.selectedChannel = channel.index;
-            },
-
-            getChannelsPlaceStyle() {
-                return {
-                    'width': (CHANNEL_ITEM_WIDTH + CHANNEL_ITEM_MARGIN) * this.channels.length + 'px'
-                };
-            },
-
-            getChannelItemStyle(item) {
-                return {
-                    'background-color': item.color,
-                    'color': Utils.getContrastColor(item.color)
-                };
-            }
-        },
-        computed: {
-            level: {
-                get() {
-                    return this.channels[this.selectedChannel].level * 10000;
-                },
-                set(level) {
-                    if (this.vModelTimer) {
-                        clearTimeout(this.vModelTimer);
-                    }
-
-                    this.vModelTimer = setTimeout(() => {
-                        let newLevel = level / 10000;
-
-                        if (newLevel === this.channels[this.selectedChannel].level) {
-                            return;
-                        }
-
-                        let levels = JSON.parse((JSON.stringify(this.channels)));
-                        levels[this.selectedChannel].level = newLevel;
-
-                        let max = 0;
-
-                        for (let channel = 1; channel < levels.length; channel++) {
-                            if (max < levels[channel].level) {
-                                max = levels[channel].level;
-                            }
-                        }
-
-                        if (this.selectedChannel === 0) {
-                            let brightness = levels[0].level;
-                            for (let channel = 1; channel < levels.length; channel++) {
-                                levels[channel].level = !max ? brightness : brightness * (levels[channel].level / max);
-                            }
-                            max = brightness;
-                        } else {
-                            levels[0].level = max;
-                        }
-                        this.$emit('input', levels);
-                    }, 10);
-                }
-            },
-
-            channels() {
-                let result = [];
-                if (this.value) {
-                    this.value.map((source, index) => {
-                        result.push({
-                            index: index,
-                            color: source.color,
-                            level: source.level
-                        });
-                    });
-                }
-                return result;
-            }
+export default {
+    props: {
+        value: {
+            type: Array,
+            required: true
+        }
+    },
+    methods: {
+        onSelectChannel (channel) {
+            this.selectedChannel = channel.index;
         },
 
-        filters: {
-            percent(value) {
-                return !value ? 0 : (value * 100).toFixed(2);
-            }
-        },
-        watch: {},
-
-        data() {
+        getChannelsPlaceStyle () {
             return {
-                selectedChannel: 0,
-                vModelTimer: null
+                'width': (CHANNEL_ITEM_WIDTH + CHANNEL_ITEM_MARGIN) * this.channels.length + 'px'
+            };
+        },
+
+        getChannelItemStyle (item) {
+            return {
+                'background-color': item.color,
+                'color': Utils.getContrastColor(item.color)
             };
         }
+    },
+    computed: {
+        level: {
+            get () {
+                return this.channels[this.selectedChannel].level * 10000;
+            },
+            set (level) {
+                if (this.vModelTimer) {
+                    clearTimeout(this.vModelTimer);
+                }
 
-    };
+                this.vModelTimer = setTimeout(() => {
+                    let newLevel = level / 10000;
+
+                    if (newLevel === this.channels[this.selectedChannel].level) { return; }
+
+                    let levels = JSON.parse((JSON.stringify(this.channels)));
+                    levels[this.selectedChannel].level = newLevel;
+
+                    let max = 0;
+
+                    for (let channel = 1; channel < levels.length; channel++) {
+                        if (max < levels[channel].level) {
+                            max = levels[channel].level;
+                        }
+                    }
+
+                    if (this.selectedChannel === 0) {
+                        let brightness = levels[0].level;
+                        for (let channel = 1; channel < levels.length; channel++) {
+                            levels[channel].level = !max ? brightness : brightness * (levels[channel].level / max);
+                        }
+                        max = brightness;
+                    } else {
+                        levels[0].level = max;
+                    }
+                    this.$emit('input', levels);
+                }, 10);
+            }
+        },
+
+        channels () {
+            let result = [];
+            if (this.value) {
+                this.value.map((source, index) => {
+                    result.push({
+                        index: index,
+                        color: source.color,
+                        level: source.level
+                    });
+                });
+            }
+            return result;
+        }
+    },
+
+    filters: {
+        percent (value) {
+            return !value ? 0 : (value * 100).toFixed(2);
+        }
+    },
+    watch: {},
+
+    data () {
+        return {
+            selectedChannel: 0,
+            vModelTimer: null
+        };
+    }
+
+};
 </script>
 
 <style lang="less" rel="stylesheet/less">
@@ -137,7 +134,6 @@
             width: 100%;
             height: 59px;
             overflow-x: auto;
-
             .channels-place {
                 .item {
                     display: block;

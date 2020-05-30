@@ -20,14 +20,14 @@
 
 <script>
 
-    export default {
-        name: 'Settings',
-        computed: {},
-        methods: {},
-        data() {
-            return {};
-        }
-    };
+export default {
+    name: 'Settings',
+    computed: {},
+    methods: {},
+    data () {
+        return {};
+    }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

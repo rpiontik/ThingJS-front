@@ -75,57 +75,57 @@
 
 <script>
 
-    import NetworkComponent from './settings/Network.vue';
-    import DisplayComponent from './settings/Display.vue';
-    import DateTimeComponent from './settings/DateTime.vue';
+import NetworkComponent from './settings/Network.vue';
+import DisplayComponent from './settings/Display.vue';
+import DateTimeComponent from './settings/DateTime.vue';
 
-    export default {
-        name: 'Settings',
-        components: {
-            NetworkComponent: NetworkComponent,
-            DisplayComponent: DisplayComponent,
-            DateTimeComponent: DateTimeComponent
+export default {
+    name: 'Settings',
+    components: {
+        NetworkComponent: NetworkComponent,
+        DisplayComponent: DisplayComponent,
+        DateTimeComponent: DateTimeComponent
+    },
+    computed: {
+        htmlHello () {
+            return Vue.filter('lang')('CONFIG_HELPER_HELLO');
         },
-        computed: {
-            htmlHello() {
-                return Vue.filter('lang')('CONFIG_HELPER_HELLO');
+        htmlDone () {
+            return Vue.filter('lang')('CONFIG_HELPER_READY');
+        },
+        lang: {
+            get () {
+                return this.$store.state.display.lang;
             },
-            htmlDone() {
-                return Vue.filter('lang')('CONFIG_HELPER_READY');
-            },
-            lang: {
-                get() {
-                    return this.$store.state.display.lang;
-                },
-                set(value) {
-                    this.$store.commit('setLang', value);
-                }
+            set (value) {
+                this.$store.commit('setLang', value);
             }
-        },
-        methods: {
-            goToPage(thePage, step) {
-                if (thePage === 'lang') {
-                    this.$store.dispatch('putConfiguration', {
-                        display: {
-                            lang: '' + this.$store.state.display.lang
-                        }
-                    });
-                } else if (thePage) {
-                    thePage.submit();
-                }
-                this.step = step;
-            },
-            submit() {
-            }
-        },
-        data() {
-            return {
-                step: 0,
-                languages: Vue.filter('lang')('AVAILABLE'),
-                is_valid_network: false
-            };
         }
-    };
+    },
+    methods: {
+        goToPage (thePage, step) {
+            if (thePage === 'lang') {
+                this.$store.dispatch('putConfiguration', {
+                    display: {
+                        lang: '' + this.$store.state.display.lang
+                    }
+                });
+            } else if (thePage) {
+                thePage.submit();
+            }
+            this.step = step;
+        },
+        submit () {
+        }
+    },
+    data () {
+        return {
+            step: 0,
+            languages: Vue.filter('lang')('AVAILABLE'),
+            is_valid_network: false
+        };
+    }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

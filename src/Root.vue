@@ -20,48 +20,48 @@
 </template>
 
 <script>
-    import consts from 'consts';
+import consts from 'consts';
 
-    if (process.env.NODE_ENV !== 'production') {
-        require('../build/_hot-reload');
-    }
+if (process.env.NODE_ENV !== 'production') {
+    require('../build/_hot-reload');
+}
 
-    export default {
-        name: 'ThingJSCore',
-        mounted() {
-            this.onResize();
-            window.addEventListener('resize', this.onResize, {passive: true});
+export default {
+    name: 'ThingJSCore',
+    mounted () {
+        this.onResize();
+        window.addEventListener('resize', this.onResize, {passive: true});
 
-            // Loading available access points
-            this.$bus.$on(consts.EVENTS.LAUNCHER_IS_LOADED, (type, messages) => {
-                this.is_launcher_loaded = true;
-            });
+        // Loading available access points
+        this.$bus.$on(consts.EVENTS.LAUNCHER_IS_LOADED, (type, messages) => {
+            this.is_launcher_loaded = true;
+        });
 
-            setTimeout(() => {
-                window.$bus.$emit(consts.EVENTS.CORE_IS_LOADED);
-            }, 50);
-        },
-        beforeDestroy() {
-            if (typeof window !== 'undefined') {
-                window.removeEventListener('resize', this.onResize, {passive: true});
-            }
-        },
-        methods: {
-            onResize() {
-                this.$store.commit('setIsMobile', window.innerWidth < 600);
-            }
-        },
-        computed: {
-            isProfileReady() {
-                return !!this.$store.state.apps.manifest;
-            }
-        },
-        data() {
-            return {
-                is_launcher_loaded: false
-            };
+        setTimeout(() => {
+            window.$bus.$emit(consts.EVENTS.CORE_IS_LOADED);
+        }, 50);
+    },
+    beforeDestroy () {
+        if (typeof window !== 'undefined') {
+            window.removeEventListener('resize', this.onResize, {passive: true});
         }
-    };
+    },
+    methods: {
+        onResize () {
+            this.$store.commit('setIsMobile', window.innerWidth < 600);
+        }
+    },
+    computed: {
+        isProfileReady () {
+            return !!this.$store.state.apps.manifest;
+        }
+    },
+    data () {
+        return {
+            is_launcher_loaded: false
+        };
+    }
+};
 </script>
 
 <style>

@@ -1,10 +1,10 @@
 export default {
-    getStrVersion(manifest) {
+    getStrVersion (manifest) {
         return (`version` in manifest ? manifest.version : '0') + '.' +
             (`subversion` in manifest ? manifest.subversion : '0') + '.' +
             (`patch` in manifest ? manifest.patch : '0');
     },
-    getDescription(manifest) {
+    getDescription (manifest) {
         if (!('description' in manifest)) {
             return '';
         }

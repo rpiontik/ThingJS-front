@@ -17,44 +17,44 @@
 
 <script>
 
-    import NetworkComponent from './settings/Network.vue';
-    import DisplayComponent from './settings/Display.vue';
-    import DateTimeComponent from './settings/DateTime.vue';
-    import Applications from './settings/Applications.vue';
-    import Firmware from './settings/Firmware.vue';
+import NetworkComponent from './settings/Network.vue';
+import DisplayComponent from './settings/Display.vue';
+import DateTimeComponent from './settings/DateTime.vue';
+import Applications from './settings/Applications.vue';
+import Firmware from './settings/Firmware.vue';
 
-    export default {
-        name: 'Settings',
-        components: {
-            NetworkComponent: NetworkComponent,
-            DisplayComponent: DisplayComponent,
-            DateTimeComponent: DateTimeComponent,
-            Applications: Applications,
-            Firmware: Firmware
+export default {
+    name: 'Settings',
+    components: {
+        NetworkComponent: NetworkComponent,
+        DisplayComponent: DisplayComponent,
+        DateTimeComponent: DateTimeComponent,
+        Applications: Applications,
+        Firmware: Firmware
+    },
+    computed: {
+        customPrefs () {
+            return $getComponentBy('thingjs.intent.category.PREFERENCE', 'thingjs.intent.action.MAIN');
         },
-        computed: {
-            customPrefs() {
-                return $getComponentBy('thingjs.intent.category.PREFERENCE', 'thingjs.intent.action.MAIN');
-            },
-            panelStyle() {
-                if (this.isMobileScreen) {
-                    return {
-                        width: '100%'
-                    };
-                } else {
-                    return {
-                        // width   : this.panel_width + 'px'
-                    };
-                }
+        panelStyle () {
+            if (this.isMobileScreen) {
+                return {
+                    width: '100%'
+                };
+            } else {
+                return {
+                    // width   : this.panel_width + 'px'
+                };
             }
-        },
-        data() {
-            return {
-                valid: false,
-                panel_width: 0
-            };
         }
-    };
+    },
+    data () {
+        return {
+            valid: false,
+            panel_width: 0
+        };
+    }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

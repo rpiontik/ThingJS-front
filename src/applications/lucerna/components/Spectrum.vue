@@ -40,76 +40,70 @@
 
 <script>
 
-    import waves from './waves.json';
+import waves from './waves.json';
 
-    export default {
+export default {
 
-        props: ['value', 'width', 'height', 'opacity', 'text-height', 'no-animate'],
-        computed: {
-            axis() {
-                let result = [];
-                let k = this.width / (this.waveStop - this.waveStart);
-                for (let w = this.waveStart, offset = 0; w < this.waveStop; w++, offset++) {
-                    if (!(w % 10)) {
-                        result.push({
-                            wave: w,
-                            x: (w - this.waveStart) * k,
-                            length: w % 50 ? this.textHeight : this.textHeight * 2
-                        });
-                    }
-                }
-
-                return result;
-            },
-            path() {
-                let max = 0;
-                for (let w in this.spectrum) {
-                    if (this.spectrum[w] > max) {
-                        max = this.spectrum[w];
-                    }
-                }
-
-                let result = this.gradient.map((stop) => {
-                    if (this.spectrum[stop.key]) {
-                        return (stop.offset * this.width).toFixed(4) + ' ' + (1 * this.height - this.spectrum[stop.key] / max * this.height);
-                    } else {
-                        return (stop.offset * this.width).toFixed(4) + ` ${this.height}`;
-                    }
-                }).join(',');
-
-                return `M0 ${this.height}, ${result}, ${this.width} ${this.height}`;
-            },
-
-            gradient() {
-                let result = [];
-                let total = this.waveStop - this.waveStart;
-                for (let w = this.waveStart, offset = 0; w < this.waveStop; w++, offset++) {
+    props: ['value', 'width', 'height', 'opacity', 'text-height', 'no-animate'],
+    computed: {
+        axis () {
+            let result = [];
+            let k = this.width / (this.waveStop - this.waveStart);
+            for (let w = this.waveStart, offset = 0; w < this.waveStop; w++, offset++) {
+                if (!(w % 10)) {
                     result.push({
-                        key: w,
-                        offset: offset / total,
-                        color: this.waves[w]
+                        wave: w,
+                        x: (w - this.waveStart) * k,
+                        length: w % 50 ? this.textHeight : this.textHeight * 2
                     });
                 }
-                return result;
             }
+
+            return result;
+        },
+        path () {
+            let max = 0;
+            for (let w in this.spectrum) {
+                if (this.spectrum[w] > max) { max = this.spectrum[w]; }
+            }
+
+            let result = this.gradient.map((stop) => {
+                if (this.spectrum[stop.key]) { return (stop.offset * this.width).toFixed(4) + ' ' + (1 * this.height - this.spectrum[stop.key] / max * this.height); } else { return (stop.offset * this.width).toFixed(4) + ` ${this.height}`; }
+            }).join(',');
+
+            return `M0 ${this.height}, ${result}, ${this.width} ${this.height}`;
         },
 
-        watch: {
-            value() {
-                this.spectrum = this.value;
+        gradient () {
+            let result = [];
+            let total = this.waveStop - this.waveStart;
+            for (let w = this.waveStart, offset = 0; w < this.waveStop; w++, offset++) {
+                result.push({
+                    key: w,
+                    offset: offset / total,
+                    color: this.waves[w]
+                });
             }
-        },
-
-        data() {
-            return {
-                waveStart: 360,
-                waveStop: 750,
-                waves: waves,
-                spectrum: this.value
-            };
+            return result;
         }
+    },
 
-    };
+    watch: {
+        value () {
+            this.spectrum = this.value;
+        }
+    },
+
+    data () {
+        return {
+            waveStart: 360,
+            waveStop: 750,
+            waves: waves,
+            spectrum: this.value
+        };
+    }
+
+};
 </script>
 
 <style lang="less" rel="stylesheet/less">

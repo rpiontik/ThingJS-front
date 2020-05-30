@@ -5,20 +5,20 @@
 </template>
 
 <script>
-    export default {
-        name: 'Blink',
-        watch: {
-            blink_state(state) {
-                // Send event to script
-                this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'blink', state);
-            }
-        },
-        data() {
-            return {
-                blink_state: true
-            };
+export default {
+    name: 'Blink',
+    watch: {
+        blink_state (state) {
+            // Send event to script
+            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'blink', state);
         }
-    };
+    },
+    data () {
+        return {
+            blink_state: true
+        };
+    }
+};
 </script>
 
 <style>

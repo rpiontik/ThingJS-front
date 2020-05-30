@@ -8,12 +8,12 @@ module.exports = {
 
     mutations: {
         // Setting storage status
-        $setStorageStatus(state, object) {
+        $setStorageStatus (state, object) {
             state.$status[object.name] = object.status;
         },
 
         // Setting new data to storage
-        applyData(state, object) {
+        applyData (state, object) {
             if (object.name in state) {
                 state[object.name] = object.data;
             } else {
@@ -23,7 +23,7 @@ module.exports = {
     },
 
     actions: {
-        reload(context, object) {
+        reload (context, object) {
             if (object in context.state) {
                 let url =
                     (process.env.NODE_ENV === 'development' ? (process.env.HW_DEVICE_URL ? process.env.HW_DEVICE_URL : '') : '') +
@@ -54,7 +54,7 @@ module.exports = {
             }
         },
 
-        post(context, object) {
+        post (context, object) {
             let profile = null;
             for (let index in $store.state.apps.manifest) {
                 if ($store.state.apps.manifest[index].name === context.state.$namespace) {

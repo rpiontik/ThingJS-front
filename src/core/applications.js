@@ -2,7 +2,7 @@ import consts from 'consts';
 
 export default {
     // Create component by name
-    requireComponent(name) {
+    requireComponent (name) {
         if (name in Vue.options.components) {
             return new Promise(Vue.options.components[name]);
         } else {
@@ -11,7 +11,7 @@ export default {
     },
 
     // Include application lang constants
-    includeLang(consts) {
+    includeLang (consts) {
         // todo если включить debugger вываливается ошибка interval
         // debugger;
         for (let lng in consts) {
@@ -55,7 +55,7 @@ export default {
     },
 
     // Register pubic component
-    exportComponent(component, object) {
+    exportComponent (component, object) {
         if (component in window.$resolvers_components) {
             window.$resolvers_components[component].map((resolve) => {
                 try {
@@ -72,7 +72,7 @@ export default {
     },
 
     // Create promise for dynamically load component
-    makePromisLoadComponent(url, component) {
+    makePromisLoadComponent (url, component) {
         return function (resolve, reject) {
             let doLoadComponent = (attempt) => {
                 if (component in window.$protocomponents) {

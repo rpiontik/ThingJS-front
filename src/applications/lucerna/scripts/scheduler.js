@@ -11,7 +11,7 @@ let channels = [];
 // The scheduler's timer
 let timer = null;
 
-function hwInit() {
+function hwInit () {
     // Make drivers array
     let ledcDrivers = [$res.ledc1];
     $res.ledc2 && ledcDrivers.push($res.ledc2);
@@ -41,7 +41,7 @@ function hwInit() {
 let config = null;
 
 // Configuration of application
-function getConfig() {
+function getConfig () {
     let config = $storage.open('config');
     let result = {
         'interval': {
@@ -61,7 +61,7 @@ function getConfig() {
 }
 
 // Return current (actual) interval between two points
-function getCurrentInterval() {
+function getCurrentInterval () {
     let time = $res.clock.getTime() % config.interval.width;
     let prevDot = null;
     let nextDot = null;
@@ -102,12 +102,12 @@ function getCurrentInterval() {
     };
 }
 
-function abs(r) {
+function abs (r) {
     return r < 0 ? -r : r;
 }
 
 // Calculation transition levels
-function calcTransition(border, dot1, dot2) {
+function calcTransition (border, dot1, dot2) {
     let leftShoulder = 0;
     let width = 0;
 
@@ -187,7 +187,7 @@ let execute = function (reset) {
 };
 
 // Force restart execution
-function restartExecution() {
+function restartExecution () {
     execute(1);
 }
 

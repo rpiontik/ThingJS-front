@@ -11,16 +11,16 @@ export default {
             day = day.length > 1 ? day : '0' + day;
 
             switch (format) {
-                case 'ru' :
-                    return day + '.' + month + '.' + year;
-                case 'vuetifyjs':
-                    if (!date) {
-                        return null;
-                    } else {
-                        return year + '-' + month + '-' + day;
-                    }
-                default:
-                    return year + '/' + month + '/' + day;
+            case 'ru' :
+                return day + '.' + month + '.' + year;
+            case 'vuetifyjs':
+                if (!date) {
+                    return null;
+                } else {
+                    return year + '-' + month + '-' + day;
+                }
+            default:
+                return year + '/' + month + '/' + day;
             }
         },
 
@@ -36,13 +36,13 @@ export default {
             s = s.length > 1 ? s : '0' + s;
 
             switch (format) {
-                case 'vuetifyjs':
-                    if (!date) {
-                        return null;
-                    }
+            case 'vuetifyjs':
+                if (!date) {
+                    return null;
+                }
                 // eslint-disable-next-line no-fallthrough
-                default:
-                    return h + ':' + m + ':' + s;
+            default:
+                return h + ':' + m + ':' + s;
             }
         }
     },
