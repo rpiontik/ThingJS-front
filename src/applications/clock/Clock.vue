@@ -16,22 +16,22 @@
 
 <script>
 
-    export default {
-        name: 'Clock',
-        mounted() {
-            this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, time) => {
-                if (type === 'show-time') {
-                    // Correct on local time
-                    this.curr_time = new Date(1000 * time + new Date().getTimezoneOffset() * 60000);
-                }
-            });
-        },
-        data() {
-            return {
-                curr_time: '---'
-            };
-        }
-    };
+export default {
+    name: 'Clock',
+    mounted () {
+        this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, time) => {
+            if (type === 'show-time') {
+                // Correct on local time
+                this.curr_time = new Date(1000 * time + new Date().getTimezoneOffset() * 60000);
+            }
+        });
+    },
+    data () {
+        return {
+            curr_time: '---'
+        };
+    }
+};
 </script>
 
 <style>

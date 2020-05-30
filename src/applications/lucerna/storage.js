@@ -650,12 +650,12 @@ export default {
     mutations: {
 
         // Update current hardware time after recalculation
-        setIntervalWidth(state, width) {
+        setIntervalWidth (state, width) {
             state.interval.width = width;
         },
 
         // Update current hardware time after recalculation
-        setChannelsParams(state, channels) {
+        setChannelsParams (state, channels) {
             state.channels = [];
             channels.map((channel) => {
                 state.channels.push(Object.assign({}, channel));

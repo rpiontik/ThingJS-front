@@ -42,48 +42,48 @@
 </template>
 
 <script>
-    export default {
-        name: 'HTTP',
-        mounted() {
-            this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, data) => {
-                let response = {};
-                switch (type) {
-                    case 'http-req-proc':
-                        response = JSON.parse(data);
-                        this.code = response.code;
-                        this.length = response.length;
-                        break;
-                    case 'http-req-end':
-                        response = JSON.parse(data);
-                        this.error = response.error;
-                        this.code = response.code;
-                        clearTimeout(this.process);
-                        this.process = null;
-                        break;
-                }
-            });
-        },
-        methods: {
-            doRequest() {
-                this.code = '---';
-                this.length = '---';
-                this.error = '---';
-                this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'do-http-req', this.url);
-                this.process = setTimeout(function () {
-                    this.process = null;
-                }, 30000);
+export default {
+    name: 'HTTP',
+    mounted () {
+        this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, data) => {
+            let response = {};
+            switch (type) {
+            case 'http-req-proc':
+                response = JSON.parse(data);
+                this.code = response.code;
+                this.length = response.length;
+                break;
+            case 'http-req-end':
+                response = JSON.parse(data);
+                this.error = response.error;
+                this.code = response.code;
+                clearTimeout(this.process);
+                this.process = null;
+                break;
             }
-        },
-        data() {
-            return {
-                process: null,
-                url: 'https://example.com/',
-                code: '---',
-                length: '---',
-                error: '---'
-            };
+        });
+    },
+    methods: {
+        doRequest () {
+            this.code = '---';
+            this.length = '---';
+            this.error = '---';
+            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'do-http-req', this.url);
+            this.process = setTimeout(function () {
+                this.process = null;
+            }, 30000);
         }
-    };
+    },
+    data () {
+        return {
+            process: null,
+            url: 'https://example.com/',
+            code: '---',
+            length: '---',
+            error: '---'
+        };
+    }
+};
 </script>
 
 <style>

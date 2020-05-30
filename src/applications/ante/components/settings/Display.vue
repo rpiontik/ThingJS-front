@@ -32,56 +32,56 @@
 
 <script>
 
-    import template from './Template.vue';
+import template from './Template.vue';
 
-    export default {
-        name: 'SettingsDisplay',
-        extends: template,
-        computed: {
-            themes() {
-                return Vue.filter('lang')('THEMES');
-            },
+export default {
+    name: 'SettingsDisplay',
+    extends: template,
+    computed: {
+        themes () {
+            return Vue.filter('lang')('THEMES');
+        },
 
-            theme: {
-                get() {
-                    return this.$store.state.display.theme;
-                },
-                set(value) {
-                    this.$store.commit('setTheme', value);
-                }
+        theme: {
+            get () {
+                return this.$store.state.display.theme;
             },
-            lang: {
-                get() {
-                    return this.$store.state.display.lang;
-                },
-                set(value) {
-                    this.$store.commit('setLang', value);
-                }
+            set (value) {
+                this.$store.commit('setTheme', value);
             }
         },
-        methods: {
-            reset() {
-                this.$store.commit('setLang', (navigator.language || navigator.userLanguage).toLowerCase());
-                this.$store.commit('setTheme', $consts.DISPLAY_DEF.theme);
+        lang: {
+            get () {
+                return this.$store.state.display.lang;
             },
-            submit() {
-                this.$store.dispatch('putConfiguration', {
-                    display: {
-                        lang: this.$store.state.display.lang,
-                        theme: this.$store.state.display.theme
-                    }
-                });
+            set (value) {
+                this.$store.commit('setLang', value);
             }
-        },
-        data() {
-            return {
-                languages: [
-                    {text: 'English', value: 'en'},
-                    {text: 'Русский', value: 'ru'}
-                ]
-            };
         }
-    };
+    },
+    methods: {
+        reset () {
+            this.$store.commit('setLang', (navigator.language || navigator.userLanguage).toLowerCase());
+            this.$store.commit('setTheme', $consts.DISPLAY_DEF.theme);
+        },
+        submit () {
+            this.$store.dispatch('putConfiguration', {
+                display: {
+                    lang: this.$store.state.display.lang,
+                    theme: this.$store.state.display.theme
+                }
+            });
+        }
+    },
+    data () {
+        return {
+            languages: [
+                {text: 'English', value: 'en'},
+                {text: 'Русский', value: 'ru'}
+            ]
+        };
+    }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

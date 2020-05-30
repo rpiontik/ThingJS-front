@@ -44,12 +44,12 @@ export default {
 
     mutations: {
         // Set client IP (when connected to access point)
-        setGUID(state, value) {
+        setGUID (state, value) {
             state.guid = value;
         },
 
         // Set manifest of applications
-        setApplicationsManifest(state, manifest) {
+        setApplicationsManifest (state, manifest) {
             for (let appid in manifest) {
                 let appManifest = manifest[appid];
                 if ('storage' in appManifest && 'objects' in appManifest.storage) {
@@ -89,110 +89,110 @@ export default {
         },
 
         // Set profile of hardware
-        setHardwareProfile(state, profile) {
+        setHardwareProfile (state, profile) {
             state.hardware.profile = profile;
         },
 
         // Set flag of synchronize with NTP server
-        setSyncWithNTP(state, value) {
+        setSyncWithNTP (state, value) {
             state.net.sync_with_ntp = value;
         },
 
         // Set Internet status
-        setInternetStatus(state, value) {
+        setInternetStatus (state, value) {
             state.net.internet_status = value;
         },
 
         // Set client IP (when connected to access point)
-        setIP(state, value) {
+        setIP (state, value) {
             state.net.client_ip = value;
         },
 
         // Set own access point name
-        setAPSSID(state, value) {
+        setAPSSID (state, value) {
             state.net.ap_ssid = value;
         },
 
         // Set access point for connection
-        setSTASSID(state, value) {
+        setSTASSID (state, value) {
             state.net.sta_ssid = value;
         },
 
-        setIsNetPending(state, pending) {
+        setIsNetPending (state, pending) {
             state.is_net_pending = pending;
         },
 
         // Flag of mobile device
-        setIsMobile(state, value) {
+        setIsMobile (state, value) {
             state.display.is_mobile = value;
         },
 
         // Set firmware build commit
-        setBuildCommit(state, value) {
+        setBuildCommit (state, value) {
             state.system.build_commit = value;
         },
 
         // Set firmware build moment
-        setBuildMoment(state, value) {
+        setBuildMoment (state, value) {
             state.system.build_moment = value;
         },
 
         // Set firmware version
-        setFirmwareVersion(state, value) {
+        setFirmwareVersion (state, value) {
             state.system.firmware_v = value;
         },
 
         // Set flag of reloading process
-        setReloadingAPList(state, value) {
+        setReloadingAPList (state, value) {
             state.net.is_reloading_ap_list = value;
         },
 
         // Set theme
-        setUserFirstEnter(state, value) {
+        setUserFirstEnter (state, value) {
             state.user.first_enter = value;
         },
 
         // Set theme
-        setLang(state, lang) {
+        setLang (state, lang) {
             state.display.lang = lang;
         },
 
         // Set ip
-        setClientIP(state, ip) {
+        setClientIP (state, ip) {
             state.net.client_ip = ip;
         },
 
         // Set theme
-        setTheme(state, theme) {
+        setTheme (state, theme) {
             state.display.theme = theme;
         },
 
         // Set available access points
-        setAPAvailable(state, list) {
+        setAPAvailable (state, list) {
             state.net.ap_available = list;
         },
 
         // Set time (only for storage)
-        setTime(state, time) {
+        setTime (state, time) {
             state.datetime.hw_datetime = time;
             state.datetime.sync_datetime = (new Date()).getTime();
             state.datetime.curr_datetime = time;
         },
 
         // Set timezone offset
-        setTimezoneOffset(state, offset) {
+        setTimezoneOffset (state, offset) {
             state.datetime.time_zone_offset = offset;
         },
 
         // Update current hardware time after recalculation
-        updateCurrentTime(state, time) {
+        updateCurrentTime (state, time) {
             state.datetime.curr_datetime = time;
         }
     },
 
     actions: {
         // Put configuration to controller
-        putConfiguration(context, config) {
+        putConfiguration (context, config) {
             $axios._addPendingRequest($consts.REST.CONFIG);
             $axios.put($consts.REST.CONFIG, config).then((response) => {
                 $axios._removePendingRequest($consts.REST.CONFIG);
@@ -217,7 +217,7 @@ export default {
         },
 
         // Reload available access point list
-        refreshAccessPointsList(context) {
+        refreshAccessPointsList (context) {
             if (context.state.net.is_reloading_ap_list) {
                 return;
             }
@@ -236,17 +236,17 @@ export default {
         },
 
         // Apply new manifest of applications
-        applyApplicationsManifest(context, manifest) {
+        applyApplicationsManifest (context, manifest) {
             context.commit('setApplicationsManifest', manifest);
         },
 
         // Apply new profile of hardware
-        applyHardwareProfile(context, manifest) {
+        applyHardwareProfile (context, manifest) {
             context.commit('setHardwareProfile', manifest);
         },
 
         // Apply new control state to store
-        applyState(context, state) {
+        applyState (context, state) {
             try {
                 context.commit('setTime', +state.time.current);
                 context.commit('setTimezoneOffset', state.time.offset);
@@ -281,7 +281,7 @@ export default {
         },
 
         // Reload manifest of applications
-        reloadApplicationsManifest(context) {
+        reloadApplicationsManifest (context) {
             $axios._addPendingRequest($consts.REST.MANIFEST);
             $axios.get($consts.REST.MANIFEST).then((response) => {
                 $axios._removePendingRequest($consts.REST.MANIFEST);
@@ -294,7 +294,7 @@ export default {
         },
 
         // Reload profile of hardware
-        reloadHardwareProfile(context) {
+        reloadHardwareProfile (context) {
             $axios._addPendingRequest($consts.REST.PROFILE);
             $axios.get($consts.REST.PROFILE).then((response) => {
                 $axios._removePendingRequest($consts.REST.PROFILE);
@@ -306,7 +306,7 @@ export default {
         },
 
         // Reload available access point list
-        reloadState(context) {
+        reloadState (context) {
             $axios._addPendingRequest($consts.REST.STATE);
 
             $axios.get($consts.REST.STATE).then((response) => {
@@ -318,7 +318,7 @@ export default {
         },
 
         // Initiation function
-        initData(context) {
+        initData (context) {
             [
                 {id: 'lang', 'commit': 'setLang'},
                 {id: 'theme', 'commit': 'setTheme'}
@@ -350,17 +350,17 @@ export default {
             // Loading available access points
             this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (action, content) => {
                 switch (action) {
-                    case $consts.UBUS.CURRENT_TIME :
-                        context.commit('setTime', +content);
-                        break;
-                    case $consts.UBUS.IS_ONLINE :
-                        context.commit('setInternetStatus', 'CONNECTED');
-                        context.commit('setIP', content);
-                        break;
-                    case $consts.UBUS.IS_OFFLINE :
-                        context.commit('setInternetStatus', 'DISCONNECTED');
-                        context.commit('setIP', '0.0.0.0');
-                        break;
+                case $consts.UBUS.CURRENT_TIME :
+                    context.commit('setTime', +content);
+                    break;
+                case $consts.UBUS.IS_ONLINE :
+                    context.commit('setInternetStatus', 'CONNECTED');
+                    context.commit('setIP', content);
+                    break;
+                case $consts.UBUS.IS_OFFLINE :
+                    context.commit('setInternetStatus', 'DISCONNECTED');
+                    context.commit('setIP', '0.0.0.0');
+                    break;
                 }
             });
 

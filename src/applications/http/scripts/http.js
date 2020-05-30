@@ -1,4 +1,4 @@
-function doRequest(url) {
+function doRequest (url) {
     print('URL:', url);
     $res.http.request(url,
         function (response) {

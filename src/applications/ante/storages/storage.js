@@ -7,19 +7,19 @@ export default {
 
     mutations: {
         // Set client IP (when connected to access point)
-        setCurrentApplication(state, value) {
+        setCurrentApplication (state, value) {
             state.currentApplication = value;
         }
     },
 
     actions: {
         // Close current application
-        closeCurrentApplication(context) {
+        closeCurrentApplication (context) {
             context.commit('setCurrentApplication', null);
         },
 
         // Close current application
-        registerCurrentApplication(context, profile) {
+        registerCurrentApplication (context, profile) {
             context.commit('setCurrentApplication', profile);
         }
     }

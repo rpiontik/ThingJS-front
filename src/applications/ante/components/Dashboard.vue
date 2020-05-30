@@ -20,52 +20,52 @@
 </template>
 
 <script>
-    export default {
-        name: 'ThingJS',
-        mounted() {
-            this.$bus.$on($consts.EVENTS.DO_CLOSE_APPLICATION, () => {
-                this.targetApp = null;
-            });
+export default {
+    name: 'ThingJS',
+    mounted () {
+        this.$bus.$on($consts.EVENTS.DO_CLOSE_APPLICATION, () => {
+            this.targetApp = null;
+        });
+    },
+    computed: {
+        startedApp () {
+            if (this.appList.length === 1) {
+                this.$store.dispatch('$launcher/registerCurrentApplication', this.appList[0]);
+            }
+            return this.$store.state.$launcher.currentApplication;
         },
-        computed: {
-            startedApp() {
-                if (this.appList.length === 1) {
-                    this.$store.dispatch('$launcher/registerCurrentApplication', this.appList[0]);
-                }
-                return this.$store.state.$launcher.currentApplication;
-            },
-            appList() {
-                let result = [];
-                $getComponentBy('thingjs.intent.category.LAUNCH', 'thingjs.intent.action.MAIN', (componentName, component, profile) => {
-                    result.push({
-                        componentName,
-                        name: profile.name,
-                        favicon: profile.favicon
-                    });
+        appList () {
+            let result = [];
+            $getComponentBy('thingjs.intent.category.LAUNCH', 'thingjs.intent.action.MAIN', (componentName, component, profile) => {
+                result.push({
+                    componentName,
+                    name: profile.name,
+                    favicon: profile.favicon
                 });
-                return result;
-            },
-            panelStyle() {
-                if (this.isMobileScreen) {
-                    return {
-                        width: '100%'
-                    };
-                } else {
-                    return {
-                        // width   : this.panel_width + 'px'
-                    };
-                }
-            }
+            });
+            return result;
         },
-        methods: {
-            runApplication(app) {
-                this.$store.dispatch('$launcher/registerCurrentApplication', app);
+        panelStyle () {
+            if (this.isMobileScreen) {
+                return {
+                    width: '100%'
+                };
+            } else {
+                return {
+                    // width   : this.panel_width + 'px'
+                };
             }
-        },
-        data() {
-            return {};
         }
-    };
+    },
+    methods: {
+        runApplication (app) {
+            this.$store.dispatch('$launcher/registerCurrentApplication', app);
+        }
+    },
+    data () {
+        return {};
+    }
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
