@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-  namespaced: true
-}
+    namespaced: true
+};

@@ -32,7 +32,8 @@
                     :font-size="textHeight"
                     text-anchor="middle"
                     :opacity="opacity"
-            >{{line.wave}}nm</text>
+            >{{line.wave}}nm
+            </text>
         </template>
     </g>
 </template>
@@ -44,69 +45,71 @@
     export default {
 
         props: ['value', 'width', 'height', 'opacity', 'text-height', 'no-animate'],
-
-        computed :{
-            axis(){
+        computed: {
+            axis() {
                 let result = [];
                 let k = this.width / (this.waveStop - this.waveStart);
-                for(let w = this.waveStart, offset = 0; w<this.waveStop; w++, offset++){
-                    if(!(w % 10))
+                for (let w = this.waveStart, offset = 0; w < this.waveStop; w++, offset++) {
+                    if (!(w % 10)) {
                         result.push({
-                            wave : w,
-                            x : (w - this.waveStart) * k,
-                            length : w % 50 ? this.textHeight : this.textHeight * 2
+                            wave: w,
+                            x: (w - this.waveStart) * k,
+                            length: w % 50 ? this.textHeight : this.textHeight * 2
                         });
+                    }
                 }
 
                 return result;
             },
-            path(){
+            path() {
                 let max = 0;
-                for(let w in this.spectrum){
-                    if(this.spectrum[w] > max)
+                for (let w in this.spectrum) {
+                    if (this.spectrum[w] > max) {
                         max = this.spectrum[w];
+                    }
                 }
 
                 let result = this.gradient.map((stop) => {
-                    if(this.spectrum[stop.key])
-                        return (stop.offset * this.width).toFixed(4) + ' ' + (1 * this.height - this.spectrum[stop.key] / max * this.height)
-                    else
+                    if (this.spectrum[stop.key]) {
+                        return (stop.offset * this.width).toFixed(4) + ' ' + (1 * this.height - this.spectrum[stop.key] / max * this.height);
+                    } else {
                         return (stop.offset * this.width).toFixed(4) + ` ${this.height}`;
+                    }
                 }).join(',');
 
                 return `M0 ${this.height}, ${result}, ${this.width} ${this.height}`;
             },
 
-            gradient(){
-                let result  = [];
-                let total   = this.waveStop - this.waveStart;
-                for(let w = this.waveStart, offset = 0; w<this.waveStop; w++, offset++){
+            gradient() {
+                let result = [];
+                let total = this.waveStop - this.waveStart;
+                for (let w = this.waveStart, offset = 0; w < this.waveStop; w++, offset++) {
                     result.push({
-                        key : w,
-                        offset : offset / total,
-                        color : this.waves[w]
+                        key: w,
+                        offset: offset / total,
+                        color: this.waves[w]
                     });
                 }
                 return result;
             }
         },
 
-        watch : {
-            value(){
+        watch: {
+            value() {
                 this.spectrum = this.value;
             }
         },
 
-        data(){
+        data() {
             return {
-                waveStart : 360,
-                waveStop  : 750,
-                waves   : waves,
-                spectrum : this.value
-            }
+                waveStart: 360,
+                waveStop: 750,
+                waves: waves,
+                spectrum: this.value
+            };
         }
 
-    }
+    };
 </script>
 
 <style lang="less" rel="stylesheet/less">
@@ -129,6 +132,5 @@
     .dot-inspector {
 
     }
-
 
 </style>

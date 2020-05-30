@@ -13,14 +13,14 @@
 
 <script>
 
-export default {
-  name: 'BlockScreen',
-  computed: {},
-  methods: {},
-  data () {
-    return {};
-  }
-};
+    export default {
+        name: 'BlockScreen',
+        computed: {},
+        methods: {},
+        data() {
+            return {};
+        }
+    };
 </script>
 
 <style scoped>
