@@ -1,8 +1,11 @@
 print('MJS', 'Starting Lucerna script...', 1);
-print($res.DS18B20);
 $res.DS18B20.search(function (sensor) {
     print('Sensor:', sensor);
+    $res.DS18B20.convert_all();
+    print('Temperature:', $res.DS18B20.get_temp_c(sensor));
 });
+
+
 // Max level
 let MAX_LEVEL = 32767;
 let RESOLUTION = 15;
