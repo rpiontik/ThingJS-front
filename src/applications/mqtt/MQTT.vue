@@ -1,15 +1,19 @@
 <template>
   <v-flex fill-height>
     <h1>{{ 'TITLE'|lang }}</h1>
-    {{ 'DESCRIPTION'|lang }}
+    <v-container>
+      <v-layout>
+        <v-flex xs12 md4>
+          {{ 'DESCRIPTION'|lang }}
+        </v-flex>
+      </v-layout>
+    </v-container>
     <v-container>
       <v-layout>
         <v-flex xs12 md2>
-          Connected:
-        </v-flex>
-        <v-flex xs12 md4>
+          Status:
           <template v-if="isConnected">
-            Connected
+            connected
           </template>
           <template v-else>
             Disconnected
@@ -18,7 +22,7 @@
       </v-layout>
       <v-layout>
         <v-flex xs12 md4>
-          <v-text-field v-model="data"></v-text-field>
+          <v-text-field v-model="timeFromBroker"></v-text-field>
         </v-flex>
       </v-layout>
     </v-container>
@@ -39,10 +43,15 @@ export default {
                 this.isConnected = JSON.parse(data);
                 break;
             case 'mqtt-on-data':
-                this.data = JSON.parse(data);
+                this.data = new Date(JSON.parse(data) * 1000 + (new Date()).getTimezoneOffset() * 60000);
                 break;
             }
         });
+    },
+    computed: {
+        timeFromBroker () {
+            return this.getFormattedDate(this.data) + ' ' + this.getFormattedTime(this.data);
+        }
     },
     methods: {},
     data () {
