@@ -383,7 +383,7 @@ export default {
                                 for (let i = 0; i < case_.length; i++) {
                                     if (Array.isArray(case_[i])) {
                                         for (let c = 0; c < case_[i].length; c++) {
-                                            if ((mode.action === 'default') && (case_[i][c] !== node.default[i])) {
+                                            if ((mode.action === 'default') && node.default && (case_[i][c] !== node.default[i])) {
                                                 continue;
                                             }
                                             if (this.isAvailableLimitToBind(case_[i][c]) && (choice.indexOf(case_[i][c]) < 0)) {
@@ -392,7 +392,7 @@ export default {
                                             }
                                         }
                                     } else if (this.isAvailableLimitToBind(case_[i])) {
-                                        if (mode.action === 'default') {
+                                        if (mode.action === 'default' && node.default) {
                                             if (case_[i] === node.default[i]) {
                                                 choice[i] = case_[i];
                                             }

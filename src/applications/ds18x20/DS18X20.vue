@@ -10,19 +10,13 @@
     </v-container>
     <v-container>
       <v-layout>
-        <v-flex xs12 md2>
-          Status:
-          <template v-if="isConnected">
-            connected
-          </template>
-          <template v-else>
-            Disconnected
-          </template>
+        <v-flex xs12 md12>
+          {{ 'CURR_TEMP'|lang }}: {{temperature}}
         </v-flex>
       </v-layout>
       <v-layout>
-        <v-flex xs12 md4>
-          <v-text-field v-model="timeFromBroker"></v-text-field>
+        <v-flex xs12 md12>
+          <v-btn round large color="primary" @click="doRefresh">{{'FORCE_UPDATE'|lang }}</v-btn>
         </v-flex>
       </v-layout>
     </v-container>
@@ -33,31 +27,31 @@
 import Template from '../ante/components/settings/Template';
 
 export default {
-    name: 'MQTT',
+    name: 'DS18X20',
     components: {Template},
     mounted () {
-        this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'do-refresh-state');
+        this.doRefresh();
         this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, data) => {
             switch (type) {
-            case 'mqtt-connected':
-                this.isConnected = JSON.parse(data);
-                break;
-            case 'mqtt-on-data':
-                this.data = new Date(JSON.parse(data) * 1000 + (new Date()).getTimezoneOffset() * 60000);
+            case 'ds18x20-temp':
+                this.temperature = JSON.parse(data);
                 break;
             }
         });
+    },
+    methods: {
+        doRefresh () {
+            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'do-refresh-temp');
+        }
     },
     computed: {
         timeFromBroker () {
             return this.getFormattedDate(this.data) + ' ' + this.getFormattedTime(this.data);
         }
     },
-    methods: {},
     data () {
         return {
-            isConnected: false,
-            data: null
+            temperature: ''
         };
     }
 };
