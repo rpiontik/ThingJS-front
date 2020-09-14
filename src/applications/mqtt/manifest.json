@@ -1,0 +1,57 @@
+{
+  "name": "MQTT",
+  "vendor": "rpiontik",
+  "version": 1,
+  "subversion": 0,
+  "patch": 0,
+  "description": {
+    "ru": "Пример интеграции через MQTT протокол",
+    "en": "MQTT integration"
+  },
+  "components": {
+    "mqtt-app": {
+      "source": "mqtt.js",
+      "intent_filter": [
+        {
+          "action": "thingjs.intent.action.MAIN",
+          "category": "thingjs.intent.category.LAUNCH"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "entry": "mqtt",
+    "subscriptions": ["do-refresh-state"],
+    "modules": {
+      "mqtt": {
+        "hot_reload": true,
+        "source": "scripts/mqtt.js",
+        "optimize": false
+      }
+    }
+  },
+  "requires": {
+    "interfaces": {
+      "mqtt": {
+        "type": "mqttc",
+        "required": true
+      },
+      "timers": {
+        "type": "timers",
+        "required": true,
+        "description": {
+          "ru": "Таймеры системы",
+          "en": "System timers"
+        }
+      },
+      "clock": {
+        "type": "clock",
+        "required": true,
+        "description": {
+          "ru": "Системные часы",
+          "en": "System clock"
+        }
+      }
+    }
+  }
+}

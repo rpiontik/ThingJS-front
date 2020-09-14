@@ -25,14 +25,20 @@ module.exports = {
             throw new Error(`Application name is too long ${manifest.name} max 64 chars`);
 
         if ('scripts' in manifest) {
-            if (!('entry' in manifest.scripts))
-                throw new Error(`The ${manifest.name} application do not have required block [entry] im manifest`);
+            if (!('entry' in manifest.scripts)) {
+                let err = `The ${manifest.name} application do not have required block [entry] im manifest`;
+                throw new Error(err);
+            }
 
-            if (!('modules' in manifest.scripts))
-                throw new Error(`The ${manifest.name} application do not have required block [modules] in manifest`);
+            if (!('modules' in manifest.scripts)) {
+                let err = `The ${manifest.name} application do not have required block [modules] in manifest`;
+                throw new Error(err);
+            }
 
-            if (!(manifest.scripts.entry in manifest.scripts.modules))
-                throw new Error(`The ${manifest.name} application has entry [${manifest.scripts.entry}] but do not have module for it`);
+            if (!(manifest.scripts.entry in manifest.scripts.modules)) {
+                let err = `The ${manifest.name} application has entry [${manifest.scripts.entry}] but do not have module for it`;
+                throw new Error(err);
+            }
         }
 
         if ('storage' in manifest) {
