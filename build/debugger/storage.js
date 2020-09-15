@@ -54,7 +54,7 @@ export default {
         //Update state of execution
         updateState(state, data){
             for(let app in data)
-                state.exec_state[app] = data[app];
+                state.exec_state[app] = Object.assign(state.exec_state[app] ? state.exec_state[app] : {}, data[app]);
             state.exec_state = Object.assign({}, state.exec_state);
         },
 
@@ -194,6 +194,7 @@ export default {
             ], (message) => {
                 context.commit('updateState', {
                     [message.app] : {
+                        last_error: null,
                         [message.source.split('.')[0]] : {
                             line : message.line,
                             event_type : `dbgr-${message.action}`
@@ -201,6 +202,22 @@ export default {
                     }
                 });
                 this.dispatch('recalcExpressionsForApp', message.app);
+                if(message.action === 'error') {
+                    this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
+                        action : consts.WS_ACTIONS.LAST_ERROR,
+                        app : message.app
+                    });
+                }
+            });
+
+            this.$bus.$on([
+                consts.DEBUGGER_EVENT.DEBUGGER_LASTERROR
+            ], (message) => {
+                context.commit('updateState', {
+                    [message.app]: {
+                        last_error: message.err
+                    }
+                });
             });
 
             this.$bus.$on([consts.EVENTS.WS_CLOSED, consts.EVENTS.WS_TIMEOUT], () => {

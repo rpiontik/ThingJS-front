@@ -74,12 +74,20 @@
             }
         },
         mounted(){
-            this.$bus.$on([consts.DEBUGGER_EVENT.DEBUGGER_DETECTED, consts.DEBUGGER_EVENT.DEBUGGER_ON_ERROR], (message) => {
+            this.$bus.$on([
+                consts.DEBUGGER_EVENT.DEBUGGER_DETECTED,
+                consts.DEBUGGER_EVENT.DEBUGGER_ON_ERROR,
+                consts.DEBUGGER_EVENT.DEBUGGER_WAITING
+            ], (message) => {
                 let source  = message.source.split('.')[0];
-                if(this.manifest && (message.app in this.manifest)
-                        && (source in this.manifest[message.app].scripts.modules)) {
+                let goto = () => {
+                  if(!this.manifest) {
+                    setTimeout(goto, 100);
+                  } else if((message.app in this.manifest) && (source in this.manifest[message.app].scripts.modules)) {
                     this.onClickItem('scripts', message.app, source);
-                }
+                  }
+                };
+                setTimeout(goto, 1000);
             });
         },
         methods : {

@@ -1,0 +1,70 @@
+{
+  "name": "Thermostat",
+  "vendor": "rpiontik",
+  "version": 1,
+  "subversion": 0,
+  "patch": 0,
+  "description": {
+    "ru": "Термостат",
+    "en": "Thermostat"
+  },
+  "components": {
+    "thermostat-app": {
+      "source": "thermostat.js",
+      "intent_filter": [
+        {
+          "action": "thingjs.intent.action.MAIN",
+          "category": "thingjs.intent.category.LAUNCH"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "entry": "thermostat",
+    "subscriptions": ["tmst-refresh-state"],
+    "modules": {
+      "thermostat": {
+        "hot_reload": true,
+        "source": "scripts/thermostat.js",
+        "optimize": false
+      }
+    }
+  },
+  "requires": {
+    "interfaces": {
+      "mqtt": {
+        "type": "mqttc",
+        "required": true
+      },
+      "timers": {
+        "type": "timers",
+        "required": true,
+        "description": {
+          "ru": "Таймеры системы",
+          "en": "System timers"
+        }
+      },
+      "clock": {
+        "type": "clock",
+        "required": true,
+        "description": {
+          "ru": "Системные часы",
+          "en": "System clock"
+        }
+      },
+      "ds18x20": {
+        "type": "DS18X20",
+        "required": true
+      },
+      "relay": {
+        "type": "bit_port",
+        "required": true,
+        "default": 2,
+        "description": {
+          "ru": "Реле",
+          "en": "Relay"
+        }
+      }
+    }
+  }
+}
