@@ -120,8 +120,10 @@ $res.timers.setInterval(function () {
     }
 
     publishState();
+    $res.relay.set(!state);
 }, 1000);
 
 temp = 34.5;
+$res.relay.direction($res.relay.DIR_MODE_OUTPUT);
 publishState();
 $res.mqtt.connect(constMQTTServer);
