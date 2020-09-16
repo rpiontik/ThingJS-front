@@ -3,8 +3,10 @@ let constMQTTServer = 'wss://mqtt.eclipse.org:443/mqtt';
 
 // Consts of MQTT topics
 let constTopicTemp = '/thingjs/123456/temp';
-let constTopicTarget = '/thingjs/123456/target';
-let constTopicMode = '/thingjs/123456/mode';
+let constTopicTargetOut = '/thingjs/123456/target/out';
+let constTopicTargetIn = '/thingjs/123456/target/in';
+let constTopicModeOut = '/thingjs/123456/mode/out';
+let constTopicModeIn = '/thingjs/123456/mode/in';
 let constTopicState = '/thingjs/123456/state';
 
 // Consts of device mode
@@ -17,9 +19,10 @@ let constModeOff = 3;
 let isConnected = false;
 let mode = constModeLess;
 let target = 32;
-let temp = null;
 let state = 0;
 let sensor = null;
+let temp = null;
+let fakeVector = 0.5;
 
 // Looking for ds18b20 sensors
 $res.ds18x20.search(function (addr) {
@@ -39,8 +42,8 @@ function publishState () {
     }));
 
     if (isConnected) {
-        $res.mqtt.publish(constTopicMode, JSON.stringify(mode));
-        $res.mqtt.publish(constTopicTarget, JSON.stringify(target));
+        $res.mqtt.publish(constTopicModeOut, JSON.stringify(mode));
+        $res.mqtt.publish(constTopicTargetOut, JSON.stringify(target));
         $res.mqtt.publish(constTopicState, JSON.stringify(state));
         $res.mqtt.publish(constTopicTemp, JSON.stringify(temp));
     }
@@ -50,8 +53,8 @@ function publishState () {
 $res.mqtt.onconnected = function () {
     print('MQTT client is connected');
     isConnected = true;
-    $res.mqtt.subscribe(constTopicTarget);
-    $res.mqtt.subscribe(constTopicMode);
+    $res.mqtt.subscribe(constTopicTargetIn);
+    $res.mqtt.subscribe(constTopicModeIn);
     publishState();
 };
 
@@ -65,42 +68,53 @@ $res.mqtt.disconnected = function () {
 // MQTT receive data
 $res.mqtt.ondata = function (topic, data) {
     print('MQTT client received from topic [', topic, '] with data [', data, ']');
-    if (topic === constTopicTarget) {
+    if (topic === constTopicTargetIn) {
         target = JSON.parse(data);
-    } else if (topic === constTopicMode) {
+    } else if (topic === constTopicModeIn) {
         mode = JSON.parse(data);
     }
 };
 
 // Event listener
 // $bus - system bus interface
-$bus.on(function (event, url) {
-    if (event === 'tmst-refresh-state') {
-        publishState();
+$bus.on(function (event, data) {
+    if (event === 'tmst-set-target') {
+        target = JSON.parse(data);
+    } else if (event === 'tmst-set-mode') {
+        mode = JSON.parse(data);
     }
+    publishState();
 }, null);
 
 // Execution function
 $res.timers.setInterval(function () {
-    // Refresh sensor data
     if (sensor !== null) {
         $res.ds18x20.convert_all();
         temp = $res.ds18x20.get_temp_c(sensor);
-        if (mode === constModeLess) {
-            if (temp < target) {
-                state = 1;
-            } else {
-                state = 0;
-            }
-        } else if (mode === constModeMore) {
-            if (temp > target) {
-                state = 1;
-            } else {
-                state = 0;
-            }
-        } else if (mode === constModeOn) {
+    } else { // Fake temperature
+        if (temp > 99) {
+            fakeVector = -0.5;
+        } else if (temp < 1) {
+            fakeVector = 0.5;
+        }
+
+        temp += fakeVector;
+    }
+    // Refresh sensor data
+    if (mode === constModeOn) {
+        state = 1;
+    } else if (mode === constModeOff) {
+        state = 0;
+    } else if (mode === constModeLess) {
+        if (temp < target) {
             state = 1;
-        } else if (mode === constModeOff) {
+        } else {
+            state = 0;
+        }
+    } else if (mode === constModeMore) {
+        if (temp > target) {
+            state = 1;
+        } else {
             state = 0;
         }
     }
@@ -108,5 +122,6 @@ $res.timers.setInterval(function () {
     publishState();
 }, 1000);
 
+temp = 34.5;
 publishState();
 $res.mqtt.connect(constMQTTServer);

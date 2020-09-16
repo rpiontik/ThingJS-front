@@ -21,7 +21,7 @@
   },
   "scripts": {
     "entry": "thermostat",
-    "subscriptions": ["tmst-refresh-state"],
+    "subscriptions": ["tmst-refresh-state", "tmst-set-target", "tmst-set-mode"],
     "modules": {
       "thermostat": {
         "hot_reload": true,
