@@ -8,66 +8,119 @@
         </v-flex>
       </v-layout>
     </v-container>
-    <v-layout>
-      <v-flex class="current-temp" xs12 md4>
-          <span>
-            <template v-if="state.temp !== null">
-              {{state.temp.toFixed(1)}}°
-            </template>
-            <template v-else>
-              --.--
-            </template>
-          </span>
-      </v-flex>
-      <v-flex xs12 md4 style="text-align: center; padding: 12px; ">
-        <template v-if="state.state === 1">
-          <v-icon
-              title="Power on"
-              class="indicator"
-          >power</v-icon>
-        </template>
-        <template v-else-if="state.state === 0">
-          <v-icon
-              title="Power off"
-              class="indicator"
-          >power_off</v-icon>
-        </template>
-      </v-flex>
-      <v-flex xs12 md4 style="text-align: center; padding: 12px;">
-        <template v-if="!!state.connected">
-          <v-icon
-              title="Connected"
-              class="indicator"
-          >cloud</v-icon>
-        </template>
-        <template v-else>
-          <v-icon
-              title="Disconnected"
-              class="indicator"
-          >cloud_off</v-icon>
-        </template>
-      </v-flex>
-    </v-layout>
-    <v-container grid-list-xl>
-      <v-layout>
-        <v-flex xs12 md3>
-          <v-select
-              label = "Mode"
-              :items="modes"
-              v-model="state.mode"
-              @change="onChangeMode"
-          ></v-select>
-        </v-flex>
-        <v-flex xs12 md9>
-          <v-slider v-if="state.mode <= 1"
-              thumb-label="always"
-              v-model="state.target"
-              :disabled="!state.target"
-              @change="onChangeTarget"
-          ></v-slider>
-        </v-flex>
-      </v-layout>
-    </v-container>
+    <v-tabs
+        centered
+        icons-and-text
+    >
+      <v-tab href="#tab-1">
+        {{'CONTROL'|lang}}
+        <v-icon>dashboard</v-icon>
+      </v-tab>
+
+      <v-tab href="#tab-2">
+        {{'CLOUD'|lang}}
+        <v-icon>cloud</v-icon>
+      </v-tab>
+
+      <v-tab-item value="tab-1">
+        <v-container>
+          <v-layout>
+            <v-flex class="current-temp" xs12 md4>
+                <span>
+                  <template v-if="state.temp !== null">
+                    {{state.temp.toFixed(1)}}°
+                  </template>
+                  <template v-else>
+                    --.--
+                  </template>
+                </span>
+            </v-flex>
+            <v-flex xs12 md4 style="text-align: center; padding: 12px; ">
+              <template v-if="state.state === 1">
+                <v-icon
+                    title="Power on"
+                    class="indicator"
+                >power</v-icon>
+              </template>
+              <template v-else-if="state.state === 0">
+                <v-icon
+                    title="Power off"
+                    class="indicator"
+                >power_off</v-icon>
+              </template>
+            </v-flex>
+            <v-flex xs12 md4 style="text-align: center; padding: 12px;">
+              <template v-if="!!state.connected">
+                <v-icon
+                    title="Connected"
+                    class="indicator"
+                >cloud</v-icon>
+              </template>
+              <template v-else>
+                <v-icon
+                    title="Disconnected"
+                    class="indicator"
+                >cloud_off</v-icon>
+              </template>
+            </v-flex>
+          </v-layout>
+        </v-container>
+        <v-container grid-list-xl>
+          <v-layout>
+            <v-flex xs12 md3>
+              <v-select
+                  label = "Mode"
+                  :items="modes"
+                  v-model="state.mode"
+                  @change="onChangeMode"
+              ></v-select>
+            </v-flex>
+            <v-flex xs12 md9>
+              <v-slider v-if="state.mode <= 1"
+                  thumb-label="always"
+                  v-model="state.target"
+                  :disabled="!state.target"
+                  @change="onChangeTarget"
+              ></v-slider>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-tab-item>
+      <v-tab-item  value="tab-2">
+        <v-container v-if="state.chip_id">
+    <table class="topic-table">
+      <tr>
+        <th>{{'TOPIC'|lang}}</th>
+        <th>{{'TOPIC_DESCRIPTION'|lang}}</th>
+      </tr>
+      <tr>
+        <td>/thingjs/{{state.chip_id}}/temp</td>
+        <td>{{'TOPIC_TEMP_DESC'|lang}}</td>
+      </tr>
+      <tr>
+        <td>/thingjs/{{state.chip_id}}/state</td>
+        <td>{{'TOPIC_STATE_DESC'|lang}}</td>
+      </tr>
+      <tr>
+        <td>/thingjs/{{state.chip_id}}/target/out</td>
+        <td>{{'TOPIC_TARGET_OUT'|lang}}</td>
+      </tr>
+      <tr>
+        <td>/thingjs/{{state.chip_id}}/target/in</td>
+        <td>{{'TOPIC_TARGET_IN'|lang}}</td>
+      </tr>
+      <tr>
+        <td>/thingjs/{{state.chip_id}}/mode/out</td>
+        <td>{{'TOPIC_MODE_OUT'|lang}}</td>
+      </tr>
+      <tr>
+        <td>/thingjs/{{state.chip_id}}/mode/in</td>
+        <td>{{'TOPIC_MODE_IN'|lang}}</td>
+      </tr>
+    </table>
+  </v-container>
+      </v-tab-item>
+    </v-tabs>
   </v-flex>
 </template>
 
@@ -125,7 +178,8 @@ export default {
                 mode: null,
                 target: null,
                 temp: null,
-                state: null
+                state: null,
+                chip_id: null
             }
         };
     }
@@ -141,6 +195,15 @@ export default {
 
   .indicator {
     font-size: 64px;
+  }
+
+  .topic-table {
+    border-spacing: 0;
+  }
+
+  .topic-table td {
+    padding: 4px;
+    border-top: solid 1px #fff;
   }
 
 </style>

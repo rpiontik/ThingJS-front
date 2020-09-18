@@ -28,6 +28,7 @@ let temp = null;
 let fakeVector = 0.5;
 
 // Looking for ds18b20 sensors
+// Тут вешается при перезагрузке?
 $res.ds18x20.search(function (addr) {
     if (sensor === null) {
         sensor = addr;
