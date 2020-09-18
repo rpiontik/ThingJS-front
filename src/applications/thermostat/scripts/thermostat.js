@@ -2,22 +2,25 @@ print('MQTT client is started');
 let constMQTTServer = 'wss://mqtt.eclipse.org:443/mqtt';
 
 // Consts of MQTT topics
-let constTopicTemp = '/thingjs/123456/temp';
-let constTopicTargetOut = '/thingjs/123456/target/out';
-let constTopicTargetIn = '/thingjs/123456/target/in';
-let constTopicModeOut = '/thingjs/123456/mode/out';
-let constTopicModeIn = '/thingjs/123456/mode/in';
-let constTopicState = '/thingjs/123456/state';
+let CHIP_ID = $res.sys_info.chip_id;
+let TOPIC_TEMP = '/thingjs/' + CHIP_ID + '/temp';
+let TOPIC_TARGET_OUT = '/thingjs/' + CHIP_ID + '/target/out';
+let TOPIC_TARGET_IN = '/thingjs/' + CHIP_ID + '/target/in';
+let TOPIC_MODE_OUT = '/thingjs/' + CHIP_ID + '/mode/out';
+let TOPIC_MODE_IN = '/thingjs/' + CHIP_ID + '/mode/in';
+let TOPIC_MODE_STATE = '/thingjs/' + CHIP_ID + '/state';
+
+print('>>>>>>>>>>>>', $res.sys_info.chip_id, '<<<<<<<<<<<<<<');
 
 // Consts of device mode
-let constModeLess = 0;
-let constModeMore = 1;
-let constModeOn = 2;
-let constModeOff = 3;
+let MODE_LESS = 0;
+let MODE_MORE = 1;
+let MODE_ON = 2;
+let MODE_OFF = 3;
 
 // Operation registers
 let isConnected = false;
-let mode = constModeLess;
+let mode = MODE_LESS;
 let target = 32;
 let state = 0;
 let sensor = null;
@@ -38,14 +41,15 @@ function publishState () {
         mode: mode,
         target: target,
         temp: temp,
-        state: state
+        state: state,
+        chip_id: CHIP_ID
     }));
 
     if (isConnected) {
-        $res.mqtt.publish(constTopicModeOut, JSON.stringify(mode));
-        $res.mqtt.publish(constTopicTargetOut, JSON.stringify(target));
-        $res.mqtt.publish(constTopicState, JSON.stringify(state));
-        $res.mqtt.publish(constTopicTemp, JSON.stringify(temp));
+        $res.mqtt.publish(TOPIC_MODE_OUT, JSON.stringify(mode));
+        $res.mqtt.publish(TOPIC_TARGET_OUT, JSON.stringify(target));
+        $res.mqtt.publish(TOPIC_MODE_STATE, JSON.stringify(state));
+        $res.mqtt.publish(TOPIC_TEMP, JSON.stringify(temp));
     }
 }
 
@@ -53,8 +57,8 @@ function publishState () {
 $res.mqtt.onconnected = function () {
     print('MQTT client is connected');
     isConnected = true;
-    $res.mqtt.subscribe(constTopicTargetIn);
-    $res.mqtt.subscribe(constTopicModeIn);
+    $res.mqtt.subscribe(TOPIC_TARGET_IN);
+    $res.mqtt.subscribe(TOPIC_MODE_IN);
     publishState();
 };
 
@@ -68,9 +72,9 @@ $res.mqtt.disconnected = function () {
 // MQTT receive data
 $res.mqtt.ondata = function (topic, data) {
     print('MQTT client received from topic [', topic, '] with data [', data, ']');
-    if (topic === constTopicTargetIn) {
+    if (topic === TOPIC_TARGET_IN) {
         target = JSON.parse(data);
-    } else if (topic === constTopicModeIn) {
+    } else if (topic === TOPIC_MODE_IN) {
         mode = JSON.parse(data);
     }
 };
@@ -101,17 +105,17 @@ $res.timers.setInterval(function () {
         temp += fakeVector;
     }
     // Refresh sensor data
-    if (mode === constModeOn) {
+    if (mode === MODE_ON) {
         state = 1;
-    } else if (mode === constModeOff) {
+    } else if (mode === MODE_OFF) {
         state = 0;
-    } else if (mode === constModeLess) {
+    } else if (mode === MODE_LESS) {
         if (temp < target) {
             state = 1;
         } else {
             state = 0;
         }
-    } else if (mode === constModeMore) {
+    } else if (mode === MODE_MORE) {
         if (temp > target) {
             state = 1;
         } else {

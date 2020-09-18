@@ -21,7 +21,12 @@
   },
   "scripts": {
     "entry": "thermostat",
-    "subscriptions": ["tmst-refresh-state", "tmst-set-target", "tmst-set-mode"],
+    "subscriptions": [
+      "$-started",
+      "tmst-refresh-state",
+      "tmst-set-target",
+      "tmst-set-mode"
+    ],
     "modules": {
       "thermostat": {
         "hot_reload": true,
@@ -63,6 +68,14 @@
         "description": {
           "ru": "Реле",
           "en": "Relay"
+        }
+      },
+      "sys_info": {
+        "type": "sys_info",
+        "required": true,
+        "description": {
+          "ru": "Информация о системе",
+          "en": "System information"
         }
       }
     }
