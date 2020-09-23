@@ -1,6 +1,6 @@
 print('MQTT client is started');
 let isConnected = false;
-let topic = '/thingjs/example/times';
+let topic = '/thingjs/example/' + $res.sys_info.chip_id + '/times';
 $bus.emit('mqtt-connected', JSON.stringify(false));
 
 $res.mqtt.onconnected = function () {
