@@ -29,13 +29,11 @@ let fakeVector = 0.5;
 
 // Looking for ds18b20 sensors
 // Тут вешается при перезагрузке?
-print('BEGIN SEARCH');
 $res.ds18x20.search(function (addr) {
     if (sensor === null) {
         sensor = addr;
     }
 });
-print('END SEARCH');
 
 // Publish data to UBUS and MQTT server
 function publishState () {
@@ -96,11 +94,8 @@ $bus.on(function (event, data) {
 // Execution function
 $res.timers.setInterval(function () {
     if (sensor !== null) {
-        print('BEGIN GET TIME');
         $res.ds18x20.convert_all();
-        print('GET TIME');
         temp = $res.ds18x20.get_temp_c(sensor);
-        print('END GET TIME');
     } else { // Fake temperature
         if (temp > 99) {
             fakeVector = -0.5;
@@ -130,7 +125,7 @@ $res.timers.setInterval(function () {
     }
 
     publishState();
-    $res.relay.set(!state);
+    $res.relay.set(state);
 }, 1000);
 
 temp = 34.5;
