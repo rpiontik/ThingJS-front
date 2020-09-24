@@ -95,8 +95,8 @@
           <p>
             Android applications:
             <ul>
-              <li><a href="https://play.google.com/store/apps/details?id=net.routix.mqttdash&hl=ru&pli=1" target="_blank">MQTT Dash (RUS)</a></li>
-              <li><a href="https://play.google.com/store/apps/details?id=snr.lab.iotmqttpanel.prod&hl=ru" target="_blank">IoT MQTT Panel (EN)</a></li>
+              <li><a href="https://play.google.com/store/apps/details?id=net.routix.mqttdash" target="_blank">MQTT Dash (RUS)</a></li>
+              <li><a href="https://play.google.com/store/apps/details?id=snr.lab.iotmqttpanel.prod" target="_blank">IoT MQTT Panel (EN)</a></li>
             </ul>
           </p>
           <p>
