@@ -202,6 +202,15 @@
           "en": "Main LEDC driver"
         }
       },
+      "DS18B20": {
+        "type": "DS18X20",
+        "required": true,
+        "default": [],
+        "description": {
+          "ru": "Температурные датчики DS18B20",
+          "en": "Temperature sensors DS18B20"
+        }
+      },
       "ledc2": {
         "type": "SmartLED",
         "required": false,

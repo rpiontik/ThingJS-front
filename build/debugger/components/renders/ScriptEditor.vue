@@ -25,9 +25,12 @@
                 class="editor"
                 v-model="code"
                 language="javascript"
-                style = "position: absolute; top: 48px; left: 0px; right: 0px; bottom: 0px;"
+                :style = "{'bottom': lastError ? '48px' : '0px'}"
         >
         </monaco-editor>
+      <div v-if="lastError" class="last-error">
+        {{lastError}}
+      </div>
     </div>
 </template>
 
@@ -160,6 +163,10 @@
             }
         },
         computed: {
+            lastError() {
+              let app_state = this.$store.state.exec_state[this.appname];
+              return app_state && ('last_error' in app_state) ? app_state.last_error : null;
+            },
             appname() {
                 return utils.parseURI(this.uri).app;
             },
@@ -202,6 +209,25 @@
 </script>
 
 <style>
+    .editor {
+        position: absolute;
+        top: 48px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+    }
+
+    .last-error {
+        position: absolute;
+        height: 48px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+        background: #C62828;
+        color: #fff;
+        padding: 4px;
+        overflow-y: auto;
+    }
     .current-exec-line-text {
         background: lightblue;
     }

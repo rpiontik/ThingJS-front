@@ -20,6 +20,7 @@ export default {
         DEBUGGER_ON_ERROR : 'dbgr-error',
         MANIFEST_CHANGED : 'dbgr-manifest-changed',
         DEBUGGER_EXPR_RES : 'dbgr-expr-res',
+        DEBUGGER_LASTERROR : 'dbgr-lasterror',
     },
     WS_ACTIONS : {
         TAKEN : '$taken',
@@ -30,6 +31,7 @@ export default {
         STEP_OUT : 'step-out',
         STEP_RUN : 'step-run',
         STEP_STOP : 'step-stop',
+        LAST_ERROR : 'lasterror',
         STDERR : 'stderr',
         STDOUT : 'stdout',
     },
