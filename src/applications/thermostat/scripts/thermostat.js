@@ -1,4 +1,4 @@
-print('MQTT client is started');
+print('MQproнекторTT client is started');
 let constMQTTServer = 'wss://mqtt.eclipse.org:443/mqtt';
 
 // Consts of MQTT topics
@@ -125,7 +125,7 @@ $res.timers.setInterval(function () {
     }
 
     publishState();
-    $res.relay.set(!state);
+    $res.relay.set(state);
 }, 1000);
 
 temp = 34.5;

@@ -81,22 +81,15 @@ delivered when node is subscriber for this message.
 ```
 #### application mjs script scripts/main.js
 ``` javascript
-
- //Importing UBUS listener function  
- let listener = ffi('void listener(void (*)(char*, char*, userdata), userdata)');
- 
- //When message will received, function will call callback function  
- listener(function(event, content, data) {
-    if(event === "hello"){
+ //When message will received, function will call callback function
+ $bus.on(function (event, data) {
+    if (event === 'hello') {
         print(event, ":", data);
     }
- }, null); 
+ }, null);
 
- //Importing UBUS send function
- let emit = ffi('void emit(char*, char*)');    
  //Sending message to UBUS
- emit('my-script-ready', null);
-
+ $bus.emit('my-script-ready', null);
 ```
 
 ### Predefined system messages
@@ -134,13 +127,18 @@ delivered when node is subscriber for this message.
 
 #### mjs script
 ``` javascript
- let listener = ffi('void listener(void (*)(char*, char*, userdata), userdata)');
- listener(function(event, content, data) {
-    if(event === "$-started"){
-        print("Controller is ready!");       
+ $bus.on(function (event, data) {
+    if (event === '$-started') {
+        print("Controller is ready!");
     }
  }, null);
 ```
 
 ## Resource interfaces
 
+The descriptions of available interfaces in [repo](https://github.com/rpiontik/ThingJS-stdi/tree/beta) 
+
+# Licensing
+ThingsJS is released under
+[GNU GPL v.2](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+open source license.

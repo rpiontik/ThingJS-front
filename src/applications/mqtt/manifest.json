@@ -34,7 +34,11 @@
     "interfaces": {
       "mqtt": {
         "type": "mqttc",
-        "required": true
+        "required": true,
+        "description": {
+          "ru": "MQTT брокер",
+          "en": "MQTT broker"
+        }
       },
       "timers": {
         "type": "timers",
@@ -50,6 +54,14 @@
         "description": {
           "ru": "Системные часы",
           "en": "System clock"
+        }
+      },
+      "sys_info": {
+        "type": "sys_info",
+        "required": true,
+        "description": {
+          "ru": "Информация о системе",
+          "en": "System information"
         }
       }
     }

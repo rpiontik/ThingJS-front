@@ -13,12 +13,12 @@
         icons-and-text
     >
       <v-tab href="#tab-1">
-        {{'CONTROL'|lang}}
+        {{ 'CONTROL'|lang }}
         <v-icon>dashboard</v-icon>
       </v-tab>
 
       <v-tab href="#tab-2">
-        {{'CLOUD'|lang}}
+        {{ 'CLOUD'|lang }}
         <v-icon>cloud</v-icon>
       </v-tab>
 
@@ -28,7 +28,7 @@
             <v-flex class="current-temp" xs12 md4>
                 <span>
                   <template v-if="state.temp !== null">
-                    {{state.temp.toFixed(1)}}°
+                    {{ state.temp.toFixed(1) }}°
                   </template>
                   <template v-else>
                     --.--
@@ -40,13 +40,15 @@
                 <v-icon
                     title="Power on"
                     class="indicator"
-                >power</v-icon>
+                >power
+                </v-icon>
               </template>
               <template v-else-if="state.state === 0">
                 <v-icon
                     title="Power off"
                     class="indicator"
-                >power_off</v-icon>
+                >power_off
+                </v-icon>
               </template>
             </v-flex>
             <v-flex xs12 md4 style="text-align: center; padding: 12px;">
@@ -54,13 +56,15 @@
                 <v-icon
                     title="Connected"
                     class="indicator"
-                >cloud</v-icon>
+                >cloud
+                </v-icon>
               </template>
               <template v-else>
                 <v-icon
                     title="Disconnected"
                     class="indicator"
-                >cloud_off</v-icon>
+                >cloud_off
+                </v-icon>
               </template>
             </v-flex>
           </v-layout>
@@ -69,7 +73,7 @@
           <v-layout>
             <v-flex xs12 md3>
               <v-select
-                  label = "Mode"
+                  label="Mode"
                   :items="modes"
                   v-model="state.mode"
                   @change="onChangeMode"
@@ -77,48 +81,62 @@
             </v-flex>
             <v-flex xs12 md9>
               <v-slider v-if="state.mode <= 1"
-                  thumb-label="always"
-                  v-model="state.target"
-                  :disabled="!state.target"
-                  @change="onChangeTarget"
+                        thumb-label="always"
+                        v-model="state.target"
+                        :disabled="!state.target"
+                        @change="onChangeTarget"
               ></v-slider>
             </v-flex>
           </v-layout>
         </v-container>
       </v-tab-item>
-      <v-tab-item  value="tab-2">
-        <v-container v-if="state.chip_id">
-    <table class="topic-table">
-      <tr>
-        <th>{{'TOPIC'|lang}}</th>
-        <th>{{'TOPIC_DESCRIPTION'|lang}}</th>
-      </tr>
-      <tr>
-        <td>/thingjs/{{state.chip_id}}/temp</td>
-        <td>{{'TOPIC_TEMP_DESC'|lang}}</td>
-      </tr>
-      <tr>
-        <td>/thingjs/{{state.chip_id}}/state</td>
-        <td>{{'TOPIC_STATE_DESC'|lang}}</td>
-      </tr>
-      <tr>
-        <td>/thingjs/{{state.chip_id}}/target/out</td>
-        <td>{{'TOPIC_TARGET_OUT'|lang}}</td>
-      </tr>
-      <tr>
-        <td>/thingjs/{{state.chip_id}}/target/in</td>
-        <td>{{'TOPIC_TARGET_IN'|lang}}</td>
-      </tr>
-      <tr>
-        <td>/thingjs/{{state.chip_id}}/mode/out</td>
-        <td>{{'TOPIC_MODE_OUT'|lang}}</td>
-      </tr>
-      <tr>
-        <td>/thingjs/{{state.chip_id}}/mode/in</td>
-        <td>{{'TOPIC_MODE_IN'|lang}}</td>
-      </tr>
-    </table>
-  </v-container>
+      <v-tab-item value="tab-2">
+        <v-container>
+          <p>
+            Android applications:
+            <ul>
+              <li><a href="https://play.google.com/store/apps/details?id=net.routix.mqttdash" target="_blank">MQTT Dash (RUS)</a></li>
+              <li><a href="https://play.google.com/store/apps/details?id=snr.lab.iotmqttpanel.prod" target="_blank">IoT MQTT Panel (EN)</a></li>
+            </ul>
+          </p>
+          <p>
+            Server params:
+            <ul>
+              <li>Address: mqtt.eclipse.org</li>
+              <li>port: 1883</li>
+            </ul>
+          </p>
+          <table class="topic-table">
+            <tr>
+              <th>{{ 'TOPIC'|lang }}</th>
+              <th>{{ 'TOPIC_DESCRIPTION'|lang }}</th>
+            </tr>
+            <tr>
+              <td>/thingjs/{{ state.chip_id }}/temp</td>
+              <td>{{ 'TOPIC_TEMP_DESC'|lang }}</td>
+            </tr>
+            <tr>
+              <td>/thingjs/{{ state.chip_id }}/state</td>
+              <td>{{ 'TOPIC_STATE_DESC'|lang }}</td>
+            </tr>
+            <tr>
+              <td>/thingjs/{{ state.chip_id }}/target/out</td>
+              <td>{{ 'TOPIC_TARGET_OUT'|lang }}</td>
+            </tr>
+            <tr>
+              <td>/thingjs/{{ state.chip_id }}/target/in</td>
+              <td>{{ 'TOPIC_TARGET_IN'|lang }}</td>
+            </tr>
+            <tr>
+              <td>/thingjs/{{ state.chip_id }}/mode/out</td>
+              <td>{{ 'TOPIC_MODE_OUT'|lang }}</td>
+            </tr>
+            <tr>
+              <td>/thingjs/{{ state.chip_id }}/mode/in</td>
+              <td>{{ 'TOPIC_MODE_IN'|lang }}</td>
+            </tr>
+          </table>
+        </v-container>
       </v-tab-item>
     </v-tabs>
   </v-flex>
@@ -142,14 +160,15 @@ export default {
         });
         this.refreshState();
     },
-    computed: {
-    },
+    computed: {},
     methods: {
         refreshState () {
             this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'tmst-refresh-state');
         },
         flushData () {
-            if (this.isHold) { clearTimeout(this.isHold); }
+            if (this.isHold) {
+                clearTimeout(this.isHold);
+            }
             this.isHold = setTimeout(() => {
                 this.isHold = null;
                 this.refreshState();
@@ -167,10 +186,10 @@ export default {
     data () {
         return {
             modes: [
-                { text: 'Less then', value: 0 },
-                { text: 'More then', value: 1 },
-                { text: 'On', value: 2 },
-                { text: 'Off', value: 3 }
+                {text: 'Less then', value: 0},
+                {text: 'More then', value: 1},
+                {text: 'On', value: 2},
+                {text: 'Off', value: 3}
             ],
             isHold: false,
             state: {
@@ -188,22 +207,22 @@ export default {
 
 <style>
 
-  .current-temp {
-    font-size: 64px;
-    text-align: center;
-  }
+.current-temp {
+  font-size: 64px;
+  text-align: center;
+}
 
-  .indicator {
-    font-size: 64px;
-  }
+.indicator {
+  font-size: 64px;
+}
 
-  .topic-table {
-    border-spacing: 0;
-  }
+.topic-table {
+  border-spacing: 0;
+}
 
-  .topic-table td {
-    padding: 4px;
-    border-top: solid 1px #fff;
-  }
+.topic-table td {
+  padding: 4px;
+  border-top: solid 1px #fff;
+}
 
 </style>

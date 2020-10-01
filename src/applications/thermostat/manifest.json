@@ -39,7 +39,11 @@
     "interfaces": {
       "mqtt": {
         "type": "mqttc",
-        "required": true
+        "required": true,
+        "description": {
+          "ru": "MQTT брокер",
+          "en": "MQTT broker"
+        }
       },
       "timers": {
         "type": "timers",
@@ -59,7 +63,12 @@
       },
       "ds18x20": {
         "type": "DS18X20",
-        "required": true
+        "required": true,
+        "default": [6002, 16, 17],
+        "description": {
+          "ru": "Датчики температуры DS18B20",
+          "en": "Temperature sensor DS18B20"
+        }
       },
       "relay": {
         "type": "bit_port",
