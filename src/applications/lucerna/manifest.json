@@ -219,6 +219,14 @@
           "ru": "Дополнительный LEDC драйвер",
           "en": "Extended LEDC driver"
         }
+      },
+      "http": {
+        "type": "http",
+        "required": true
+      },
+      "prefs": {
+        "type": "preferences",
+        "required": true
       }
     }
   }

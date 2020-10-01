@@ -1,6 +1,8 @@
 print('MJS', 'Starting Lucerna script...', 1);
-    let sens = null;
-    $res.DS18B20.search(function (sensor) {
+
+
+let sens = null;
+$res.DS18B20.search(function (sensor) {
     print('Sensor:', sensor);
     sens = sensor;
 });
@@ -67,7 +69,7 @@ function getConfig () {
     }
     config.close();
 
-    print('Interval=', result.interval.width, ' channelNumber=', result.channelNumber);
+    // print('Interval=', result.interval.width, ' channelNumber=', result.channelNumber);
     return result;
 }
 
@@ -78,12 +80,12 @@ function getCurrentInterval () {
     let nextDot = null;
     let recScanned = 0;
 
-    print('Current time is ', time);
+    // print('Current time is ', time);
 
     let dots = $storage.open('dots');
     for (let found = dots.first(); found; found = dots.next()) {
         let dot = dots.get();
-        print('#', recScanned++, 'Dot time=', dot.time, 'brightness=', dot.brightness);
+        // print('#', recScanned++, 'Dot time=', dot.time, 'brightness=', dot.brightness);
         if (dot.time < time) {
             prevDot = dot;
         } else {
@@ -92,14 +94,14 @@ function getCurrentInterval () {
         }
     }
 
-    print('Records scanned ', recScanned);
+    // print('Records scanned ', recScanned);
 
     if (prevDot && !nextDot) {
-        print('Next dot is first dot');
+        // print('Next dot is first dot');
         dots.first();
         nextDot = dots.get();
     } else if (nextDot && !prevDot) {
-        print('First dot is last dot');
+        // print('First dot is last dot');
         dots.last();
         prevDot = dots.get();
     }
@@ -137,7 +139,7 @@ function calcTransition (border, dot1, dot2) {
         spectrum: {}
     };
 
-    print('Border=', border, ' dot1.brightness=', dot1.brightness, ' dot2.brightness=', dot2.brightness, ' avg=', result.brightness, ' k=', koof);
+    // print('Border=', border, ' dot1.brightness=', dot1.brightness, ' dot2.brightness=', dot2.brightness, ' avg=', result.brightness, ' k=', koof);
     for (let channel = 0; channel < channels.length; channel++) {
         result.spectrum[channel] = abs(
             dot1.spectrum[channel] -
@@ -171,17 +173,17 @@ let execute = function (reset) {
         exposition *= 1000; // To ms
         exposition += 10; // For exposition will be > 0
 
-        print('Interval is ', interval.start.time, '<>', interval.stop.time, ' exposition is ', exposition, 'ms');
+        // print('Interval is ', interval.start.time, '<>', interval.stop.time, ' exposition is ', exposition, 'ms');
 
         for (let i = 0; i < channels.length; i++) {
             let channel = channels[i];
             if (reset) {
-                print('     Reset channel ', i);
+                // print('     Reset channel ', i);
                 channel.fade(MAX_LEVEL * (transition.spectrum[i] / DIVIDER), 0);
             }
             if (interval.start !== interval.stop) {
                 channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER), exposition);
-                print('     Executing channel ', i, ' from ', transition.spectrum[i], ' to ', interval.stop.spectrum[i], ' exposition ', exposition);
+                // print('     Executing channel ', i, ' from ', transition.spectrum[i], ' to ', interval.stop.spectrum[i], ' exposition ', exposition);
             }
         }
 
@@ -204,7 +206,7 @@ function restartExecution () {
 
 // Event listener
 $bus.on(function (event, content, data) {
-    print('>>> EVENT: ', event, ';', content, ';', data, '<<<');
+    // print('>>> EVENT: ', event, ';', content, ';', data, '<<<');
     if (event === '$-storage-changed') {
         if (content === 'Lucerna/config') {
             config = getConfig();
