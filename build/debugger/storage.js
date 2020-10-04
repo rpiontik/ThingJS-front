@@ -58,6 +58,13 @@ export default {
             state.exec_state = Object.assign({}, state.exec_state);
         },
 
+        //Set state of execution
+        setState(state, data){
+            for(let app in data)
+                state.exec_state[app] = Object.assign({}, data[app]);
+            state.exec_state = Object.assign({}, state.exec_state);
+        },
+
         //Append text to console log
         appendToConsoleLog(state, item) {
             state.consolelog.push(item);
@@ -178,7 +185,7 @@ export default {
             });
 
             this.$bus.$on(consts.DEBUGGER_EVENT.DEBUGGER_EXECUTING, (message) => {
-                context.commit('updateState', {
+                context.commit('setState', {
                     [message.app] : {}
                 });
             });

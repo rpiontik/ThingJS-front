@@ -1,0 +1,119 @@
+{
+  "name": "TinyLED",
+  "vendor": "rpiontik",
+  "version": 1,
+  "subversion": 0,
+  "patch": 0,
+  "description": {
+    "ru": "Приложение управления светильником для морского и пресноводного аквариума TinyLED",
+    "en": "The application for lighting control of marine and freshwater aquariums TinyLED"
+  },
+  "components": {
+    "tinyled-preferences": {
+      "source": "prefs.js",
+      "intent_filter": [
+        {
+          "action": "thingjs.intent.action.MAIN",
+          "category": "thingjs.intent.category.PREFERENCE"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "subscriptions": [
+      "$-started",
+      "$-current-time",
+      "lucerna-set-uuid",
+      "$-script-restart",
+      "lucerna-get-uuid"
+    ],
+    "entry": "scheduler",
+    "modules": {
+      "scheduler": {
+        "source": "scripts/scheduler.js",
+        "optimize": false
+      }
+    }
+  },
+  "files": [
+    {
+      "src": "cfg/config.json",
+      "dist": "config.json"
+    }
+  ],
+  "storage": {
+    "objects": {
+      "config": {
+        "version": 1,
+        "preload": true,
+        "default" : "data/config.json",
+        "struct": {
+          "version": "int",
+          "channelNumber": "int"
+        }
+      },
+      "dots": {
+        "version": 1,
+        "default" : "data/dots.json",
+        "struct": {
+          "time": "int",
+          "spectrum": {
+            "0": "int",
+            "1": "int",
+            "2": "int",
+            "3": "int",
+            "4": "int",
+            "5": "int",
+            "6": "int",
+            "7": "int"
+          }
+        }
+      }
+    }
+  },
+  "requires": {
+    "interfaces": {
+      "clock": {
+        "type": "clock",
+        "required": true,
+        "description": {
+          "ru": "Системные часы",
+          "en": "System clock"
+        }
+      },
+      "timers": {
+        "type": "timers",
+        "required": true,
+        "description": {
+          "ru": "Таймеры системы",
+          "en": "System timers"
+        }
+      },
+      "ledc1": {
+        "type": "SmartLED",
+        "required": true,
+        "default": [],
+        "description": {
+          "ru": "Основной LEDC драйвер",
+          "en": "Main LEDC driver"
+        }
+      },
+      "http": {
+        "type": "http",
+        "required": true
+      },
+      "prefs": {
+        "type": "preferences",
+        "required": true
+      },
+      "sys_info": {
+        "type": "sys_info",
+        "required": true,
+        "description": {
+          "ru": "Информация о системе",
+          "en": "System information"
+        }
+      }
+    }
+  }
+}

@@ -41,7 +41,10 @@
     "subscriptions": [
       "$-storage-changed",
       "$-started",
-      "$-current-time"
+      "$-current-time",
+      "lucerna-set-uuid",
+      "$-script-restart",
+      "lucerna-get-uuid"
     ],
     "entry": "scheduler",
     "modules": {
@@ -67,6 +70,7 @@
           "interval": {
             "width": "double"
           },
+          "cloud": "int",
           "channelNumber": "int",
           "channels": {
             "0": {
@@ -227,6 +231,14 @@
       "prefs": {
         "type": "preferences",
         "required": true
+      },
+      "timer": {
+        "type": "timers",
+        "required": true,
+        "description": {
+          "ru": "Таймеры системы",
+          "en": "System timers"
+        }
       }
     }
   }

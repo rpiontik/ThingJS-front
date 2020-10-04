@@ -1,6 +1,8 @@
 export default {
     en: {
-        PREFS_TITLE: 'Light',
+        PREFS_TITLE_STANDALONE: 'Light config',
+        PREFS_TITLE_CLOUD: 'Cloud connection',
+        DEVICE_ID: 'UUID of device',
         DAYS_NUMBER: 'Days on schedule',
         CHANNELS_NUMBER: 'Number of channels',
         COLORS_TITLE: 'Color channels',
@@ -10,7 +12,9 @@ export default {
         DOT_INSPECTOR: 'Dot inspector'
     },
     ru: {
-        PREFS_TITLE: 'Освещение',
+        PREFS_TITLE_STANDALONE: 'Настройка освещения',
+        PREFS_TITLE_CLOUD: 'Подключение к облаку',
+        DEVICE_ID: 'Уникальный идентификатор устройства',
         DAYS_NUMBER: 'Кол-во дней на графике',
         CHANNELS_NUMBER: 'Количество каналов',
         COLORS_TITLE: 'Цвет каналов',

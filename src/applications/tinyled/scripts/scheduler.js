@@ -3,26 +3,17 @@ print('MJS', 'Starting Lucerna script...', 1);
 // Preferences fields
 let PREF_FIELD_UUID = 'uuid';
 
-let sens = null; // Temperature sensor id
-let cloud_uuid = $res.prefs.get(PREF_FIELD_UUID, null); // Tinyled cloud uuid
+// Cloud URL
+let CLOUD_URL = 'http://ds1.tinyled.ru/json.php?action=getschedule&fid=' + $res.sys_info.chip_id;
+// http://ds1.tinyled.ru/json.php?action=getschedule&version=1&fid=C8P27NUQM9&deviceid=C8P27NUQM9
 
-// Looking for temperature sensor
-$res.DS18B20.search(function (sensor) {
-    print('Sensor:', sensor);
-    sens = sensor;
-});
-
-if (sens === null) {
-    print('Sensor not found');
-} else {
-    $res.DS18B20.convert_all();
-    print('Temperature:', $res.DS18B20.get_temp_c(sens));
-}
+let cloudUUID = $res.prefs.get(PREF_FIELD_UUID, null); // Tinyled cloud uuid
 
 // Max level
 let MAX_LEVEL = 32767;
 let RESOLUTION = 15;
 let DIVIDER = 10000;
+let DAY_WIDTH = 86400;
 
 // Global channels array
 let channels = [];
@@ -31,43 +22,81 @@ let channels = [];
 let timer = null;
 
 function hwInit () {
-    // Make drivers array
-    let ledcDrivers = [$res.ledc1];
-    $res.ledc2 && ledcDrivers.push($res.ledc2);
-
-    // Make channels array
-    for (let i = 0; i < ledcDrivers.length; i++) {
-        // Init the driver
-        let driver = ledcDrivers[i];
-        driver.reconfig({
-            'resolution': RESOLUTION
-        });
-        for (let f = 0; f < driver.channels.length; f++) {
-            let channel = driver.channels[f];
-            if (channel) {
-                // Init the channel
-                channel.reconfig({
-                    'duty': 0
-                });
-                // Channel level by percent
-                channel.level = 0;
-                channels.push(channel);
-            }
+    // Init the driver
+    $res.ledc1.reconfig({
+        'resolution': RESOLUTION
+    });
+    for (let f = 0; f < $res.ledc1.channels.length; f++) {
+        let channel = $res.ledc1.channels[f];
+        if (channel) {
+            // Init the channel
+            channel.reconfig({
+                'duty': 0
+            });
+            // Channel level by percent
+            channel.level = 0;
+            channels.push(channel);
         }
     }
 }
 
 let config = null;
 
+// Cloud synchronization
+function doCloudSync () {
+    if (cloudUUID.length > 0) {
+        $res.http.request(CLOUD_URL + '&deviceid=' + cloudUUID + '&version=0',
+            function (response) {
+                if (response.data) {
+                    let dots = $storage.open('dots');
+                    let dotIndex = 0;
+                    for (
+                        let found = dots.first();
+                        found || (dotIndex < response.data.s.length);
+                        found = dots.next()
+                    ) {
+                        let dot = response.data.s[dotIndex];
+                        let point = null;
+                        if (dot) {
+                            point = {
+                                'time': dot.o,
+                                'spectrum': {
+                                    '0': dot.p[0],
+                                    '1': dot.p[1],
+                                    '2': dot.p[2],
+                                    '3': dot.p[3],
+                                    '4': dot.p[4],
+                                    '5': dot.p[5],
+                                    '6': dot.p[6],
+                                    '7': dot.p[7]
+                                }
+                            };
+                        }
+
+                        if (found && dot) {
+                            dots.post(point);
+                        } else if (found) {
+                            dots.remove();
+                        } else {
+                            dots.append(point);
+                        }
+                        ++dotIndex;
+                    }
+                    dots.close();
+                }
+            }
+        );
+    }
+}
+// Do sync every 10sec
+$res.timers.setInterval(doCloudSync, 10000);
+
 // Configuration of application
 function getConfig () {
     let config = $storage.open('config');
     let result = {
-        'interval': {
-            'width': 86400
-        },
-        'channelNumber': 0,
-        'channels': {}
+        'version': 0,
+        'channelNumber': 0
     };
 
     if (config.first()) {
@@ -75,13 +104,12 @@ function getConfig () {
     }
     config.close();
 
-    // print('Interval=', result.interval.width, ' channelNumber=', result.channelNumber);
     return result;
 }
 
 // Return current (actual) interval between two points
 function getCurrentInterval () {
-    let time = $res.clock.getTime() % config.interval.width;
+    let time = $res.clock.getTime() % DAY_WIDTH;
     let prevDot = null;
     let nextDot = null;
 
@@ -133,8 +161,8 @@ function calcTransition (border, dot1, dot2) {
         leftShoulder = border - dot1.time;
         width = dot2.time - dot1.time;
     } else {
-        leftShoulder = border > dot1.time ? border - dot1.time : config.interval.width - dot1.time + border;
-        width = config.interval.width - dot1.time + dot2.time;
+        leftShoulder = border > dot1.time ? border - dot1.time : DAY_WIDTH - dot1.time + border;
+        width = DAY_WIDTH - dot1.time + dot2.time;
     }
 
     let koof = leftShoulder / width;
@@ -170,7 +198,7 @@ let execute = function (reset) {
 
         let exposition = 0;
         if (interval.stop.time < interval.time) {
-            exposition = config.interval.width - interval.time + interval.stop.time;
+            exposition = DAY_WIDTH - interval.time + interval.stop.time;
         } else {
             exposition = interval.stop.time - interval.time;
         }
@@ -211,21 +239,14 @@ function restartExecution () {
 
 // Event listener
 $bus.on(function (event, content, data) {
-    // print('>>> EVENT: ', event, ';', content, ';', data, '<<<');
-    if (event === '$-storage-changed') {
-        if (content === 'Lucerna/config') {
-            config = getConfig();
-            restartExecution();
-        } else if (content === 'Lucerna/dots') {
-            restartExecution();
-        }
-    } else if (event === '$-current-time') {
+    if (event === '$-current-time') {
         restartExecution();
     } else if (event === 'lucerna-set-uuid') {
         $res.prefs.put(PREF_FIELD_UUID, content);
-        $bus.emit('lucerna-state-uuid', cloud_uuid);
+        cloudUUID = $res.prefs.get(PREF_FIELD_UUID);
+        $bus.emit('lucerna-state-uuid', cloudUUID);
     } else if (event === 'lucerna-get-uuid') {
-        $bus.emit('lucerna-state-uuid', cloud_uuid);
+        $bus.emit('lucerna-state-uuid', cloudUUID);
     }
 }, null);
 
