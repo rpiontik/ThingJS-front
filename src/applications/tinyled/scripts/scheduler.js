@@ -118,7 +118,6 @@ function getCurrentInterval () {
     let dots = $storage.open('dots');
     for (let found = dots.first(); found; found = dots.next()) {
         let dot = dots.get();
-        // print('#', recScanned++, 'Dot time=', dot.time, 'brightness=', dot.brightness);
         if (dot.time < time) {
             prevDot = dot;
         } else {
@@ -126,8 +125,6 @@ function getCurrentInterval () {
             break;
         }
     }
-
-    // print('Records scanned ', recScanned);
 
     if (prevDot && !nextDot) {
         // print('Next dot is first dot');
@@ -167,14 +164,10 @@ function calcTransition (border, dot1, dot2) {
 
     let koof = leftShoulder / width;
 
-    let result = {
-        brightness: abs(dot1.brightness - (dot1.brightness - dot2.brightness) * koof),
-        spectrum: {}
-    };
+    let result = {};
 
-    // print('Border=', border, ' dot1.brightness=', dot1.brightness, ' dot2.brightness=', dot2.brightness, ' avg=', result.brightness, ' k=', koof);
     for (let channel = 0; channel < channels.length; channel++) {
-        result.spectrum[channel] = abs(
+        result[channel] = abs(
             dot1.spectrum[channel] -
             (dot1.spectrum[channel] - dot2.spectrum[channel]) *
             koof
@@ -212,11 +205,10 @@ let execute = function (reset) {
             let channel = channels[i];
             if (reset) {
                 // print('     Reset channel ', i);
-                channel.fade(MAX_LEVEL * (transition.spectrum[i] / DIVIDER), 0);
+                channel.fade(MAX_LEVEL * (transition[i] / DIVIDER), 0);
             }
             if (interval.start !== interval.stop) {
                 channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER), exposition);
-                // print('     Executing channel ', i, ' from ', transition.spectrum[i], ' to ', interval.stop.spectrum[i], ' exposition ', exposition);
             }
         }
 
