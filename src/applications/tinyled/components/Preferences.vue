@@ -14,7 +14,13 @@
                           :label="'DEVICE_ID' | lang"
                           type="text"
                           maxlength="10"
+                          :disabled="notReceived"
                       ></v-text-field>
+                      <v-switch
+                          v-model="inverse"
+                          :label="'INVERSE' | lang"
+                          :disabled="notReceived"
+                      ></v-switch>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -34,9 +40,12 @@ export default {
     name: 'SettingsTinyLED',
     components: {Template},
     mounted () {
-        this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, deviceId) => {
-            if (type === 'lucerna-state-uuid') {
-                this.deviceId = deviceId;
+        this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, config) => {
+            if (type === 'lucerna-state-config') {
+                let conf = JSON.parse(config);
+                this.deviceId = conf.uuid;
+                this.inverse = conf.inverse;
+                this.notReceived = false;
             }
         });
         this.$bus.$on($consts.EVENTS.WS_STARTED, this.refreshDeviceID);
@@ -44,16 +53,21 @@ export default {
     },
     methods: {
         refreshDeviceID () {
-            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'lucerna-get-uuid', null);
+            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'lucerna-get-config', null);
         },
 
         submit () {
-            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'lucerna-set-uuid', this.deviceId);
+            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'lucerna-set-config', JSON.stringify({
+                uuid: this.deviceId,
+                inverse: this.inverse
+            }));
         }
     },
     data () {
         let data = {
-            deviceId: ''
+            notReceived: true,
+            deviceId: '',
+            inverse: false
         };
 
         return data;

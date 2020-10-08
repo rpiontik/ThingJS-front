@@ -23,9 +23,9 @@
     "subscriptions": [
       "$-started",
       "$-current-time",
-      "lucerna-set-uuid",
-      "$-script-restart",
-      "lucerna-get-uuid"
+      "lucerna-set-config",
+      "lucerna-get-config",
+      "$-script-restart"
     ],
     "entry": "scheduler",
     "modules": {
@@ -43,15 +43,6 @@
   ],
   "storage": {
     "objects": {
-      "config": {
-        "version": 1,
-        "preload": true,
-        "default" : "data/config.json",
-        "struct": {
-          "version": "int",
-          "channelNumber": "int"
-        }
-      },
       "dots": {
         "version": 1,
         "default" : "data/dots.json",
