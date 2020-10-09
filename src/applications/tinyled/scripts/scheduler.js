@@ -227,8 +227,8 @@ $bus.on(function (event, content, data) {
         let config = JSON.parse(content);
         $res.prefs.put(PREF_FIELD_UUID, config.uuid);
         $res.prefs.put(PREF_FIELD_INVERSE, !!config.inverse);
-        cloudUUID = $res.prefs.get(PREF_FIELD_UUID);
-        isInverse = $res.prefs.get(PREF_FIELD_INVERSE);
+        cloudUUID = $res.prefs.get(PREF_FIELD_UUID, '');
+        isInverse = $res.prefs.get(PREF_FIELD_INVERSE, false);
         $bus.emit('lucerna-state-config', JSON.stringify({
             'uuid': cloudUUID,
             'inverse': isInverse
