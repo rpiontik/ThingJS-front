@@ -83,7 +83,7 @@
       "ledc1": {
         "type": "SmartLED",
         "required": true,
-        "default": [],
+        "default": [5001,32,33,26,27,14,12,13,4],
         "description": {
           "ru": "Основной LEDC драйвер",
           "en": "Main LEDC driver"
