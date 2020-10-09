@@ -163,7 +163,7 @@ function restartExecution () {
 
 // Cloud synchronization
 function doCloudSync () {
-    if (cloudUUID.length > 0) {
+    if (cloudUUID && cloudUUID.length > 0) {
         $res.http.request({
             'url': CLOUD_URL,
             'params': {
