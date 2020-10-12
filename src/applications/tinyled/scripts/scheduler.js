@@ -161,6 +161,7 @@ function restartExecution () {
     execute(1);
 }
 
+
 // Cloud synchronization
 function doCloudSync () {
     if (cloudUUID && cloudUUID.length > 0) {
@@ -173,7 +174,7 @@ function doCloudSync () {
             }
         },
         function (response) {
-            if (response.data && response.data.s && response.data.s.length) {
+            if (response.data && (typeof response.data === 'object') && response.data.s && response.data.s.length) {
                 let dots = $storage.open('dots');
                 let dotIndex = 0;
                 for (
