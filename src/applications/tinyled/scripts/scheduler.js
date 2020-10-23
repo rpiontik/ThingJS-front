@@ -1,19 +1,5 @@
 print('MJS', 'Starting Lucerna script...');
 
-function printCurrTime() {
-    let currTime = $res.clock.parse();
-    print(
-        'sec=', currTime.sec,
-        ' min=', currTime.min,
-        ' hour=', currTime.hour,
-        ' mday=', currTime.mday,
-        ' mon=', currTime.mon,
-        ' year=', currTime.year,
-        ' wday=', currTime.wday,
-        ' yday=', currTime.yday
-    );
-}
-
 // Preferences fields
 let PREF_FIELD_UUID = 'uuid';
 let PREF_FIELD_INVERSE = 'inverse';
@@ -172,10 +158,8 @@ let execute = function (reset) {
 
 // Force restart execution
 function restartExecution () {
-    printCurrTime();
     execute(1);
 }
-
 
 // Cloud synchronization
 function doCloudSync () {
