@@ -41,7 +41,10 @@
     "subscriptions": [
       "$-storage-changed",
       "$-started",
-      "$-current-time"
+      "$-current-time",
+      "lucerna-set-uuid",
+      "$-script-restart",
+      "lucerna-get-uuid"
     ],
     "entry": "scheduler",
     "modules": {
@@ -67,6 +70,7 @@
           "interval": {
             "width": "double"
           },
+          "cloud": "int",
           "channelNumber": "int",
           "channels": {
             "0": {
@@ -218,6 +222,22 @@
         "description": {
           "ru": "Дополнительный LEDC драйвер",
           "en": "Extended LEDC driver"
+        }
+      },
+      "http": {
+        "type": "http",
+        "required": true
+      },
+      "prefs": {
+        "type": "preferences",
+        "required": true
+      },
+      "timer": {
+        "type": "timers",
+        "required": true,
+        "description": {
+          "ru": "Таймеры системы",
+          "en": "System timers"
         }
       }
     }

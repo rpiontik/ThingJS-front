@@ -133,6 +133,12 @@ module.exports = {
         return parseSubStruct(state.struct);
     },
 
+    // Skipping binary row
+    skipBinaryRow (state) {
+        state.offset += state.header_size;
+        return null;
+    },
+
     // Parsing object structure
     parseStructObject (data) {
         let state = {
@@ -154,9 +160,10 @@ module.exports = {
         while (state.offset < state.data.byteLength) {
             if (!this.parseBinaryInt8(state)) {
                 result.push(this.parseBinaryRow(state));
+            } else {
+                this.skipBinaryRow(state);
             }
         }
-
         return result;
     },
 

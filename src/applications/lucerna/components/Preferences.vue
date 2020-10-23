@@ -2,9 +2,29 @@
     <v-form ref="form" lazy-validation>
         <v-card style="width: 100%">
             <v-card-title primary-title>
-                <v-container style="padding: 0">
+                <v-switch
+                    v-model="cloud"
+                    label="Cloud"
+                ></v-switch>
+                <v-container v-if="cloud" style="padding: 0">
+                  <v-layout row>
+                    <h1>{{'PREFS_TITLE_CLOUD' | lang}}</h1>
+                  </v-layout>
+                  <v-layout :wrap="isMobileScreen">
+                    <v-flex xs12="isMobileScreen" class="col1">
+                      <v-text-field
+                          v-model="deviceId"
+                          class="col1 device-id"
+                          :label="'DEVICE_ID' | lang"
+                          type="text"
+                          maxlength="10"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+                <v-container v-else style="padding: 0">
                     <v-layout row>
-                        <h1>{{'PREFS_TITLE' | lang}}</h1>
+                        <h1>{{'PREFS_TITLE_STANDALONE' | lang}}</h1>
                     </v-layout>
                     <v-layout :wrap="isMobileScreen">
                         <v-flex :xs12="isMobileScreen" :xs6="!isMobileScreen" class="col1">
@@ -54,13 +74,15 @@
                 <v-btn @click="submit">{{'SUBMIT' | lang }}</v-btn>
                 <v-btn @click="reset" flat>{{'RESET' | lang }}</v-btn>
 
-                <v-btn @click="download" class="download-file" icon :title="'DOWNLOAD' | lang ">
+                <template v-if="!cloud">
+                  <v-btn @click="download" class="download-file" icon :title="'DOWNLOAD' | lang ">
                     <v-icon color="grey" large>archive</v-icon>
-                </v-btn>
-                <label class="upload-file" :title="'UPLOAD' | lang ">
+                  </v-btn>
+                  <label class="upload-file" :title="'UPLOAD' | lang ">
                     <v-icon color="grey" large>unarchive</v-icon>
                     <input type="file" @change="upload" accept=".json"/>
-                </label>
+                  </label>
+                </template>
             </v-card-actions>
         </v-card>
     </v-form>
@@ -69,11 +91,13 @@
 <script>
 
 import Utils from '../utils';
+import Template from '../../ante/components/settings/Template';
 
 let consts = window.$consts;
 
-const default_config = {
+const defaultConfig = {
     channelNumber: 0,
+    cloud: false,
     channels: [
         {color: '#000000', mw: 0}, {color: '#000000', mw: 0}, {color: '#000000', mw: 0},
         {color: '#000000', mw: 0}, {color: '#000000', mw: 0}, {color: '#000000', mw: 0},
@@ -89,6 +113,16 @@ const default_config = {
 
 export default {
     name: 'SettingsLucerna',
+    components: {Template},
+    mounted () {
+        this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, deviceId) => {
+            if (type === 'lucerna-state-uuid') {
+                this.deviceId = deviceId;
+            }
+        });
+        this.$bus.$on($consts.EVENTS.WS_STARTED, this.refreshDeviceID);
+        this.refreshDeviceID();
+    },
     computed: {
         daysNumber: {
             get () {
@@ -98,7 +132,6 @@ export default {
                 this.config.interval.width = (value < 1 ? 1 : (value < 365 ? value : 365)) * 86400;
             }
         },
-
         channelsNumber: {
             get () {
                 return this.config.channelNumber;
@@ -106,13 +139,35 @@ export default {
             set (value) {
                 this.config.channelNumber = (+value < 1 ? 1 : (+value > 16 ? 16 : +value));
             }
+        },
+        cloud: {
+            get () {
+                return this.config.cloud;
+            },
+            set (value) {
+                this.config.cloud = !!value;
+            }
+        },
+        config () {
+            if (!this.new_config) {
+                if (this.$store.state.Lucerna.data.config && this.$store.state.Lucerna.data.config.length) {
+                    this.new_config = this.copyConfig(this.$store.state.Lucerna.data.config[0], 'ui');
+                } else {
+                    this.new_config = defaultConfig;
+                }
+            }
+            return this.new_config;
         }
     },
     methods: {
+        refreshDeviceID () {
+            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'lucerna-get-uuid', null);
+        },
         copyConfig (source, to) {
             let result = {
                 channelNumber: source.channelNumber,
                 channels: [],
+                cloud: source.cloud,
                 interval: {
                     width: source.interval.width
                 }
@@ -166,6 +221,9 @@ export default {
             this.new_config = null;
         },
         submit () {
+            if (this.config.cloud) {
+                this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'lucerna-set-uuid', this.deviceId);
+            }
             this.$store.commit('Lucerna/data/applyData', {
                 name: 'config',
                 data: [this.copyConfig(this.config, 'hw')]
@@ -257,7 +315,11 @@ export default {
         }
     },
     data () {
-        let data = {};
+        let data = {
+            new_config: null,
+            deviceId: ''
+        };
+
         this.$bus.$on(consts.EVENTS.STORE_RELOADED, (action, content) => {
             switch (action) {
             case 'Lucerna/spectrum':
@@ -269,14 +331,8 @@ export default {
             }
         });
 
-        if (!this.$store.state.Lucerna.data.config) {
-            this.$store.dispatch('Lucerna/data/reload', 'config');
-            data.config = default_config;
-        }
         if (!this.$store.state.Lucerna.data.config || !this.$store.state.Lucerna.data.config.length) {
-            data.config = default_config;
-        } else {
-            data.config = this.copyConfig(this.$store.state.Lucerna.data.config[0], 'ui');
+            this.$store.dispatch('Lucerna/data/reload', 'config');
         }
 
         if (!this.$store.state.Lucerna.data.spectrum) {
@@ -292,7 +348,11 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="css" scoped>
+
+    .device-id /deep/ input{
+      text-transform: uppercase !important;
+    }
 
     .col1 {
         padding-right: 4px;
