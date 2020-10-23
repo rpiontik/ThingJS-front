@@ -4,6 +4,7 @@
       "width": 86400
     },
     "channelNumber": 6,
+    "cloud": 0,
     "channels": {
       "0": {
         "color": 16773595,

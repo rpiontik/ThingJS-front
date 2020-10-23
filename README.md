@@ -138,6 +138,9 @@ delivered when node is subscriber for this message.
 
 The descriptions of available interfaces in [repo](https://github.com/rpiontik/ThingJS-stdi/tree/beta) 
 
+# Thankful
+* [JetBrains](https://www.jetbrains.com/) for OpenSource license.
+
 # Licensing
 ThingsJS is released under
 [GNU GPL v.2](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
