@@ -3,12 +3,16 @@ print('MJS', 'Starting Lucerna script...');
 // Preferences fields
 let PREF_FIELD_UUID = 'uuid';
 let PREF_FIELD_INVERSE = 'inverse';
+let PREF_FIELD_FREQUENCY = 'frequency';
 
 // Cloud URL
 let CLOUD_URL = 'http://ds1.tinyled.ru/json.php?action=getschedule';
 
+let LEDC_DEFAULT_FREQUENCY = 400;
+
 let cloudUUID = $res.prefs.get(PREF_FIELD_UUID, null); // Tinyled cloud uuid
 let isInverse = $res.prefs.get(PREF_FIELD_INVERSE, 0); // Tinyled cloud uuid
+let ledcFrequency = $res.prefs.get(PREF_FIELD_FREQUENCY, LEDC_DEFAULT_FREQUENCY); // PWM frequency
 
 // Max level
 let MAX_LEVEL = 32767;
@@ -25,7 +29,8 @@ let timer = null;
 function hwInit () {
     // Init the driver
     $res.ledc1.reconfig({
-        'resolution': RESOLUTION
+        'resolution': RESOLUTION,
+        'frequency': ledcFrequency
     });
     for (let f = 0; f < $res.ledc1.channels.length; f++) {
         let channel = $res.ledc1.channels[f];
@@ -37,7 +42,7 @@ function hwInit () {
             });
             // Channel level by percent
             channel.level = 0;
-            channels.push(channel);
+            channels[f] = channel;
         }
     }
 }
@@ -104,8 +109,7 @@ function calcTransition (border, dot1, dot2) {
     for (let channel = 0; channel < channels.length; channel++) {
         result[channel] = abs(
             dot1.spectrum[channel] -
-            (dot1.spectrum[channel] - dot2.spectrum[channel]) *
-            koof
+            (dot1.spectrum[channel] - dot2.spectrum[channel]) * koof
         );
     }
 
@@ -227,18 +231,24 @@ $bus.on(function (event, content, data) {
         let config = JSON.parse(content);
         $res.prefs.put(PREF_FIELD_UUID, config.uuid);
         $res.prefs.put(PREF_FIELD_INVERSE, !!config.inverse);
+        $res.prefs.put(PREF_FIELD_FREQUENCY, config.frequency);
         cloudUUID = $res.prefs.get(PREF_FIELD_UUID, '');
         isInverse = $res.prefs.get(PREF_FIELD_INVERSE, false);
+        ledcFrequency = $res.prefs.get(PREF_FIELD_FREQUENCY, LEDC_DEFAULT_FREQUENCY);
         $bus.emit('lucerna-state-config', JSON.stringify({
             'uuid': cloudUUID,
-            'inverse': isInverse
+            'inverse': isInverse,
+            'resolution': RESOLUTION,
+            'frequency': ledcFrequency
         }));
         hwInit();
         restartExecution();
     } else if (event === 'lucerna-get-config') {
         $bus.emit('lucerna-state-config', JSON.stringify({
             'uuid': cloudUUID,
-            'inverse': isInverse
+            'inverse': isInverse,
+            'resolution': RESOLUTION,
+            'frequency': ledcFrequency
         }));
     }
 }, null);

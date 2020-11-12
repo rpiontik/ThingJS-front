@@ -21,6 +21,13 @@
                           :label="'INVERSE' | lang"
                           :disabled="notReceived"
                       ></v-switch>
+                      <v-slider
+                          v-model="frequency"
+                          thumb-label="always"
+                          :label="'FREQUENCY' | lang"
+                          :max="2440"
+                          :min="100"
+                      ></v-slider>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -46,6 +53,7 @@ export default {
                 this.deviceId = conf.uuid;
                 this.inverse = conf.inverse;
                 this.notReceived = false;
+                this.frequency = conf.frequency;
             }
         });
         this.$bus.$on($consts.EVENTS.WS_STARTED, this.refreshDeviceID);
@@ -59,7 +67,8 @@ export default {
         submit () {
             this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'lucerna-set-config', JSON.stringify({
                 uuid: this.deviceId,
-                inverse: this.inverse
+                inverse: this.inverse,
+                frequency: this.frequency
             }));
         }
     },
@@ -67,7 +76,8 @@ export default {
         let data = {
             notReceived: true,
             deviceId: '',
-            inverse: false
+            inverse: false,
+            frequency: 400
         };
 
         return data;
