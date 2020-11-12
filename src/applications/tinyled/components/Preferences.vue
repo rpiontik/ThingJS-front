@@ -27,6 +27,7 @@
                           :label="'FREQUENCY' | lang"
                           :max="2440"
                           :min="100"
+                          :disabled="notReceived"
                       ></v-slider>
                     </v-flex>
                   </v-layout>
