@@ -7,4 +7,5 @@ idf_component_register(
         EMBED_TXTFILES "dist/platform.gz"
         "dist/apps/ante/ante.smt"
 #        "dist/apps/lucerna/lucerna.smt"
+        "dist/apps/tinyled/tinyled.smt"
         )
