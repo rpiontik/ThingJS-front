@@ -1,0 +1,43 @@
+{
+  "name": "NodeRed",
+  "vendor": "rpiontik",
+  "version": 1,
+  "subversion": 0,
+  "patch": 0,
+  "description": {
+    "ru": "NodeRed демонстратор ",
+    "en": "NodeRed application example"
+  },
+  "components": {
+    "nodered-app": {
+      "source": "nodered.js",
+      "intent_filter": [
+        {
+          "action": "thingjs.intent.action.MAIN",
+          "category": "thingjs.intent.category.LAUNCH"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "entry": "nodered",
+    "subscriptions": [
+      "nodered-exec"
+    ],
+    "modules": {
+      "nodered": {
+        "hot_reload": true,
+        "source": "scripts/nodered.js",
+        "optimize": false
+      }
+    }
+  },
+  "requires": {
+    "interfaces": {
+      "timers": {
+        "type": "timers",
+        "required": true
+      }
+    }
+  }
+}
