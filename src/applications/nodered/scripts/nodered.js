@@ -4,5 +4,5 @@ let $$r = {
 
 let String = $res.string;
 
-print(">>>>>>>>>>>",String.replaceAll("1234",4, {}),"<<<<<<<<<<<<<<<<");
+print(">>>>>>>>>>>",String.replaceAll("1234",4, ""),"<<<<<<<<<<<<<<<<");
 
