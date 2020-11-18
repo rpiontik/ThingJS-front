@@ -37,6 +37,10 @@
       "timers": {
         "type": "timers",
         "required": true
+      },
+      "string": {
+        "type": "string",
+        "required": true
       }
     }
   }
