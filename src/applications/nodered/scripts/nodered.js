@@ -3,10 +3,19 @@ let $$r = {
 };
 
 let String = $res.string;
+function doit() {
+    print("!");
+    for (let i = 0; i < 100; i++) {
+        print(String.template('_test:{{i * 100}}:pest_'));
+    }
+}
 
-print(">>>>>>>>>>>",String.replaceAll("1234",4, ""),"<<<<<<<<<<<<<<<<");
-
-let items = String.split({}.a,"d");
+$bus.on(function() {
+    doit();
+    gc(true);
+});
+/*
 for(let i=0; i < items.length; i++) {
     print("Item[",i,"]=",items[i],";");
 }
+*/
