@@ -26,6 +26,12 @@ let channels = [];
 // The scheduler's timer
 let timer = null;
 
+// Relays states
+let relay1state = 0;
+let relay2state = 0;
+let relay3state = 0;
+let relay4state = 0;
+
 function hwInit () {
     // Init the driver
     $res.ledc1.reconfig({
@@ -45,6 +51,14 @@ function hwInit () {
             channels[f] = channel;
         }
     }
+    $res.relay1.direction($res.relay1.DIR_MODE_OUTPUT);
+    $res.relay1.set(relay1state);
+    $res.relay2.direction($res.relay2.DIR_MODE_OUTPUT);
+    $res.relay2.set(relay2state);
+    $res.relay3.direction($res.relay3.DIR_MODE_OUTPUT);
+    $res.relay3.set(relay3state);
+    $res.relay4.direction($res.relay4.DIR_MODE_OUTPUT);
+    $res.relay4.set(relay4state);
 }
 
 // Return current (actual) interval between two points
@@ -235,11 +249,20 @@ $bus.on(function (event, content, data) {
         cloudUUID = $res.prefs.get(PREF_FIELD_UUID, '');
         isInverse = $res.prefs.get(PREF_FIELD_INVERSE, false);
         ledcFrequency = $res.prefs.get(PREF_FIELD_FREQUENCY, LEDC_DEFAULT_FREQUENCY);
+        if (config.relay1) { relay1state = 1; } else { relay1state = 0; }
+        if (config.relay2) { relay2state = 1; } else { relay2state = 0; }
+        if (config.relay3) { relay3state = 1; } else { relay3state = 0; }
+        if (config.relay4) { relay4state = 1; } else { relay4state = 0; }
+
         $bus.emit('lucerna-state-config', JSON.stringify({
             'uuid': cloudUUID,
             'inverse': isInverse,
             'resolution': RESOLUTION,
-            'frequency': ledcFrequency
+            'frequency': ledcFrequency,
+            'relay1': relay1state,
+            'relay2': relay2state,
+            'relay3': relay3state,
+            'relay4': relay4state
         }));
         hwInit();
         restartExecution();
@@ -248,7 +271,11 @@ $bus.on(function (event, content, data) {
             'uuid': cloudUUID,
             'inverse': isInverse,
             'resolution': RESOLUTION,
-            'frequency': ledcFrequency
+            'frequency': ledcFrequency,
+            'relay1': relay1state,
+            'relay2': relay2state,
+            'relay3': relay3state,
+            'relay4': relay4state
         }));
     }
 }, null);
