@@ -3,21 +3,22 @@ let $$r = {
 };
 
 let String = $res.string;
-function doit() {
-    for (let i = 0; i < 10; i++) {
-        print(String.template('_test:{{i * 100}}:pest_'));
-    }
+function doit () {
+    let context = {
+        'header': 'Colors',
+        'items': [
+            {'name': 'red', 'first': true, 'url': '#Red'},
+            {'name': 'green', 'link': true, 'url': '#Green'},
+            {'name': 'blue', 'link': true, 'url': '#Blue'}
+        ],
+        'empty': false
+    };
+    print(String.mustache('<h1>{{header}}</h1>{{#bug}}{{! ПРОБНЫЙ КОММЕНТАРИЙ }}{{/bug}}{{#items}}{{#first}}<li><strong>{{name}}</strong></li>{{/first}}{{#link}}<li><a href="{{url}}">{{name}}</a></li>{{/link}}{{/items}}{{#empty}}<p>The list is empty.</p>{{/empty}}', context));
 }
 
-$bus.on(function() {
+$bus.on(function () {
     doit();
     gc(true);
 });
-print(">>>>>>>>");
-let test = {"a":1, "b":2};
-for(let key in test) {
-    print(test[key],":");
-}
-print("<<<<<<<<");
-this.a = 10;
-String.template('_----:{{a}}:----_');
+
+doit();
