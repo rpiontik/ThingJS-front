@@ -4,8 +4,7 @@ let $$r = {
 
 let String = $res.string;
 function doit() {
-    print("!");
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 10; i++) {
         print(String.template('_test:{{i * 100}}:pest_'));
     }
 }
@@ -14,8 +13,11 @@ $bus.on(function() {
     doit();
     gc(true);
 });
-/*
-for(let i=0; i < items.length; i++) {
-    print("Item[",i,"]=",items[i],";");
+print(">>>>>>>>");
+let test = {"a":1, "b":2};
+for(let key in test) {
+    print(test[key],":");
 }
-*/
+print("<<<<<<<<");
+this.a = 10;
+String.template('_----:{{a}}:----_');

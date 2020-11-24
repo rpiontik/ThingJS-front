@@ -74,10 +74,11 @@
                     app : this.appname
                 });
 
-                if(mode == consts.WS_ACTIONS.STEP_RUN)
-                    setTimeout(() => this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
-                        action : consts.WS_ACTIONS.GET_STATE
-                    }), 100);
+                //if(mode == consts.WS_ACTIONS.STEP_RUN)
+                setTimeout(() => this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
+                    action : consts.WS_ACTIONS.GET_STATE,
+                    app : this.appname
+                }), 100);
             },
             doStepRun(){
                 this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
@@ -86,7 +87,8 @@
                 });
 
                 setTimeout(() => this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
-                    action : consts.WS_ACTIONS.GET_STATE
+                    action : consts.WS_ACTIONS.GET_STATE,
+                    app : this.appname
                 }), 100);
             },
             doStepInto() {

@@ -17,6 +17,7 @@ export default {
         DEBUGGER_DETECTED : 'dbgr-debugger',
         DEBUGGER_WAITING : 'dbgr-waiting',
         DEBUGGER_EXECUTING : 'dbgr-executing',
+        DEBUGGER_UNKNOWN : 'dbgr-unknown',
         DEBUGGER_ON_ERROR : 'dbgr-error',
         MANIFEST_CHANGED : 'dbgr-manifest-changed',
         DEBUGGER_EXPR_RES : 'dbgr-expr-res',

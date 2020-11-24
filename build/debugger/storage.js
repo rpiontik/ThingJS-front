@@ -58,6 +58,13 @@ export default {
             state.exec_state = Object.assign({}, state.exec_state);
         },
 
+        //Clear state of execution
+        clearState(state, data){
+            for(let index in data)
+                delete state.exec_state[data[index]];
+            state.exec_state = Object.assign({}, state.exec_state);
+        },
+
         //Append text to console log
         appendToConsoleLog(state, item) {
             state.consolelog.push(item);
@@ -181,6 +188,10 @@ export default {
                 context.commit('updateState', {
                     [message.app] : {}
                 });
+            });
+
+            this.$bus.$on(consts.DEBUGGER_EVENT.DEBUGGER_UNKNOWN, (message) => {
+                context.commit('clearState', [message.app]);
             });
 
             this.$bus.$on(consts.DEBUGGER_EVENT.MANIFEST_CHANGED, () => {
