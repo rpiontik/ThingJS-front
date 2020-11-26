@@ -9,7 +9,25 @@
     "en": "The application for lighting control of marine and freshwater aquariums TinyLED"
   },
   "components": {
+    "fenist-app": {
+      "source": "prefs.js",
+      "intent_filter": [
+        {
+          "action": "thingjs.intent.action.MAIN",
+          "category": "thingjs.intent.category.LAUNCH"
+        }
+      ]
+    },
     "tinyled-preferences": {
+      "source": "prefs.js",
+      "intent_filter": [
+        {
+          "action": "thingjs.intent.action.MAIN",
+          "category": "thingjs.intent.category.PREFERENCE"
+        }
+      ]
+    },
+    "fenist-preferences": {
       "source": "prefs.js",
       "intent_filter": [
         {
@@ -25,6 +43,10 @@
       "$-current-time",
       "lucerna-set-config",
       "lucerna-get-config",
+      "fenist-set-hw-config",
+      "fenist-get-config",
+      "relay-on",
+      "relay-off",
       "$-script-restart"
     ],
     "entry": "scheduler",

@@ -1,4 +1,4 @@
-print('MJS', 'Starting Lucerna script...');
+print('MJS', ' Starting Lucerna script... ');
 
 // Preferences fields
 let PREF_FIELD_UUID = 'uuid';
@@ -31,6 +31,48 @@ let relay1state = 0;
 let relay2state = 0;
 let relay3state = 0;
 let relay4state = 0;
+
+let sensors = [];
+// Looking for ds18b20 sensors
+$res.DS18B20.search(function (addr) {
+    sensors.push(addr);
+});
+
+let refresh = function () {
+    if (sensors.length > 0) {
+        let temperature = {
+            Max: 0,
+            Min: 200,
+            Avg: 0,
+            Count: 0
+        };
+        for (let i = 0; i < sensors.length; i++) {
+            let t = $res.DS18B20.get_temp_c(sensors[i]);
+            if ((t < 125) && (t > -40)) {
+                if (t > temperature.Max) {
+                    temperature.Max = t;
+                }
+                if (t < temperature.Min) {
+                    temperature.Min = t;
+                }
+                temperature.Avg += t;
+                temperature.Count++;
+            }
+        }
+        temperature.Avg /= temperature.Count;
+        $bus.emit('ds18x20-temp', JSON.stringify(temperature));
+        $res.DS18B20.convert_all();
+    } else {
+        $bus.emit('ds18x20-temp', JSON.stringify('Sensor not detected'));
+    }
+};
+
+if (sensors.length > 0) {
+    refresh();
+    $res.timers.setInterval(refresh, 2000);
+} else {
+    print('OW: DS18X20 sensor not detected');
+}
 
 function hwInit () {
     // Init the driver
@@ -105,8 +147,8 @@ function abs (r) {
 
 // Calculation transition levels
 function calcTransition (border, dot1, dot2) {
-    let leftShoulder = 0;
-    let width = 0;
+    let leftShoulder;
+    let width;
 
     if (dot1.time < dot2.time) {
         leftShoulder = border - dot1.time;
@@ -142,7 +184,7 @@ let execute = function (reset) {
     if (interval) {
         let transition = calcTransition(interval.time, interval.start, interval.stop);
 
-        let exposition = 0;
+        let exposition;
         if (interval.stop.time < interval.time) {
             exposition = DAY_WIDTH - interval.time + interval.stop.time;
         } else {
@@ -237,52 +279,67 @@ function doCloudSync () {
 // Do sync every 10sec
 $res.timers.setInterval(doCloudSync, 6000);
 
+let sendFenistState = function () {
+    $bus.emit('fenist-state-config', JSON.stringify({
+        'inverse': isInverse,
+        'resolution': RESOLUTION,
+        'frequency': ledcFrequency,
+        'relay1': relay1state,
+        'relay2': relay2state,
+        'relay3': relay3state,
+        'relay4': relay4state
+    }));
+};
+
 // Event listener
 $bus.on(function (event, content, data) {
     if (event === '$-current-time') {
         restartExecution();
+    } else if (event === 'relay-on') {
+        let rel = JSON.parse(content);
+        if (rel.num === 1) { $res.relay1.set(1); relay1state = 1; }
+        if (rel.num === 2) { $res.relay2.set(1); relay2state = 1; }
+        if (rel.num === 3) { $res.relay3.set(1); relay3state = 1; }
+        if (rel.num === 4) { $res.relay4.set(1); relay4state = 1; }
+        sendFenistState();
+    } else if (event === 'relay-off') {
+        let rel = JSON.parse(content);
+        if (rel.num === 1) { $res.relay1.set(0); relay1state = 0; }
+        if (rel.num === 2) { $res.relay2.set(0); relay2state = 0; }
+        if (rel.num === 3) { $res.relay3.set(0); relay3state = 0; }
+        if (rel.num === 4) { $res.relay4.set(0); relay4state = 0; }
+        sendFenistState();
     } else if (event === 'lucerna-set-config') {
         let config = JSON.parse(content);
         $res.prefs.put(PREF_FIELD_UUID, config.uuid);
-        $res.prefs.put(PREF_FIELD_INVERSE, !!config.inverse);
-        $res.prefs.put(PREF_FIELD_FREQUENCY, config.frequency);
         cloudUUID = $res.prefs.get(PREF_FIELD_UUID, '');
-        isInverse = $res.prefs.get(PREF_FIELD_INVERSE, false);
-        ledcFrequency = $res.prefs.get(PREF_FIELD_FREQUENCY, LEDC_DEFAULT_FREQUENCY);
-        if (config.relay1) { relay1state = 1; } else { relay1state = 0; }
-        if (config.relay2) { relay2state = 1; } else { relay2state = 0; }
-        if (config.relay3) { relay3state = 1; } else { relay3state = 0; }
-        if (config.relay4) { relay4state = 1; } else { relay4state = 0; }
 
         $bus.emit('lucerna-state-config', JSON.stringify({
-            'uuid': cloudUUID,
-            'inverse': isInverse,
-            'resolution': RESOLUTION,
-            'frequency': ledcFrequency,
-            'relay1': relay1state,
-            'relay2': relay2state,
-            'relay3': relay3state,
-            'relay4': relay4state
+            'uuid': cloudUUID
         }));
+        hwInit();
+        restartExecution();
+    } else if (event === 'fenist-set-hw-config') {
+        let config = JSON.parse(content);
+        $res.prefs.put(PREF_FIELD_INVERSE, !!config.inverse);
+        $res.prefs.put(PREF_FIELD_FREQUENCY, config.frequency);
+        isInverse = $res.prefs.get(PREF_FIELD_INVERSE, false);
+        ledcFrequency = $res.prefs.get(PREF_FIELD_FREQUENCY, LEDC_DEFAULT_FREQUENCY);
+        sendFenistState();
         hwInit();
         restartExecution();
     } else if (event === 'lucerna-get-config') {
         $bus.emit('lucerna-state-config', JSON.stringify({
-            'uuid': cloudUUID,
-            'inverse': isInverse,
-            'resolution': RESOLUTION,
-            'frequency': ledcFrequency,
-            'relay1': relay1state,
-            'relay2': relay2state,
-            'relay3': relay3state,
-            'relay4': relay4state
+            'uuid': cloudUUID
         }));
+    } else if (event === 'fenist-get-config') {
+        sendFenistState();
     }
 }, null);
 
 // Initialization
-print('MJS', 'HW init');
+print('MJS', ' HW init');
 hwInit();
 
-print('MJS', 'Restart execution');
+print('MJS', ' Restart execution');
 restartExecution();

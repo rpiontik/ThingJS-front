@@ -16,41 +16,6 @@
                           maxlength="10"
                           :disabled="notReceived"
                       ></v-text-field>
-                      <v-switch
-                          v-model="inverse"
-                          :label="'INVERSE' | lang"
-                          :disabled="notReceived"
-                      ></v-switch>
-                      <v-slider
-                          v-model="frequency"
-                          thumb-label="always"
-                          :label="'FREQUENCY' | lang"
-                          :max="2440"
-                          :min="100"
-                          :disabled="notReceived"
-                      ></v-slider>
-                    </v-flex>
-                    <v-flex xs12="isMobileScreen" class="row1">
-                      <v-switch
-                          v-model="rel1"
-                          :label="'RELAY' | lang"
-                          :disabled="notReceived"
-                      ></v-switch>
-                      <v-switch
-                          v-model="rel2"
-                          :label="'RELAY' | lang"
-                          :disabled="notReceived"
-                      ></v-switch>
-                      <v-switch
-                          v-model="rel3"
-                          :label="'RELAY' | lang"
-                          :disabled="notReceived"
-                      ></v-switch>
-                      <v-switch
-                          v-model="rel4"
-                          :label="'RELAY' | lang"
-                          :disabled="notReceived"
-                      ></v-switch>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -74,16 +39,7 @@ export default {
             if (type === 'lucerna-state-config') {
                 let conf = JSON.parse(config);
                 this.deviceId = conf.uuid;
-                this.inverse = conf.inverse;
                 this.notReceived = false;
-                this.frequency = conf.frequency;
-                //debugger;
-                console.info(this.rel1);
-                this.rel1 = conf.relay1;
-                console.info(this.rel1);
-                this.rel2 = conf.relay2;
-                this.rel3 = conf.relay3;
-                this.rel4 = conf.relay4;
             }
         });
         this.$bus.$on($consts.EVENTS.WS_STARTED, this.refreshDeviceID);
@@ -93,29 +49,16 @@ export default {
         refreshDeviceID () {
             this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'lucerna-get-config', null);
         },
-
         submit () {
             this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'lucerna-set-config', JSON.stringify({
-                uuid: this.deviceId,
-                inverse: this.inverse,
-                frequency: this.frequency,
-                relay1: this.rel1,
-                relay2: this.rel2,
-                relay3: this.rel3,
-                relay4: this.rel4
+                uuid: this.deviceId
             }));
         }
     },
     data () {
         let data = {
             notReceived: true,
-            deviceId: '',
-            inverse: false,
-            frequency: 400,
-            rel1: false,
-            rel2: false,
-            rel3: false,
-            rel4: false
+            deviceId: ''
         };
 
         return data;
