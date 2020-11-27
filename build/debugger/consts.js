@@ -22,6 +22,7 @@ export default {
         MANIFEST_CHANGED : 'dbgr-manifest-changed',
         DEBUGGER_EXPR_RES : 'dbgr-expr-res',
         DEBUGGER_LASTERROR : 'dbgr-lasterror',
+        DEBUGGER_OBJECT_PATCHED: 'dbgr-object-patched'
     },
     WS_ACTIONS : {
         TAKEN : '$taken',

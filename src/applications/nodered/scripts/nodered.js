@@ -1,24 +1,116 @@
-let $$r = {
-    'timer': $res.timers
+let $r = {
+    'timer': $res.timers,
+    'str': $res.string
 };
 
-let String = $res.string;
-function doit () {
-    let context = {
-        'header': 'Colors',
-        'items': [
-            {'name': 'red', 'first': true, 'url': '#Red'},
-            {'name': 'green', 'link': true, 'url': '#Green'},
-            {'name': 'blue', 'link': true, 'url': '#Blue'}
-        ],
-        'empty': false
-    };
-    print(String.mustache('<h1>{{header}}</h1>{{#bug}}{{! ПРОБНЫЙ КОММЕНТАРИЙ }}{{/bug}}{{#items}}{{#first}}<li><strong>{{name}}</strong></li>{{/first}}{{#link}}<li><a href="{{url}}">{{name}}</a></li>{{/link}}{{/items}}{{#empty}}<p>The list is empty.</p>{{/empty}}', context));
+let $me;
+let $g = {}, $_mid = 0;
+
+function $$nop() {
 }
 
-$bus.on(function () {
-    doit();
-    gc(true);
-});
+function $$fnd(v) {
+    return typeof v !== "undefined"
+}
 
-doit();
+function $$cpy(s) {
+    return JSON.parse(JSON.stringify(s))
+}
+
+function $$mid() {
+    return JSON.stringify(++$_mid)
+}
+
+let $$nd = {
+    "rev": "9c60be21677362ee55f49bd081a84cf2", "2": function ($i, $c) {
+        ({
+            "$c": $c, "$n": $$nop, "$e": function ($i) {
+                print($i);
+            }
+        }).$e($i);
+    }, "1": function ($i, $c) {
+        ({
+            "$c": $c, "$n": function ($i) {
+                $$fnd($i[0]) && $$nd["3"]($$cpy($i[0]), this.$c);
+            }, "$e": function ($i) {
+                $i["payload"] = ["test1", "test2", "test3", "test4", "test4"];
+                this.$n([$i]);
+            }
+        }).$e($i);
+    }, "3": function ($i, $c) {
+        ({
+            "$c": $c, "$n": function ($i) {
+                $$fnd($i[0]) && $$nd["2"]($$cpy($i[0]), this.$c);
+            }, "$e": function ($i) {
+                this.mki = function ($i, pl, t, k, i, c) {
+                    $i.payload = pl;
+                    $i.parts = {"id": this.mid, "type": t};
+                    if (t === "string") {
+                        $i.parts.index = $g["_spt_4c424b17.dc4d04"]++
+                    } else {
+                        $i.parts.index = i;
+                        $i.parts.key = k;
+                        $i.parts.count = c
+                    }
+                    return $i
+                };
+                let tp = typeof $i.payload;
+                this.mid = $$mid();
+                if (tp === "string") {
+                    let ch = "|", ims = $r.str.split($i.payload, ch), ln = ims.length;
+                    for (let f = 0; f < ln; f++) {
+                        $i = this.mki($i, ims[f], "string", f, f, ln);
+                        $i.parts.ch = ch;
+                        this.$n([$i])
+                    }
+                } else if ((tp === "array") || ($i.payload["length"])) {
+                    tp = "array";
+                    let pl = $$cpy($i.payload), seg = [], ind = 0,
+                        cnt = JSON.parse($r.str.split(pl.length / 2 + 0.5, ".")[0]);
+                    for (let k in pl) {
+                        seg.push(pl[k]);
+                        if (seg.length >= 2) {
+                            $i = this.mki($i, seg, tp, undefined, ind++, cnt);
+                            $i.parts.len = 2;
+                            this.$n([$i]);
+                            seg = [];
+                        }
+                    }
+                    if (seg.length > 0) {
+                        $i = this.mki($i, seg, tp, undefined, ind, cnt);
+                        $i.parts.len = 2;
+                        this.$n([$i]);
+                    }
+                } else if (tp === "object") {
+                    let ln = 0, i = 0, pl = $$cpy($i.payload);
+                    for (let k in pl) ln++;
+                    for (let k in pl) {
+                        $i = this.mki($i, pl[k], tp, k, i++, ln);
+                        $i["key"] = k;
+                        this.$n([$i])
+                    }
+                }
+            }
+        }).$e($i);
+    }
+};
+(function () {
+    let $c = {};
+    ({
+        "$c": $c, "$n": function ($i) {
+            $$fnd($i[0]) && $$nd["1"]($$cpy($i[0]), this.$c);
+        }, "$e": function ($i) {
+            this.inject = function () {
+                this.$n([{"test": "pest2", "topic": "123"}]);
+            };
+            print("Original:", JSON.stringify(this));
+            $me = this;
+            $r.timer.setTimeout(function (scope) {
+                debugger;
+                print(JSON.stringify(scope));
+                scope.inject();
+            }, 100, me);
+        }
+    }).$e({})
+})();
+$g["_spt_4c424b17.dc4d04"] = 0;

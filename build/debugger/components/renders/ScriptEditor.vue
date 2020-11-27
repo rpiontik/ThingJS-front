@@ -39,6 +39,7 @@
     import consts from '../../consts';
     import MonacoEditor from 'vue-monaco'
     import utils from '../../utils'
+    let crc32 =  require('../../../crc32');
 
     export default {
         name: 'ScriptEditor',
@@ -51,6 +52,19 @@
         mounted() {
             window.addEventListener('resize', this.onResize);
             this.reloadSource();
+            this.$bus.$on(consts.EVENTS.WS_RECOVERED, () => {
+              this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
+                action : consts.WS_ACTIONS.GET_STATE,
+                app : this.appname
+              });
+            });
+            this.$bus.$on(consts.DEBUGGER_EVENT.DEBUGGER_OBJECT_PATCHED, (message) => {
+              let crc = crc32.calcByBinary(new TextEncoder("utf-8").encode(`${this.appname}/${this.source}.mjs`));
+              if((crc == message.crc32)) {
+                this.reloadSource(undefined, true);
+                this.getState();
+              }
+            });
         },
         watch : {
             uri(){
@@ -68,6 +82,12 @@
             window.removeEventListener('resize', this.onResize);
         },
         methods : {
+            getState() {
+              this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
+                action : consts.WS_ACTIONS.GET_STATE,
+                app : this.appname
+              });
+            },
             doStep(mode) {
                 this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
                     action : mode,
@@ -75,10 +95,7 @@
                 });
 
                 //if(mode == consts.WS_ACTIONS.STEP_RUN)
-                setTimeout(() => this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
-                    action : consts.WS_ACTIONS.GET_STATE,
-                    app : this.appname
-                }), 100);
+                setTimeout(() => this.getState(), 100);
             },
             doStepRun(){
                 this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
@@ -86,10 +103,7 @@
                     app : this.appname
                 });
 
-                setTimeout(() => this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
-                    action : consts.WS_ACTIONS.GET_STATE,
-                    app : this.appname
-                }), 100);
+                setTimeout(() => this.getState(), 100);
             },
             doStepInto() {
                 this.$bus.$emit(consts.EVENTS.WS_MESSAGE_TO, {
@@ -144,8 +158,8 @@
                 }
                 this.decorations = this.getEditor().deltaDecorations(this.decorations, new_decorations);
             },
-            reloadSource(host){
-                if(this.oldSourceUrl == this.sourceUrl) {
+            reloadSource(host, force){
+                if(!force && (this.oldSourceUrl == this.sourceUrl)) {
                     this.refreshEditorState();
                 } else  if(this.sourceUrl) {
                     let url = host || this.sourceUrl;
