@@ -185,9 +185,7 @@ export default {
             });
 
             this.$bus.$on(consts.DEBUGGER_EVENT.DEBUGGER_EXECUTING, (message) => {
-                context.commit('updateState', {
-                    [message.app] : {}
-                });
+                context.commit('clearState', [message.app]);
             });
 
             this.$bus.$on(consts.DEBUGGER_EVENT.DEBUGGER_UNKNOWN, (message) => {

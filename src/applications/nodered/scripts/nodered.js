@@ -2,8 +2,8 @@ let $r = {
     'timer': $res.timers,
     'str': $res.string
 };
+let $g = {}, $_mid = 0;
 
-let $me;
 let $g = {}, $_mid = 0;
 
 function $$nop() {
@@ -22,10 +22,10 @@ function $$mid() {
 }
 
 let $$nd = {
-    "rev": "9c60be21677362ee55f49bd081a84cf2", "2": function ($i, $c) {
+    "rev": "0d2abdbe8261ad4b1aaa28d70cd5b307", "2": function ($i, $c) {
         ({
             "$c": $c, "$n": $$nop, "$e": function ($i) {
-                print($i);
+                print(JSON.stringify($i));
             }
         }).$e($i);
     }, "1": function ($i, $c) {
@@ -103,13 +103,9 @@ let $$nd = {
             this.inject = function () {
                 this.$n([{"test": "pest2", "topic": "123"}]);
             };
-            print("Original:", JSON.stringify(this));
-            $me = this;
             $r.timer.setTimeout(function (scope) {
-                debugger;
-                print(JSON.stringify(scope));
                 scope.inject();
-            }, 100, me);
+            }, 100, this);
         }
     }).$e({})
 })();
