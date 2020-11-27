@@ -16,50 +16,62 @@
       </v-flex>
     </v-card>
     <v-card class="fenist-panel">
-      <v-card-title primary-title>
-        <h4>{{ 'TITLE_FENIST_SENSORS'|lang }}</h4>
-      </v-card-title>
-      <v-flex>
-        <v-chip label outline color="blue" class="ma-2">Count: {{ temperature.cnt }}</v-chip>
-        <v-chip label outline color="green" class="ma-2">Min: {{ temperature.min.toFixed(1) + '&#8451' }}</v-chip>
-        <v-chip label outline color="black" class="ma-2">Average: {{ temperature.avg.toFixed(1) + '&#8451' }}</v-chip>
-        <v-chip label outline color="red" class="ma-2">Max: {{ temperature.max.toFixed(1) + '&#8451' }}</v-chip>
-      </v-flex>
+        <v-subheader class="pl-3">{{ 'TITLE_FENIST_SENSORS'|lang }}</v-subheader>
+        <v-chip label outline color="blue" class="ml-2 mb-2">{{ 'QTY'|lang }} {{ temperature.cnt }}</v-chip>
+        <v-chip label outline color="green" class="mb-2">{{ 'MIN'|lang }} {{ temperature.min.toFixed(1) + '&#8451' }}</v-chip>
+        <v-chip label outline color="black" class="mb-2">{{ 'AVG'|lang }} {{ temperature.avg.toFixed(1) + '&#8451' }}</v-chip>
+        <v-chip label outline color="red" class="mb-2">{{ 'MAX'|lang }} {{ temperature.max.toFixed(1) + '&#8451' }}</v-chip>
     </v-card>
     <v-card class="fenist-panel">
-      <v-card-title primary-title>
-        <h4>{{ 'TITLE_FENIST_RELAYS'|lang }}</h4>
-      </v-card-title>
-      <v-flex>
-        <v-switch
-            v-model="relay1"
-            :disabled="notReceivedHw"
-            :label="'RELAY1' | lang"
-            class="ml-4"
-            @change="changeRelayOnline(1)"
-        ></v-switch>
-        <v-switch
+      <v-flex row wrap>
+        <v-subheader class="pl-3">{{ 'TITLE_FENIST_RELAYS'|lang }}</v-subheader>
+        <v-flex wrap row>
+          <v-switch
+              v-model="relay1"
+              :disabled="notReceivedHw"
+              :label="'RELAY1' | lang"
+              class="ml-4"
+              @change="changeRelayOnline(1)"
+          ></v-switch>
+        </v-flex>
+        <v-flex wrap row>
+          <v-switch
             v-model="relay2"
             :label="'RELAY2' | lang"
             :disabled="notReceivedHw"
             class="ml-4"
             @change="changeRelayOnline(2)"
-        ></v-switch>
-        <v-switch
+          ></v-switch>
+        </v-flex>
+        <v-flex wrap row>
+          <v-switch
             v-model="relay3"
             :label="'RELAY3' | lang"
             :disabled="notReceivedHw"
             class="ml-4"
             @change="changeRelayOnline(3)"
-        ></v-switch>
-        <v-switch
+          ></v-switch>
+        </v-flex>
+        <v-flex wrap row>
+          <v-switch
             v-model="relay4"
             :label="'RELAY4' | lang"
             :disabled="notReceivedHw"
             class="ml-4"
             @change="changeRelayOnline(4)"
-        ></v-switch>
+          ></v-switch>
+        </v-flex>
       </v-flex>
+    </v-card>
+    <v-card  class="fenist-panel">
+      <v-subheader class="pl-3">Fan level</v-subheader>
+      <v-slider
+          v-model="fanLevel"
+          class="pl-4 pr-4 mt-4"
+          max=255
+          thumb-label="always"
+          @change="fanLevelChange"
+      ></v-slider>
     </v-card>
   </div>
 </template>
@@ -117,6 +129,9 @@ export default {
             else if (relay === 4) state = this.relay4;
             if (state) this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'relay-on', JSON.stringify({ num: relay }));
             else this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'relay-off', JSON.stringify({ num: relay }));
+        },
+        fanLevelChange () {
+            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'fan-level', JSON.stringify({ level: this.fanLevel }));
         }
     },
     data () {
@@ -135,7 +150,8 @@ export default {
             relay1: false,
             relay2: false,
             relay3: false,
-            relay4: false
+            relay4: false,
+            fanLevel: 0
         };
         return data;
     }

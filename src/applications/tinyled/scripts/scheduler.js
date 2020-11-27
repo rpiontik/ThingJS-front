@@ -309,6 +309,9 @@ $bus.on(function (event, content, data) {
         if (rel.num === 3) { $res.relay3.set(0); relay3state = 0; }
         if (rel.num === 4) { $res.relay4.set(0); relay4state = 0; }
         sendFenistState();
+    } else if (event === 'fan-level') {
+        let fan = JSON.parse(content);
+        $res.DAC.set(fan.level);
     } else if (event === 'lucerna-set-config') {
         let config = JSON.parse(content);
         $res.prefs.put(PREF_FIELD_UUID, config.uuid);

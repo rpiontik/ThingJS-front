@@ -1,6 +1,6 @@
 export default {
     en: {
-        TITLE_FENIST_CLOUD: 'FENIST LED CONTROLLER',
+        TITLE_FENIST_CLOUD: 'FENIST V4I2 LED CONTROLLER',
         TITLE_FENIST_SENSORS: 'SENSORS DATA',
         TITLE_TINYLED_CLOUD: 'Cloud Chart Management on Tinyled.ru',
         TITLE_FENIST_RELAYS: 'Relays control',
@@ -14,10 +14,14 @@ export default {
         RELAY3: 'Relay 3',
         RELAY4: 'Relay 4',
         SERIAL_NUMBER: 'Serial Number',
-        TEMPERATURE: 'Temperature'
+        TEMPERATURE: 'Temperature',
+        QTY: 'Quantity',
+        MIN: 'Minimum',
+        MAX: 'Maximum',
+        AVG: 'Average'
     },
     ru: {
-        TITLE_FENIST_CLOUD: 'FENIST LED КОНТРОЛЛЕР',
+        TITLE_FENIST_CLOUD: 'FENIST V4I2 LED КОНТРОЛЛЕР',
         TITLE_FENIST_SENSORS: 'ДАННЫЕ ДАТЧИКОВ',
         TITLE_TINYLED_CLOUD: 'Управление графиком в облаке Tinyled.ru',
         TITLE_FENIST_RELAYS: 'Управление реле',
@@ -31,6 +35,10 @@ export default {
         RELAY3: 'Реле 3',
         RELAY4: 'Реле 4',
         SERIAL_NUMBER: 'Серийный номер',
-        TEMPERATURE: 'Температура'
+        TEMPERATURE: 'Температура',
+        QTY: 'Количество',
+        MIN: 'Минимум',
+        MAX: 'Максимум',
+        AVG: 'Среднее'
     }
 };

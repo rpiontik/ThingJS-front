@@ -47,6 +47,7 @@
       "fenist-get-config",
       "relay-on",
       "relay-off",
+      "fan-level",
       "$-script-restart"
     ],
     "entry": "scheduler",
@@ -154,6 +155,15 @@
         "description": {
           "ru": "Датчики температуры DS18B20",
           "en": "Temperature sensor DS18B20"
+        }
+      },
+      "DAC": {
+        "type": "dac",
+        "required": true,
+        "default": 25,
+        "description": {
+          "ru": "Цифро-аналоговый преобразователь",
+          "en": "Digital-analog converter"
         }
       },
       "http": {
