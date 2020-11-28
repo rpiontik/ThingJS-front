@@ -65,6 +65,7 @@
     </v-card>
     <v-card  class="fenist-panel">
       <v-subheader class="pl-3">Fan level</v-subheader>
+      <v-chip label outline color="blue" class="ml-2 mb-4">{{ 'FAN_VOLT'|lang }} {{ fanVoltage.toFixed(2) }}V</v-chip>
       <v-slider
           v-model="fanLevel"
           class="pl-4 pr-4 mt-4"
@@ -110,6 +111,12 @@ export default {
                 this.temperature.cnt = data.Count;
             }
         });
+        this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, data_) => {
+            if (type === 'fenist-fan-sens') {
+                let data = JSON.parse(data_);
+                this.fanVoltage = data.fanV * 0.0047;
+            }
+        });
         this.$bus.$on($consts.EVENTS.WS_STARTED, this.refreshConfigs);
         this.refreshConfigs();
     },
@@ -151,7 +158,8 @@ export default {
             relay2: false,
             relay3: false,
             relay4: false,
-            fanLevel: 0
+            fanLevel: 0,
+            fanVoltage: 0
         };
         return data;
     }

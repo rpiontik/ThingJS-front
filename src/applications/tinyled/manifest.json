@@ -166,6 +166,16 @@
           "en": "Digital-analog converter"
         }
       },
+      "ADC": {
+        "type": "adc",
+        "required": true,
+        "default": [39, 3, 3],
+        "description": {
+          "ru": "Аналогово-цифровой преобразователь",
+          "en": "Analog-digital converter"
+        }
+      },
+
       "http": {
         "type": "http",
         "required": true

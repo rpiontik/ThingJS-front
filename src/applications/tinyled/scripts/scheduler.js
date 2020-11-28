@@ -26,6 +26,9 @@ let channels = [];
 // The scheduler's timer
 let timer = null;
 
+// Fan params
+let fanVoltage = 0;
+
 // Relays states
 let relay1state = 0;
 let relay2state = 0;
@@ -73,6 +76,15 @@ if (sensors.length > 0) {
 } else {
     print('OW: DS18X20 sensor not detected');
 }
+
+let fanControl = function () {
+    fanVoltage = $res.ADC.getRaw();
+    $bus.emit('fenist-fan-sens', JSON.stringify({
+        'fanV': fanVoltage
+    }));
+};
+
+$res.timers.setInterval(fanControl, 1000);
 
 function hwInit () {
     // Init the driver
