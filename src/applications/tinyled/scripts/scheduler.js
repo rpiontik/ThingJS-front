@@ -28,6 +28,7 @@ let timer = null;
 
 // Fan params
 let fanVoltage = 0;
+let fanTah = 0;
 
 // Relays states
 let relay1state = 0;
@@ -78,13 +79,17 @@ if (sensors.length > 0) {
 }
 
 let fanControl = function () {
+    let pCnt = $res.PCNT.getCount();
+    $res.PCNT.resetCounter();
+    fanTah = pCnt * 20;
     fanVoltage = $res.ADC.getRaw();
     $bus.emit('fenist-fan-sens', JSON.stringify({
-        'fanV': fanVoltage
+        'fanV': fanVoltage,
+        'fanTah': fanTah
     }));
 };
 
-$res.timers.setInterval(fanControl, 1000);
+$res.timers.setInterval(fanControl, 3000);
 
 function hwInit () {
     // Init the driver
@@ -206,13 +211,25 @@ let execute = function (reset) {
         exposition *= 1000; // To ms
         exposition += 10; // For exposition will be > 0
 
+        let newFadeValReset = [];
+        let newFadeValInterval = [];
         for (let i = 0; i < channels.length; i++) {
-            let channel = channels[i];
             if (reset) {
-                channel.fade(MAX_LEVEL * (transition[i] / DIVIDER), 0);
+                newFadeValReset[i] = MAX_LEVEL * (transition[i] / DIVIDER);
             }
             if (interval.start !== interval.stop) {
-                channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER), exposition);
+                newFadeValInterval[i] = MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER);
+            }
+        }
+
+        for (let i = 0; i < channels.length; i++) {
+            if (reset) {
+                channels[i].fade(newFadeValReset[i], 0);
+            }
+        }
+        for (let i = 0; i < channels.length; i++) {
+            if (interval.start !== interval.stop) {
+                channels[i].fade(newFadeValInterval[i], exposition);
             }
         }
 
@@ -288,7 +305,7 @@ function doCloudSync () {
         );
     }
 }
-// Do sync every 10sec
+// Do sync every 6 sec
 $res.timers.setInterval(doCloudSync, 6000);
 
 let sendFenistState = function () {

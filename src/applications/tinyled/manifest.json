@@ -175,7 +175,15 @@
           "en": "Analog-digital converter"
         }
       },
-
+      "PCNT": {
+        "type": "pcnt",
+        "required": true,
+        "default": 36,
+        "description": {
+          "ru": "Счетчик импульсов",
+          "en": "Pulse counter"
+        }
+      },
       "http": {
         "type": "http",
         "required": true

@@ -19,7 +19,8 @@ export default {
         MIN: 'Minimum',
         MAX: 'Maximum',
         AVG: 'Average',
-        FAN_VOLT: 'Fan voltage'
+        FAN_VOLT: 'Fan voltage',
+        FAN_RPM: 'Fan RPM'
     },
     ru: {
         TITLE_FENIST_CLOUD: 'FENIST V4I2 LED КОНТРОЛЛЕР',
@@ -41,6 +42,7 @@ export default {
         MIN: 'Минимум',
         MAX: 'Максимум',
         AVG: 'Среднее',
-        FAN_VOLT: 'Вент. напряжение'
+        FAN_VOLT: 'Вент. напряжение',
+        FAN_RPM: 'Вент. об/мин'
     }
 };
