@@ -91,8 +91,8 @@ function abs (r) {
 
 // Calculation transition levels
 function calcTransition (border, dot1, dot2) {
-    let leftShoulder = 0;
-    let width = 0;
+    let leftShoulder;
+    let width;
 
     if (dot1.time < dot2.time) {
         leftShoulder = border - dot1.time;
@@ -128,7 +128,7 @@ let execute = function (reset) {
     if (interval) {
         let transition = calcTransition(interval.time, interval.start, interval.stop);
 
-        let exposition = 0;
+        let exposition;
         if (interval.stop.time < interval.time) {
             exposition = DAY_WIDTH - interval.time + interval.stop.time;
         } else {
@@ -138,13 +138,25 @@ let execute = function (reset) {
         exposition *= 1000; // To ms
         exposition += 10; // For exposition will be > 0
 
+        let newFadeValReset = [];
+        let newFadeValInterval = [];
         for (let i = 0; i < channels.length; i++) {
-            let channel = channels[i];
             if (reset) {
-                channel.fade(MAX_LEVEL * (transition[i] / DIVIDER), 0);
+                newFadeValReset[i] = MAX_LEVEL * (transition[i] / DIVIDER);
             }
             if (interval.start !== interval.stop) {
-                channel.fade(MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER), exposition);
+                newFadeValInterval[i] = MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER);
+            }
+        }
+
+        for (let i = 0; i < channels.length; i++) {
+            if (reset) {
+                channels[i].fade(newFadeValReset[i], 0);
+            }
+        }
+        for (let i = 0; i < channels.length; i++) {
+            if (interval.start !== interval.stop) {
+                channels[i].fade(newFadeValInterval[i], exposition);
             }
         }
 
@@ -220,7 +232,7 @@ function doCloudSync () {
         );
     }
 }
-// Do sync every 10sec
+// Do sync every 6 sec
 $res.timers.setInterval(doCloudSync, 6000);
 
 // Event listener
@@ -254,8 +266,8 @@ $bus.on(function (event, content, data) {
 }, null);
 
 // Initialization
-print('MJS', 'HW init');
+print('MJS', ' HW init');
 hwInit();
 
-print('MJS', 'Restart execution');
+print('MJS', ' Restart execution');
 restartExecution();
