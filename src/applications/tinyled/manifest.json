@@ -157,31 +157,13 @@
           "en": "Temperature sensor DS18B20"
         }
       },
-      "DAC": {
-        "type": "dac",
+      "FAN": {
+        "type": "fan",
         "required": true,
-        "default": 25,
+        "default": [25,39,36],
         "description": {
-          "ru": "Цифро-аналоговый преобразователь",
-          "en": "Digital-analog converter"
-        }
-      },
-      "ADC": {
-        "type": "adc",
-        "required": true,
-        "default": [39, 3, 3],
-        "description": {
-          "ru": "Аналогово-цифровой преобразователь",
-          "en": "Analog-digital converter"
-        }
-      },
-      "PCNT": {
-        "type": "pcnt",
-        "required": true,
-        "default": 36,
-        "description": {
-          "ru": "Счетчик импульсов",
-          "en": "Pulse counter"
+          "ru": "Контроллер вентилятора",
+          "en": "Fan controller"
         }
       },
       "http": {

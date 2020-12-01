@@ -101,6 +101,7 @@ export default {
                 this.relay3 = conf.relay3;
                 this.relay4 = conf.relay4;
                 this.notReceivedHw = false;
+                this.fanDac = conf.fanDac;
             }
         });
         this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, data_) => {
@@ -162,7 +163,8 @@ export default {
             relay4: false,
             fanLevel: 0,
             fanVoltage: 0,
-            fanRPM: 0
+            fanRPM: 0,
+            fanDac: 0
         };
         return data;
     }

@@ -28,6 +28,7 @@ let timer = null;
 
 // Fan params
 let fanVoltage = 0;
+let fanDac = 0;
 let fanTah = 0;
 
 // Relays states
@@ -42,7 +43,17 @@ $res.DS18B20.search(function (addr) {
     sensors.push(addr);
 });
 
+let fanGetSens = function () {
+    fanVoltage = $res.FAN.getVolt();
+    fanTah = $res.FAN.getRpm();
+    $bus.emit('fenist-fan-sens', JSON.stringify({
+        'fanV': fanVoltage,
+        'fanTah': fanTah
+    }));
+};
+
 let refresh = function () {
+    fanGetSens();
     if (sensors.length > 0) {
         let temperature = {
             Max: 0,
@@ -77,19 +88,6 @@ if (sensors.length > 0) {
 } else {
     print('OW: DS18X20 sensor not detected');
 }
-
-let fanControl = function () {
-    let pCnt = $res.PCNT.getCount();
-    $res.PCNT.resetCounter();
-    fanTah = pCnt * 20;
-    fanVoltage = $res.ADC.getRaw();
-    $bus.emit('fenist-fan-sens', JSON.stringify({
-        'fanV': fanVoltage,
-        'fanTah': fanTah
-    }));
-};
-
-$res.timers.setInterval(fanControl, 3000);
 
 function hwInit () {
     // Init the driver
@@ -316,7 +314,8 @@ let sendFenistState = function () {
         'relay1': relay1state,
         'relay2': relay2state,
         'relay3': relay3state,
-        'relay4': relay4state
+        'relay4': relay4state,
+        'fanDac': fanDac
     }));
 };
 
@@ -340,7 +339,7 @@ $bus.on(function (event, content, data) {
         sendFenistState();
     } else if (event === 'fan-level') {
         let fan = JSON.parse(content);
-        $res.DAC.set(fan.level);
+        $res.FAN.setVal(fan.level);
     } else if (event === 'lucerna-set-config') {
         let config = JSON.parse(content);
         $res.prefs.put(PREF_FIELD_UUID, config.uuid);
