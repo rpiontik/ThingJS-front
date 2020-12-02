@@ -160,7 +160,7 @@
       "FAN": {
         "type": "fan",
         "required": true,
-        "default": [25,39,36],
+        "default": [25,39,8448,36],
         "description": {
           "ru": "Контроллер вентилятора",
           "en": "Fan controller"

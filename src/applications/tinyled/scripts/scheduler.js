@@ -48,7 +48,8 @@ let fanGetSens = function () {
     fanTah = $res.FAN.getRpm();
     $bus.emit('fenist-fan-sens', JSON.stringify({
         'fanV': fanVoltage,
-        'fanTah': fanTah
+        'fanTah': fanTah,
+        'fanDac': fanDac
     }));
 };
 
@@ -340,6 +341,7 @@ $bus.on(function (event, content, data) {
     } else if (event === 'fan-level') {
         let fan = JSON.parse(content);
         $res.FAN.setVal(fan.level);
+        fanDac = fan.level;
     } else if (event === 'lucerna-set-config') {
         let config = JSON.parse(content);
         $res.prefs.put(PREF_FIELD_UUID, config.uuid);
