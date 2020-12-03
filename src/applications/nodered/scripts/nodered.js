@@ -21,6 +21,13 @@ function $$mid() {
     return JSON.stringify(++$_mid)
 }
 
+let test = function() {
+    this.a = 10;
+    return this.a;
+};
+
+print("in function=", test(), "direct ", test.a);
+
 let $$nd = {
     "rev": "0d2abdbe8261ad4b1aaa28d70cd5b307", "2": function ($i, $c) {
         ({
