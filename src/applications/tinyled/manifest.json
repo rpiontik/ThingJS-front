@@ -45,9 +45,6 @@
       "lucerna-get-config",
       "fenist-set-hw-config",
       "fenist-get-config",
-      "relay-on",
-      "relay-off",
-      "fan-level",
       "$-script-restart"
     ],
     "entry": "scheduler",
@@ -106,64 +103,19 @@
       "ledc1": {
         "type": "SmartLED",
         "required": true,
-        "default": [5001,32,33,26,27,14,12,13,2],
+        "default": [5001,32,33,25,26,27,14,12,13],
         "description": {
           "ru": "Основной LEDC драйвер",
           "en": "Main LEDC driver"
         }
       },
-      "relay1": {
-        "type": "bit_port",
-        "required": true,
-        "default": 23,
-        "description": {
-          "ru": "Реле",
-          "en": "Relay"
-        }
-      },
-      "relay2": {
-        "type": "bit_port",
-        "required": true,
-        "default": 19,
-        "description": {
-          "ru": "Реле",
-          "en": "Relay"
-        }
-      },
-      "relay3": {
-        "type": "bit_port",
-        "required": true,
-        "default": 22,
-        "description": {
-          "ru": "Реле",
-          "en": "Relay"
-        }
-      },
-      "relay4": {
-        "type": "bit_port",
-        "required": true,
-        "default": 21,
-        "description": {
-          "ru": "Реле",
-          "en": "Relay"
-        }
-      },
       "DS18B20": {
         "type": "DS18X20",
         "required": true,
-        "default": [6002, 34, 5],
+        "default": [6002, 21, 4],
         "description": {
           "ru": "Датчики температуры DS18B20",
           "en": "Temperature sensor DS18B20"
-        }
-      },
-      "FAN": {
-        "type": "fan",
-        "required": true,
-        "default": [25,39,8448,36],
-        "description": {
-          "ru": "Контроллер вентилятора",
-          "en": "Fan controller"
         }
       },
       "http": {

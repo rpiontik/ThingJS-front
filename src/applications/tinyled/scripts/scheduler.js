@@ -26,35 +26,13 @@ let channels = [];
 // The scheduler's timer
 let timer = null;
 
-// Fan params
-let fanVoltage = 0;
-let fanDac = 0;
-let fanTah = 0;
-
-// Relays states
-let relay1state = 0;
-let relay2state = 0;
-let relay3state = 0;
-let relay4state = 0;
-
 let sensors = [];
 // Looking for ds18b20 sensors
 $res.DS18B20.search(function (addr) {
     sensors.push(addr);
 });
 
-let fanGetSens = function () {
-    fanVoltage = $res.FAN.getVolt();
-    fanTah = $res.FAN.getRpm();
-    $bus.emit('fenist-fan-sens', JSON.stringify({
-        'fanV': fanVoltage,
-        'fanTah': fanTah,
-        'fanDac': fanDac
-    }));
-};
-
 let refresh = function () {
-    fanGetSens();
     if (sensors.length > 0) {
         let temperature = {
             Max: 0,
@@ -109,14 +87,6 @@ function hwInit () {
             channels[f] = channel;
         }
     }
-    $res.relay1.direction($res.relay1.DIR_MODE_OUTPUT);
-    $res.relay1.set(relay1state);
-    $res.relay2.direction($res.relay2.DIR_MODE_OUTPUT);
-    $res.relay2.set(relay2state);
-    $res.relay3.direction($res.relay3.DIR_MODE_OUTPUT);
-    $res.relay3.set(relay3state);
-    $res.relay4.direction($res.relay4.DIR_MODE_OUTPUT);
-    $res.relay4.set(relay4state);
 }
 
 // Return current (actual) interval between two points
@@ -311,12 +281,7 @@ let sendFenistState = function () {
     $bus.emit('fenist-state-config', JSON.stringify({
         'inverse': isInverse,
         'resolution': RESOLUTION,
-        'frequency': ledcFrequency,
-        'relay1': relay1state,
-        'relay2': relay2state,
-        'relay3': relay3state,
-        'relay4': relay4state,
-        'fanDac': fanDac
+        'frequency': ledcFrequency
     }));
 };
 
@@ -324,24 +289,6 @@ let sendFenistState = function () {
 $bus.on(function (event, content, data) {
     if (event === '$-current-time') {
         restartExecution();
-    } else if (event === 'relay-on') {
-        let rel = JSON.parse(content);
-        if (rel.num === 1) { $res.relay1.set(1); relay1state = 1; }
-        if (rel.num === 2) { $res.relay2.set(1); relay2state = 1; }
-        if (rel.num === 3) { $res.relay3.set(1); relay3state = 1; }
-        if (rel.num === 4) { $res.relay4.set(1); relay4state = 1; }
-        sendFenistState();
-    } else if (event === 'relay-off') {
-        let rel = JSON.parse(content);
-        if (rel.num === 1) { $res.relay1.set(0); relay1state = 0; }
-        if (rel.num === 2) { $res.relay2.set(0); relay2state = 0; }
-        if (rel.num === 3) { $res.relay3.set(0); relay3state = 0; }
-        if (rel.num === 4) { $res.relay4.set(0); relay4state = 0; }
-        sendFenistState();
-    } else if (event === 'fan-level') {
-        let fan = JSON.parse(content);
-        $res.FAN.setVal(fan.level);
-        fanDac = fan.level;
     } else if (event === 'lucerna-set-config') {
         let config = JSON.parse(content);
         $res.prefs.put(PREF_FIELD_UUID, config.uuid);
