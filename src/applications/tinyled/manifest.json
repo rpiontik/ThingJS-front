@@ -65,7 +65,7 @@
     "objects": {
       "dots": {
         "version": 1,
-        "default" : "data/dots.json",
+        "default": "data/dots.json",
         "struct": {
           "time": "int",
           "spectrum": {
@@ -92,6 +92,15 @@
           "en": "System clock"
         }
       },
+      "rtc": {
+        "type": "DS3231",
+        "required": true,
+        "default": [19, 18],
+        "description": {
+          "ru": "Часы реального времени",
+          "en": "Real Time clock"
+        }
+      },
       "timers": {
         "type": "timers",
         "required": true,
@@ -103,7 +112,7 @@
       "ledc1": {
         "type": "SmartLED",
         "required": true,
-        "default": [5001,32,33,25,26,27,14,12,13],
+        "default": [5001, 32, 33, 25, 26, 27, 14, 12, 13],
         "description": {
           "ru": "Основной LEDC драйвер",
           "en": "Main LEDC driver"

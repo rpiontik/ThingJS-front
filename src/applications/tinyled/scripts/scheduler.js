@@ -12,7 +12,10 @@ let LEDC_DEFAULT_FREQUENCY = 400;
 
 let cloudUUID = $res.prefs.get(PREF_FIELD_UUID, null); // Tinyled cloud uuid
 let isInverse = $res.prefs.get(PREF_FIELD_INVERSE, 0); // Tinyled cloud uuid
-let ledcFrequency = $res.prefs.get(PREF_FIELD_FREQUENCY, LEDC_DEFAULT_FREQUENCY); // PWM frequency
+let ledcFrequency = $res.prefs.get(
+    PREF_FIELD_FREQUENCY,
+    LEDC_DEFAULT_FREQUENCY
+); // PWM frequency
 
 // Max level
 let MAX_LEVEL = 32767;
@@ -42,7 +45,7 @@ let refresh = function () {
         };
         for (let i = 0; i < sensors.length; i++) {
             let t = $res.DS18B20.get_temp_c(sensors[i]);
-            if ((t < 125) && (t > -40)) {
+            if (t < 125 && t > -40) {
                 if (t > temperature.Max) {
                     temperature.Max = t;
                 }
@@ -71,16 +74,16 @@ if (sensors.length > 0) {
 function hwInit () {
     // Init the driver
     $res.ledc1.reconfig({
-        'resolution': RESOLUTION,
-        'frequency': ledcFrequency
+        resolution: RESOLUTION,
+        frequency: ledcFrequency
     });
     for (let f = 0; f < $res.ledc1.channels.length; f++) {
         let channel = $res.ledc1.channels[f];
         if (channel) {
             // Init the channel
             channel.reconfig({
-                'duty': 0,
-                'inverse': !!isInverse
+                duty: 0,
+                inverse: !!isInverse
             });
             // Channel level by percent
             channel.level = 0;
@@ -97,6 +100,7 @@ function getCurrentInterval () {
 
     // print('Current time is ', time);
 
+    // eslint-disable-next-line no-undef
     let dots = $storage.open('dots');
     for (let found = dots.first(); found; found = dots.next()) {
         let dot = dots.get();
@@ -109,22 +113,24 @@ function getCurrentInterval () {
     }
 
     if (prevDot && !nextDot) {
-        // print('Next dot is first dot');
+    // print('Next dot is first dot');
         dots.first();
         nextDot = dots.get();
     } else if (nextDot && !prevDot) {
-        // print('First dot is last dot');
+    // print('First dot is last dot');
         dots.last();
         prevDot = dots.get();
     }
 
     dots.close();
 
-    return !prevDot ? null : {
-        time: time,
-        start: prevDot,
-        stop: nextDot
-    };
+    return !prevDot
+        ? null
+        : {
+            time: time,
+            start: prevDot,
+            stop: nextDot
+        };
 }
 
 function abs (r) {
@@ -140,7 +146,8 @@ function calcTransition (border, dot1, dot2) {
         leftShoulder = border - dot1.time;
         width = dot2.time - dot1.time;
     } else {
-        leftShoulder = border > dot1.time ? border - dot1.time : DAY_WIDTH - dot1.time + border;
+        leftShoulder =
+          border > dot1.time ? border - dot1.time : DAY_WIDTH - dot1.time + border;
         width = DAY_WIDTH - dot1.time + dot2.time;
     }
 
@@ -151,7 +158,7 @@ function calcTransition (border, dot1, dot2) {
     for (let channel = 0; channel < channels.length; channel++) {
         result[channel] = abs(
             dot1.spectrum[channel] -
-            (dot1.spectrum[channel] - dot2.spectrum[channel]) * koof
+        (dot1.spectrum[channel] - dot2.spectrum[channel]) * koof
         );
     }
 
@@ -168,7 +175,11 @@ let execute = function (reset) {
     let interval = getCurrentInterval();
 
     if (interval) {
-        let transition = calcTransition(interval.time, interval.start, interval.stop);
+        let transition = calcTransition(
+            interval.time,
+            interval.start,
+            interval.stop
+        );
 
         let exposition;
         if (interval.stop.time < interval.time) {
@@ -187,7 +198,8 @@ let execute = function (reset) {
                 newFadeValReset[i] = MAX_LEVEL * (transition[i] / DIVIDER);
             }
             if (interval.start !== interval.stop) {
-                newFadeValInterval[i] = MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER);
+                newFadeValInterval[i] =
+                  MAX_LEVEL * (interval.stop.spectrum[i] / DIVIDER);
             }
         }
 
@@ -206,11 +218,12 @@ let execute = function (reset) {
     } else {
         for (let channel in channels) {
             channels[channel].reconfig({
-                'duty': 0
+                duty: 0
             });
         }
         print('No interval');
     }
+    // eslint-disable-next-line no-undef
     gc(true);
 };
 
@@ -222,55 +235,62 @@ function restartExecution () {
 // Cloud synchronization
 function doCloudSync () {
     if (cloudUUID && cloudUUID.length > 0) {
-        $res.http.request({
-            'url': CLOUD_URL,
-            'params': {
-                'fid': $res.sys_info.chip_id,
-                'deviceid': cloudUUID,
-                'version': $res.prefs.get('version', 0)
-            }
-        },
-        function (response) {
-            if (response.data && (typeof response.data === 'object') && response.data.s && response.data.s.length) {
-                let dots = $storage.open('dots');
-                let dotIndex = 0;
-                for (
-                    let found = dots.first();
-                    found || (dotIndex < response.data.s.length);
-                    found = dots.next()
-                ) {
-                    let dot = response.data.s[dotIndex];
-                    let point = null;
-                    if (dot) {
-                        point = {
-                            'time': dot.o,
-                            'spectrum': {
-                                '0': dot.p[0],
-                                '1': dot.p[1],
-                                '2': dot.p[2],
-                                '3': dot.p[3],
-                                '4': dot.p[4],
-                                '5': dot.p[5],
-                                '6': dot.p[6],
-                                '7': dot.p[7]
-                            }
-                        };
-                    }
-
-                    if (found && dot) {
-                        dots.post(point);
-                    } else if (found) {
-                        dots.remove();
-                    } else {
-                        dots.append(point);
-                    }
-                    ++dotIndex;
+        $res.http.request(
+            {
+                url: CLOUD_URL,
+                params: {
+                    fid: $res.sys_info.chip_id,
+                    deviceid: cloudUUID,
+                    version: $res.prefs.get('version', 0)
                 }
-                dots.close();
-                $res.prefs.put('version', response.data.v);
-                restartExecution();
+            },
+            function (response) {
+                if (
+                    response.data &&
+          typeof response.data === 'object' &&
+          response.data.s &&
+          response.data.s.length
+                ) {
+                    // eslint-disable-next-line no-undef
+                    let dots = $storage.open('dots');
+                    let dotIndex = 0;
+                    for (
+                        let found = dots.first();
+                        found || dotIndex < response.data.s.length;
+                        found = dots.next()
+                    ) {
+                        let dot = response.data.s[dotIndex];
+                        let point = null;
+                        if (dot) {
+                            point = {
+                                time: dot.o,
+                                spectrum: {
+                                    '0': dot.p[0],
+                                    '1': dot.p[1],
+                                    '2': dot.p[2],
+                                    '3': dot.p[3],
+                                    '4': dot.p[4],
+                                    '5': dot.p[5],
+                                    '6': dot.p[6],
+                                    '7': dot.p[7]
+                                }
+                            };
+                        }
+
+                        if (found && dot) {
+                            dots.post(point);
+                        } else if (found) {
+                            dots.remove();
+                        } else {
+                            dots.append(point);
+                        }
+                        ++dotIndex;
+                    }
+                    dots.close();
+                    $res.prefs.put('version', response.data.v);
+                    restartExecution();
+                }
             }
-        }
         );
     }
 }
@@ -278,25 +298,32 @@ function doCloudSync () {
 $res.timers.setInterval(doCloudSync, 6000);
 
 let sendFenistState = function () {
-    $bus.emit('fenist-state-config', JSON.stringify({
-        'inverse': isInverse,
-        'resolution': RESOLUTION,
-        'frequency': ledcFrequency
-    }));
+    $bus.emit(
+        'fenist-state-config',
+        JSON.stringify({
+            inverse: isInverse,
+            resolution: RESOLUTION,
+            frequency: ledcFrequency
+        })
+    );
 };
 
 // Event listener
 $bus.on(function (event, content, data) {
     if (event === '$-current-time') {
+        $res.rtc.set();
         restartExecution();
     } else if (event === 'lucerna-set-config') {
         let config = JSON.parse(content);
         $res.prefs.put(PREF_FIELD_UUID, config.uuid);
         cloudUUID = $res.prefs.get(PREF_FIELD_UUID, '');
 
-        $bus.emit('lucerna-state-config', JSON.stringify({
-            'uuid': cloudUUID
-        }));
+        $bus.emit(
+            'lucerna-state-config',
+            JSON.stringify({
+                uuid: cloudUUID
+            })
+        );
         hwInit();
         restartExecution();
     } else if (event === 'fenist-set-hw-config') {
@@ -304,14 +331,20 @@ $bus.on(function (event, content, data) {
         $res.prefs.put(PREF_FIELD_INVERSE, !!config.inverse);
         $res.prefs.put(PREF_FIELD_FREQUENCY, config.frequency);
         isInverse = $res.prefs.get(PREF_FIELD_INVERSE, false);
-        ledcFrequency = $res.prefs.get(PREF_FIELD_FREQUENCY, LEDC_DEFAULT_FREQUENCY);
+        ledcFrequency = $res.prefs.get(
+            PREF_FIELD_FREQUENCY,
+            LEDC_DEFAULT_FREQUENCY
+        );
         sendFenistState();
         hwInit();
         restartExecution();
     } else if (event === 'lucerna-get-config') {
-        $bus.emit('lucerna-state-config', JSON.stringify({
-            'uuid': cloudUUID
-        }));
+        $bus.emit(
+            'lucerna-state-config',
+            JSON.stringify({
+                uuid: cloudUUID
+            })
+        );
     } else if (event === 'fenist-get-config') {
         sendFenistState();
     }
