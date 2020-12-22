@@ -103,6 +103,18 @@
           "en": "System timers"
         }
       },
+      "rtc": {
+        "type": "DS3231",
+        "required": true,
+        "default": [
+          15,
+          4
+        ],
+        "description": {
+          "ru": "Часы реального времени",
+          "en": "Real Time clock"
+        }
+      },
       "ledc1": {
         "type": "SmartLED",
         "required": true,
