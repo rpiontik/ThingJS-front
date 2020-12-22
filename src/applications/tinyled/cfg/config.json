@@ -1,10 +1,52 @@
 [
-  {"id":"sys_info","type":"sys_info","params":10000},
-  {"id":"prefs","type":"preferences","params":10000},
-  {"id":"http","type":"http","params":10000},
-  {"id":"clock","type":"clock","params":10000},
-  {"id":"rtc","type":"DS3231","params":[19,18]},
-  {"id":"timers","type":"timers","params":10000},
-  {"id":"ledc1","type":"SmartLED","params":[5001,32,33,25,26,27,14,12,13]},
-  {"id":"DS18B20","type":"DS18X20","params":[6002,21,4]}
+  {
+    "id": "sys_info",
+    "type": "sys_info",
+    "params": 10000
+  },
+  {
+    "id": "prefs",
+    "type": "preferences",
+    "params": 10000
+  },
+  {
+    "id": "http",
+    "type": "http",
+    "params": 10000
+  },
+  {
+    "id": "clock",
+    "type": "clock",
+    "params": 10000
+  },
+  {
+    "id": "rtc",
+    "type": "DS3231",
+    "params": [
+      19,
+      18
+    ]
+  },
+  {
+    "id": "timers",
+    "type": "timers",
+    "params": 10000
+  },
+  {
+    "id": "ledc1",
+    "type": "SmartLED",
+    "params": [
+      5001,
+      13,12,14,27,26,25,33,32
+    ]
+  },
+  {
+    "id": "DS18B20",
+    "type": "DS18X20",
+    "params": [
+      6002,
+      21,
+      4
+    ]
+  }
 ]

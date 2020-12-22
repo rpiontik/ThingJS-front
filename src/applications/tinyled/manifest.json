@@ -95,7 +95,10 @@
       "rtc": {
         "type": "DS3231",
         "required": true,
-        "default": [19, 18],
+        "default": [
+          19,
+          18
+        ],
         "description": {
           "ru": "Часы реального времени",
           "en": "Real Time clock"
@@ -112,7 +115,10 @@
       "ledc1": {
         "type": "SmartLED",
         "required": true,
-        "default": [5001, 32, 33, 25, 26, 27, 14, 12, 13],
+        "default": [
+          5001,
+          13,12,14,27,26,25,33,32
+        ],
         "description": {
           "ru": "Основной LEDC драйвер",
           "en": "Main LEDC driver"
@@ -121,7 +127,11 @@
       "DS18B20": {
         "type": "DS18X20",
         "required": true,
-        "default": [6002, 21, 4],
+        "default": [
+          6002,
+          21,
+          4
+        ],
         "description": {
           "ru": "Датчики температуры DS18B20",
           "en": "Temperature sensor DS18B20"
