@@ -88,7 +88,6 @@ export default {
                 }
 
                 const script = document.createElement('script');
-
                 window.$axios._addPendingRequest(url);
 
                 script.onload = () => {

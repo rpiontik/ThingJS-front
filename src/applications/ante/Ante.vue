@@ -60,6 +60,12 @@
                 <span v-if="debuggerUrl" class="status_label debugger">
                     <a :href="debuggerUrl" target="_blank">{{ 'DEBUGGER' | lang }}</a>
                 </span>
+              <span v-if="cloudSwitcher!==null" >
+                <v-checkbox
+                    v-model="cloudSwitcher"
+                    label="Cloud mode"
+                ></v-checkbox>
+              </span>
             </v-footer>
 
             <v-progress-linear
@@ -100,6 +106,7 @@
 import ConfigHelper from './components/ConfigHelper.vue';
 import Settings from './components/Settings.vue';
 import Dashboard from './components/Dashboard.vue';
+import CloudRegistration from './components/CloudRegistration';
 
 export default {
     name: 'App',
@@ -138,6 +145,11 @@ export default {
                 path: '/',
                 name: 'Root',
                 component: Dashboard
+            },
+            {
+                name: 'CloudRegistration',
+                path: `/cloud/registration`,
+                component: CloudRegistration
             }
         ]);
 
@@ -194,6 +206,14 @@ export default {
         },
         debuggerUrl () {
             return process.env.NODE_ENV !== 'production' ? `/debugger.html?url=${process.env.HW_DEVICE_URL}` : null;
+        },
+        cloudSwitcher: {
+            get () {
+                return this.$store.state.is_cloud_mode;
+            },
+            set (value) {
+                this.$store.dispatch('switchOnClodMode', value);
+            }
         },
         theme () {
             let bgColor = this.$store.state.display.theme === 'light' ? '#f5f5f5' : '#212121';

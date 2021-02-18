@@ -3,6 +3,7 @@
         <DateTimeComponent class="ante-settings-panel" :style="panelStyle"></DateTimeComponent>
         <NetworkComponent class="ante-settings-panel" :style="panelStyle"></NetworkComponent>
         <DisplayComponent class="ante-settings-panel" :style="panelStyle"></DisplayComponent>
+        <Cloud class="ante-settings-panel" :style="panelStyle"></Cloud>
         <component
                 v-for="(pref_comp_name) in customPrefs"
                 class="ante-settings-panel"
@@ -22,15 +23,17 @@ import DisplayComponent from './settings/Display.vue';
 import DateTimeComponent from './settings/DateTime.vue';
 import Applications from './settings/Applications.vue';
 import Firmware from './settings/Firmware.vue';
+import Cloud from './settings/Cloud.vue';
 
 export default {
     name: 'Settings',
     components: {
-        NetworkComponent: NetworkComponent,
-        DisplayComponent: DisplayComponent,
-        DateTimeComponent: DateTimeComponent,
-        Applications: Applications,
-        Firmware: Firmware
+        NetworkComponent,
+        DisplayComponent,
+        DateTimeComponent,
+        Applications,
+        Firmware,
+        Cloud
     },
     computed: {
         customPrefs () {

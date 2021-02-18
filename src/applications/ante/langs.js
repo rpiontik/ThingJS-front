@@ -67,7 +67,13 @@ export default {
         UPDATE_FIRMWARE_TITLE: 'Update firmware',
         DO_FIRMWARE: 'FLASHING',
         DETECTED_DEBUGGER_REQUEST: 'Detected debugger request from [%appname%] <br><a href="%url%" target="_blank">Start debugger.</a>',
-        DEBUGGER: 'DEBUGGER'
+        DEBUGGER: 'DEBUGGER',
+        CLOUD_TITLE: 'ThingJS Cloud',
+        INSTALL_TO_CLOUD: 'Install to cloud',
+        CLOUD_DESCRIPTION: 'By connecting your device to the cloud, you will be able to control it from anywhere in the world.',
+        PREPARE_IMAGE_DEVICE: 'Preparing image of the Device',
+        LOAD_FILES: 'Loading files...',
+        DEPLOY_TO_CLOUD: 'Deploy to cloud...'
     },
     ru: {
         DISPLAY_TITLE: 'Экран',
@@ -137,6 +143,12 @@ export default {
         UPDATE_FIRMWARE_TITLE: 'Обновление прошивки',
         DO_FIRMWARE: 'Обновить',
         DETECTED_DEBUGGER_REQUEST: 'Обнаружен запрос на отладку [%appname%] <br> <a href="%url%" target="_blank">Запустить отладчик.</a>',
-        DEBUGGER: 'DEBUGGER'
+        DEBUGGER: 'DEBUGGER',
+        CLOUD_TITLE: 'Облако ThingJS',
+        INSTALL_TO_CLOUD: 'Подключить к облаку',
+        CLOUD_DESCRIPTION: 'Подключив устройство к облаку, вы получите возможность управлять им из любой точки мира.',
+        PREPARE_IMAGE_DEVICE: 'Подготовка образа устройства',
+        LOAD_FILES: 'Загрузка файлов...',
+        DEPLOY_TO_CLOUD: 'Развертывание в облаке...'
     }
 };

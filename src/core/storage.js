@@ -4,6 +4,7 @@ export default {
     state: {
         guid: null, // GUID of the node
         is_net_pending: false, // Axios requests in pending
+        is_cloud_mode: false, // Cloud service marker
         user: {
             first_enter: true // True if first enter user on controller
         },
@@ -78,7 +79,7 @@ export default {
                             if (process.env.NODE_ENV === 'production') {
                                 Vue.component(cname, Apps.makePromisLoadComponent(`/apps/${appid}/${appManifest.components[cname].source}`, cname));
                             } else {
-                                Vue.component(cname, Apps.makePromisLoadComponent(appManifest.components[cname].source, cname));
+                                Vue.component(cname, Apps.makePromisLoadComponent(`/${appManifest.components[cname].source}`, cname));
                             }
                         }
                     }
@@ -187,6 +188,10 @@ export default {
         // Update current hardware time after recalculation
         updateCurrentTime (state, time) {
             state.datetime.curr_datetime = time;
+        },
+
+        setCloudMode (state, value) {
+            state.is_cloud_mode = value;
         }
     },
 
@@ -243,6 +248,20 @@ export default {
         // Apply new profile of hardware
         applyHardwareProfile (context, manifest) {
             context.commit('setHardwareProfile', manifest);
+            // Detect cloud mode
+            let cloudMode = process.env.NODE_ENV !== 'production'
+                ? !!(Vue.cookie.get('$$cloud_mode') === 'true') : null;
+
+            cloudMode = cloudMode === null
+                ? manifest && manifest.id && manifest.id === 'CLOUD'
+                : cloudMode;
+
+            context.commit('setCloudMode', cloudMode);
+        },
+
+        switchOnClodMode (context, isCouldMode) {
+            Vue.cookie.set('$$cloud_mode', !!isCouldMode, '365D');
+            context.commit('setCloudMode', !!isCouldMode);
         },
 
         // Apply new control state to store
