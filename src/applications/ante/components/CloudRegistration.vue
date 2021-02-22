@@ -10,7 +10,7 @@
       <form id="imageForm" method="post" :action="target" enctype="multipart/form-data">
         <input v-for="(file, index) in files" :key="index" type="hidden" :name="file.name" :value="file.payload">
       </form>
-      <v-btn @click="loadFiles">GO</v-btn>
+      <v-btn @click="doRegister">GO</v-btn>
     </v-container>
 </template>
 
@@ -19,6 +19,9 @@ const CHUNK_SIZE = 500000;
 export default {
     name: 'CloudRegistration',
     mounted () {
+        setTimeout(() => {
+            this.doRegister();
+        }, 100);
     },
     computed: {
         target () {
@@ -28,7 +31,7 @@ export default {
         }
     },
     methods: {
-        loadFiles () {
+        doRegister () {
             this.isError = false;
             this.files.push({
                 name: '0:/token',
@@ -38,38 +41,52 @@ export default {
                 name: '0:/profile',
                 payload: JSON.stringify(this.$store.state.hardware.profile)
             });
-            console.log('profile length', this.files[0].payload.length);
-            this.files.push({
-                name: '0:/manifest',
-                payload: JSON.stringify(this.$store.state.apps.manifest)
-            });
+
+            let manifest = JSON.parse(JSON.stringify(this.$store.state.apps.manifest));
 
             let marks = {};
             let uploadFiles = [
-                '/'
+                { source: '/', dist: '/' }
             ];
 
-            for (let appName in this.$store.state.apps.manifest) {
-                const app = this.$store.state.apps.manifest[appName];
+            for (let index in manifest) {
+                const app = manifest[index];
                 if (!app.components) continue;
                 for (let componentName in app.components) {
                     const component = app.components[componentName];
-                    if (component.source in marks) continue;
-                    uploadFiles.push(`/${component.source}`);
+                    const source = `/${component.source}`;
+                    component.source = `apps/${app.name}${source}`;
+                    if (marks[component.source]) continue;
+                    uploadFiles.push({
+                        source,
+                        dist: `/${component.source}`
+                    });
                     marks[component.source] = true;
                 }
             }
 
+            this.files.push({
+                name: '0:/manifest',
+                payload: JSON.stringify(manifest)
+            });
+
             let uploaded = 0;
             this.status = Vue.filter('lang')('LOAD_FILES');
 
-            uploadFiles.map((uri) => {
-                this.$axios.get(uri).then((response) => {
+            uploadFiles.map((object) => {
+                this.$axios.get(object.source,
+                    {
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        }
+                    }
+                ).then((response) => {
+                    console.info('>>>>>', object.source, '=', response.data.length);
                     const partCount = Math.round(response.data.length / CHUNK_SIZE + 0.5);
                     for (let part = 0; part < partCount; part++) {
                         const chunk = response.data.slice(part * CHUNK_SIZE, part * CHUNK_SIZE + CHUNK_SIZE);
                         this.files.push({
-                            name: `${part}:${uri}`,
+                            name: `${part}:${object.dist}`,
                             payload: chunk
                         });
                     }

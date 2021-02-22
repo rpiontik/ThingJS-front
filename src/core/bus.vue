@@ -2,6 +2,7 @@
 </template>
 
 <script>
+import consts from './consts';
 
 export default {
     created () {
@@ -25,18 +26,18 @@ export default {
         startWebsocket () {
             // todo disabled websocket
             let wsURL = null;
+            const protocol = window.location.protocol.toLowerCase() === 'https:' ? 'wss:' : 'ws:';
 
             if (process.env.NODE_ENV !== 'production') {
                 if ('HW_DEVICE_URL' in process.env) {
-                    wsURL = 'ws://' + (new URL(process.env.HW_DEVICE_URL)).hostname;
+                    wsURL = `${protocol}//${(new URL(consts.BASE_URL)).hostname}`;
                 }
             } else {
-                wsURL = `ws://${window.location.hostname}`;
+                wsURL = `${protocol}://${window.location.hostname}`;
             }
 
-            if (!wsURL) {
-                return;
-            }
+            if (!wsURL) return;
+            else if (consts.IS_CLOUD_MODE) wsURL += '/ubus';
 
             if (!('WebSocket' in window)) {
                 console.warn('WebSocket NOT supported by your Browser!');

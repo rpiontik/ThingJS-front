@@ -30,8 +30,12 @@ module.exports = {
   },
 
   upload_mjs (app_name, objects) {
+    // If cloud then turn off hot reload
+    if (window.location.hostname.slice(-10).toLowerCase() === 'thingjs.io')
+      return;
+
     let timer_id = `${app_name}_mjs`
-    let url = `${process.env.HW_DEVICE_URL}/apps/${app_name}/`
+    let url = `${process.env.HW_DEVICE_URL}apps/${app_name}/`
 
     if (this.timers[timer_id]) {
       clearTimeout(this.timers[timer_id])

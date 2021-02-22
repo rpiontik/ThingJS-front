@@ -1,10 +1,11 @@
 import Apps from './applications';
+import consts from './consts';
 
 export default {
     state: {
         guid: null, // GUID of the node
         is_net_pending: false, // Axios requests in pending
-        is_cloud_mode: false, // Cloud service marker
+        is_cloud_mode: consts.IS_CLOUD_MODE, // Cloud service marker
         user: {
             first_enter: true // True if first enter user on controller
         },
@@ -250,11 +251,12 @@ export default {
             context.commit('setHardwareProfile', manifest);
             // Detect cloud mode
             let cloudMode = process.env.NODE_ENV !== 'production'
-                ? !!(Vue.cookie.get('$$cloud_mode') === 'true') : null;
+                ? Vue.cookie.get('$$cloud_mode')
+                : null;
 
             cloudMode = cloudMode === null
                 ? manifest && manifest.id && manifest.id === 'CLOUD'
-                : cloudMode;
+                : !!(cloudMode === 'true');
 
             context.commit('setCloudMode', cloudMode);
         },

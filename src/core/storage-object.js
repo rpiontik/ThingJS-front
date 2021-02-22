@@ -27,7 +27,7 @@ module.exports = {
             if (object in context.state) {
                 let url =
                     (process.env.NODE_ENV === 'development' ? (process.env.HW_DEVICE_URL ? process.env.HW_DEVICE_URL : '') : '') +
-                    `/apps/${context.state.$namespace}/data/${object}`;
+                    `apps/${context.state.$namespace}/data/${object}`;
 
                 $axios._addPendingRequest(url);
 
@@ -77,7 +77,7 @@ module.exports = {
 
             let url =
                 (process.env.NODE_ENV === 'development' ? (process.env.HW_DEVICE_URL ? process.env.HW_DEVICE_URL : '') : '') +
-                `/apps/${context.state.$namespace}/data/${object}`;
+                `apps/${context.state.$namespace}/data/${object}`;
 
             $axios._addPendingRequest(url);
 

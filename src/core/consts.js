@@ -1,4 +1,11 @@
+const IS_CLOUD_MODE = window.location.hostname.slice(-10).toLowerCase() === 'thingjs.io';
+const BASE_URL = (!IS_CLOUD_MODE && ('HW_DEVICE_URL' in process.env)
+    ? process.env.HW_DEVICE_URL
+    : `${window.location.protocol}//${window.location.host}/`
+);
 export default {
+    IS_CLOUD_MODE,
+    BASE_URL,
     WEBSOCKET: {
         ADDRESS: 'ws://192.168.1.96:8080',
         RECONNECT_TIMEOUT: 5000,
@@ -34,13 +41,13 @@ export default {
         WARNING: 'warning'
     },
     REST: {
-        STATE: ('HW_DEVICE_URL' in process.env ? process.env.HW_DEVICE_URL : '') + '/api/state',
+        STATE: `${BASE_URL}api/state`,
         // todo Нужно решить, что делать с манифестом приложений. Пока беру с локального сервера
         MANIFEST: /* ('HW_DEVICE_URL' in process.env ? process.env.HW_DEVICE_URL : '') + */'/manifest',
-        PROFILE: ('HW_DEVICE_URL' in process.env ? process.env.HW_DEVICE_URL : '') + '/profile',
-        CONFIG: ('HW_DEVICE_URL' in process.env ? process.env.HW_DEVICE_URL : '') + '/api/config',
-        AP_AVAILABLE: ('HW_DEVICE_URL' in process.env ? process.env.HW_DEVICE_URL : '') + '/api/rescan_net',
-        TIME: ('HW_DEVICE_URL' in process.env ? process.env.HW_DEVICE_URL : '') + '/api/time'
+        PROFILE: `${BASE_URL}profile`,
+        CONFIG: `${BASE_URL}api/config`,
+        AP_AVAILABLE: `${BASE_URL}api/rescan_net`,
+        TIME: `${BASE_URL}api/time`
     },
     STORAGES: {
         STATUS_EMPTY: 'empty',
