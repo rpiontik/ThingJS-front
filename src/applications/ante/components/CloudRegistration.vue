@@ -19,9 +19,12 @@ const CHUNK_SIZE = 500000;
 export default {
     name: 'CloudRegistration',
     mounted () {
-        setTimeout(() => {
-            this.doRegister();
-        }, 100);
+        let waiter = setInterval(() => {
+            if (this.$store.state.hardware.profile && this.$store.state.apps.manifest) {
+                clearInterval(waiter);
+                this.doRegister();
+            }
+        }, 200);
     },
     computed: {
         target () {
@@ -45,23 +48,27 @@ export default {
             let manifest = JSON.parse(JSON.stringify(this.$store.state.apps.manifest));
 
             let marks = {};
-            let uploadFiles = [
-                { source: '/', dist: '/' }
-            ];
+            let uploadFiles = [{ source: '/', dist: '/' }];
 
             for (let index in manifest) {
                 const app = manifest[index];
                 if (!app.components) continue;
                 for (let componentName in app.components) {
                     const component = app.components[componentName];
-                    const source = `/${component.source}`;
-                    component.source = `apps/${app.name}${source}`;
-                    if (marks[component.source]) continue;
+                    let source;
+                    if (process.env.NODE_ENV === 'production') {
+                        source = `/apps/${app.name}/${component.source}`;
+                    } else {
+                        source = `/${component.source}`;
+                        component.source = `apps/${app.name}/${component.source}`;
+                    }
+
+                    if (marks[source]) continue;
                     uploadFiles.push({
                         source,
-                        dist: `/${component.source}`
+                        dist: `/apps/${app.name}/${component.source}`
                     });
-                    marks[component.source] = true;
+                    marks[source] = true;
                 }
             }
 
@@ -72,9 +79,49 @@ export default {
 
             let uploaded = 0;
             this.status = Vue.filter('lang')('LOAD_FILES');
-
-            uploadFiles.map((object) => {
+            const targetToUpload = uploadFiles.length;
+            const doUploadNext = () => {
+                if (!uploadFiles.length) {
+                    this.status = Vue.filter('lang')('DEPLOY_TO_CLOUD');
+                    setTimeout(() => document.getElementById('imageForm').submit(), 100);
+                    return;
+                }
+                const object = uploadFiles.pop();
                 this.$axios.get(object.source,
+                    {
+                        responseType: 'text'
+                    }
+                    /*
+                    {
+                        headers: {
+                            'Content-Type': 'text/plain, application/xhtml+xml'
+                        }
+                    }
+                    */
+                ).then((response) => {
+                    const partCount = Math.round(response.data.length / CHUNK_SIZE + 0.5);
+                    for (let part = 0; part < partCount; part++) {
+                        const chunk = response.data.slice(part * CHUNK_SIZE, part * CHUNK_SIZE + CHUNK_SIZE);
+                        this.files.push({
+                            name: `${part}:${object.dist}`,
+                            payload: chunk
+                        });
+                    }
+                    uploaded++;
+                    this.progress = uploaded / targetToUpload * 100;
+                    doUploadNext();
+                })
+                    .catch((e) => {
+                        console.error(e);
+                        this.isError = true;
+                    });
+            };
+
+            doUploadNext();
+
+            /*
+            uploadFiles.map(async (object) => {
+                await this.$axios.get(object.source,
                     {
                         headers: {
                             'Content-Type': 'text/plain'
@@ -98,9 +145,11 @@ export default {
                         this.isError = true;
                     });
             });
+            */
 
             this.preparing = false;
 
+            /*
             let watcher = setInterval(() => {
                 if (this.isError) {
                     clearInterval(watcher);
@@ -110,6 +159,7 @@ export default {
                     document.getElementById('imageForm').submit();
                 }
             }, 100);
+             */
         }
     },
     data () {

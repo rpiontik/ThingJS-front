@@ -209,7 +209,7 @@ export default {
         },
         cloudSwitcher: {
             get () {
-                return this.$store.state.is_cloud_mode;
+                return process.env.NODE_ENV === 'production' ? null : this.$store.state.is_cloud_mode;
             },
             set (value) {
                 this.$store.dispatch('switchOnClodMode', value);

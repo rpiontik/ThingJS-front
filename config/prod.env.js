@@ -2,5 +2,7 @@
 module.exports = {
   NODE_ENV: '"production"',
   BUILD_MOMENT : '"' + (new Date()).toLocaleString() + '"',
-  CLOUD_URL: '"https://thingjs.io/"'
+  // todo НУЖНО РАСКОММЕНТИРОВАТЬ!!
+  // CLOUD_URL: '"https://thingjs.io/"'
+  CLOUD_URL: '"https://dev.thingjs.io:8083/"'
 }

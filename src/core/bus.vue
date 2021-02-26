@@ -30,10 +30,10 @@ export default {
 
             if (process.env.NODE_ENV !== 'production') {
                 if ('HW_DEVICE_URL' in process.env) {
-                    wsURL = `${protocol}//${(new URL(consts.BASE_URL)).hostname}`;
+                    wsURL = `${protocol}//${(new URL(consts.BASE_URL)).host}`;
                 }
             } else {
-                wsURL = `${protocol}://${window.location.hostname}`;
+                wsURL = `${protocol}//${window.location.host}`;
             }
 
             if (!wsURL) return;

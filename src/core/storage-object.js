@@ -26,7 +26,8 @@ module.exports = {
         reload (context, object) {
             if (object in context.state) {
                 let url =
-                    (process.env.NODE_ENV === 'development' ? (process.env.HW_DEVICE_URL ? process.env.HW_DEVICE_URL : '') : '') +
+                    (process.env.NODE_ENV === 'development' && process.env.HW_DEVICE_URL
+                        ? process.env.HW_DEVICE_URL : '/') +
                     `apps/${context.state.$namespace}/data/${object}`;
 
                 $axios._addPendingRequest(url);
