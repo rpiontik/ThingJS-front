@@ -12,7 +12,9 @@
               </v-layout>
             </v-card-text>
             <v-card-actions text-xs-right v-if="!hideActions">
-                <v-btn @click="install">{{'INSTALL_TO_CLOUD' | lang }}</v-btn>
+              <form action="/cloud/deploy" method="get">
+                <v-btn type="submit" @click="install">{{'INSTALL_TO_CLOUD' | lang }}</v-btn>
+              </form>
             </v-card-actions>
         </v-card>
     </v-form>
