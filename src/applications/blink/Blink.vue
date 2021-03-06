@@ -9,7 +9,7 @@
             </v-layout>
             <v-layout>
                 <v-flex xs12 md12>
-                    <v-checkbox v-bind:label="'BLINK_SATE' | lang" v-model="blink_state"></v-checkbox>
+                    <v-checkbox v-bind:label="'BLINK_SATE' | lang" v-model="blink_state" @click="onClick"></v-checkbox>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -19,10 +19,16 @@
 <script>
 export default {
     name: 'Blink',
-    watch: {
-        blink_state (state) {
-            // Send event to script
-            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'blink', state);
+    mounted () {
+        this.$bus.$on($consts.EVENTS.UBUS_MESSAGE, (type, state) => {
+            if (type === 'blink') {
+                this.blink_state = state === 'true';
+            }
+        });
+    },
+    methods: {
+        onClick () {
+            this.$bus.$emit($consts.EVENTS.UBUS_MESSAGE, 'blink', this.blink_state);
         }
     },
     data () {
