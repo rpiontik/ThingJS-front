@@ -8,4 +8,5 @@ module.exports = merge(prodEnv, {
   CLOUD_URL: '"https://dev.thingjs.io:8083/"',
   HW_DEVICE_URL: '"http://192.168.8.107/"',
   //HW_DEVICE_URL: '"http://192.168.4.1/"',
+  npm_config_report: 'true'
 })
