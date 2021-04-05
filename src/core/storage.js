@@ -55,8 +55,10 @@ export default {
             for (let appid in manifest) {
                 let appManifest = manifest[appid];
                 if ('storage' in appManifest && 'objects' in appManifest.storage) {
-                    let objectStruct = require('./storage-object');
-                    objectStruct.state.$namespace = appManifest.name;
+                    let objectStruct = Object.assign({}, require('./storage-object'));
+                    objectStruct.state = {
+                        $namespace: appManifest.name
+                    };
                     for (let object in appManifest.storage.objects) {
                         objectStruct.state[object] = null;
                     }

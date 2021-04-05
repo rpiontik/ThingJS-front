@@ -4,44 +4,44 @@ const BundleStr = require('../../build/storage');
 
 module.exports = {
 
-    parseBinaryInt8(state) {
+    parseBinaryInt8 (state) {
         let result = new DataView(state.data, state.offset).getInt8(0, true);
         state.offset += 1;
         return result;
     },
 
-    makeBinaryInt8(value) {
+    makeBinaryInt8 (value) {
         return new Uint8Array([value === null ? 0 : 1 * value]);
     },
 
-    parseBinaryInt32(state) {
+    parseBinaryInt32 (state) {
         let result = new DataView(state.data, state.offset).getInt32(0, true);
         state.offset += 4;
         return result;
     },
 
-    makeBinaryInt32(value) {
+    makeBinaryInt32 (value) {
         return new Uint8Array(new Uint32Array([value === null ? 0 : 1 * value]).buffer);
     },
 
-    parseBinaryDouble64(state) {
+    parseBinaryDouble64 (state) {
         let result = new DataView(state.data, state.offset).getFloat64(0, true);
         state.offset += 8;
         return result;
     },
 
-    makeBinaryDouble64(value) {
+    makeBinaryDouble64 (value) {
         return new Uint8Array(new Float64Array([value === null ? 0 : 1 * value]).buffer);
     },
 
-    parseBinaryString(state) {
+    parseBinaryString (state) {
         let len = this.parseBinaryInt32(state);
         let str = (new TextDecoder('utf-8')).decode(new DataView(state.data, state.offset, len));
         state.offset += len;
         return str;
     },
 
-    parseBinaryField(state) {
+    parseBinaryField (state) {
         let result = {
             prefix: this.parseBinaryInt32(state),
             name: ''
@@ -59,7 +59,7 @@ module.exports = {
         return result;
     },
 
-    parseBinaryStruct(state) {
+    parseBinaryStruct (state) {
         let result = [];
         let items = result;
         let levels = [];
@@ -72,44 +72,44 @@ module.exports = {
             }
 
             switch (field.type) {
-                case BundleStr.BIN_BLOCK_STORAGE_VERSION : {
-                    state.version = field.name;
-                    break;
-                }
-                case BundleStr.BIN_BLOCK_STORAGE_MIGRATION : {
-                    state.migration = field.name;
-                    break;
-                }
-                case BundleStr.BIN_BLOCK_STORAGE_TYPE_OBJECT : {
-                    let obj = {
-                        name: field.name,
-                        substruct: []
-                    };
-                    items.push(obj);
-                    levels.push(items);
-                    items = obj.substruct;
-                    break;
-                }
-                case BundleStr.BIN_BLOCK_STORAGE_TYPE_INT : {
-                    items.push({
-                        name: field.name,
-                        parser: this.parseBinaryInt32,
-                        maker: this.makeBinaryInt32
-                    });
-                    state.row_size += 4;
-                    break;
-                }
-                case BundleStr.BIN_BLOCK_STORAGE_TYPE_DOUBLE : {
-                    items.push({
-                        name: field.name,
-                        parser: this.parseBinaryDouble64,
-                        maker: this.makeBinaryDouble64
-                    });
-                    state.row_size += 8;
-                    break;
-                }
-                default:
-                    throw `Error type field ${field.type}`;
+            case BundleStr.BIN_BLOCK_STORAGE_VERSION : {
+                state.version = field.name;
+                break;
+            }
+            case BundleStr.BIN_BLOCK_STORAGE_MIGRATION : {
+                state.migration = field.name;
+                break;
+            }
+            case BundleStr.BIN_BLOCK_STORAGE_TYPE_OBJECT : {
+                let obj = {
+                    name: field.name,
+                    substruct: []
+                };
+                items.push(obj);
+                levels.push(items);
+                items = obj.substruct;
+                break;
+            }
+            case BundleStr.BIN_BLOCK_STORAGE_TYPE_INT : {
+                items.push({
+                    name: field.name,
+                    parser: this.parseBinaryInt32,
+                    maker: this.makeBinaryInt32
+                });
+                state.row_size += 4;
+                break;
+            }
+            case BundleStr.BIN_BLOCK_STORAGE_TYPE_DOUBLE : {
+                items.push({
+                    name: field.name,
+                    parser: this.parseBinaryDouble64,
+                    maker: this.makeBinaryDouble64
+                });
+                state.row_size += 8;
+                break;
+            }
+            default:
+                throw `Error type field ${field.type}`;
             }
         }
 
@@ -117,7 +117,7 @@ module.exports = {
     },
 
     // Parsing binary object header + body to object
-    parseBinaryRow(state) {
+    parseBinaryRow (state) {
         let parseSubStruct = function (substruct) {
             let result = {};
             for (let fieldName in substruct) {
@@ -135,7 +135,7 @@ module.exports = {
     },
 
     // Parsing object structure
-    parseStructObject(data) {
+    parseStructObject (data) {
         let state = {
             part: BundleStr.BIN_BLOCK_STORAGE_VERSION,
             data: data,
@@ -149,7 +149,7 @@ module.exports = {
     },
 
     // Parsing binary object with header and body
-    parseBinaryObject(data) {
+    parseBinaryObject (data) {
         let result = [];
         let state = this.parseStructObject(data);
         while (state.offset < state.data.byteLength) {
@@ -164,7 +164,7 @@ module.exports = {
     // Making binary row of storage
     // fields - fields array
     // object - javascript object
-    makeBinaryRow(fields, object) {
+    makeBinaryRow (fields, object) {
         let result = null;
         for (let f = 0; f < fields.length; f++) {
             let field = fields[f];
@@ -185,7 +185,7 @@ module.exports = {
     // struct - JSON structure of object
     // data - data of storage
     // return - binary storage (header + body)
-    makeBinaryObject(struct, data) {
+    makeBinaryObject (struct, data) {
         // Making binary header
         let header = StorageBuilder.makeBinaryHeader(struct);
         let result = header;

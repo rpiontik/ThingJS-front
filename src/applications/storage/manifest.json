@@ -1,0 +1,52 @@
+{
+  "name": "Storage",
+  "vendor": "rpiontik",
+  "version": 1,
+  "subversion": 0,
+  "patch": 0,
+  "description": {
+    "ru": "Пример работы с хранилищем",
+    "en": "The storage demo"
+  },
+  "components": {
+    "storage-app": {
+      "source": "storage.js",
+      "intent_filter": [
+        {
+          "action": "thingjs.intent.action.MAIN",
+          "category": "thingjs.intent.category.LAUNCH"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "entry": "storage",
+    "subscriptions": [
+      "$-storage-changed"
+    ],
+    "modules": {
+      "storage": {
+        "hot_reload": true,
+        "source": "scripts/storage.js",
+        "optimize": false
+      }
+    }
+  },
+  "storage": {
+    "objects": {
+      "example": {
+        "version": 1,
+        "preload": true,
+        "default" : "data/example.json",
+        "struct": {
+          "field1": "int",
+          "field2":  {
+            "subfield1": "double"
+          }
+        }
+      }
+    }
+  },
+  "requires": {
+  }
+}
