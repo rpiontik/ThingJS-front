@@ -206,10 +206,10 @@ function restartExecution () {
 $bus.on(function (event, content, data) {
     print('>>> EVENT: ', event, ';', content, ';', data, '<<<');
     if (event === '$-storage-changed') {
-        if (content === 'Lucerna/config') {
+        if (content === 'Lucerna/data/config') {
             config = getConfig();
             restartExecution();
-        } else if (content === 'Lucerna/dots') {
+        } else if (content === 'Lucerna/data/dots') {
             restartExecution();
         }
     } else if (event === '$-current-time') {

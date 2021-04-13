@@ -44,7 +44,7 @@ module.exports = {
                             'data': Binary.parseBinaryObject(response.data)
                         }
                     );
-                    this.$bus.$emit($consts.EVENTS.STORE_RELOADED, `${context.state.$namespace}/${object}`);
+                    this.$bus.$emit($consts.EVENTS.STORE_RELOADED, `${context.state.$namespace}/data/${object}`);
                 }).catch((e) => {
                     console.error(e);
                     $axios._removePendingRequest(url);

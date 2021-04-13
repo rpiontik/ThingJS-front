@@ -259,11 +259,12 @@ export default {
     data () {
         let data = {};
         this.$bus.$on(consts.EVENTS.STORE_RELOADED, (action, content) => {
+          debugger;
             switch (action) {
-            case 'Lucerna/spectrum':
+            case 'Lucerna/data/spectrum':
                 this.spectrum = this.copySpectrum(this.$store.state.Lucerna.data.spectrum, 'ui');
                 break;
-            case 'Lucerna/config':
+            case 'Lucerna/data/config':
                 this.config = this.copyConfig(this.$store.state.Lucerna.data.config[0], 'ui');
                 break;
             }

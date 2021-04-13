@@ -260,7 +260,7 @@ export default {
         });
 
         this.$bus.$on(consts.EVENTS.STORE_RELOADED, (object) => {
-            if (object == 'Lucerna/dots') {
+            if (object == 'Lucerna/data/dots') {
                 this.local_dots = this.copyDotsFromVUEX();
             }
         });
@@ -268,9 +268,9 @@ export default {
         this.$bus.$on(window.$consts.EVENTS.UBUS_MESSAGE, (type, messages) => {
             switch (type) {
             case '$-storage-changed':
-                if (messages === 'Lucerna/dots') {
+                if (messages === 'Lucerna/data/dots') {
                     this.$store.dispatch('Lucerna/data/reload', 'dots');
-                } else if (messages === 'Lucerna/spectrum') {
+                } else if (messages === 'Lucerna/data/spectrum') {
                     this.$store.dispatch('Lucerna/data/reload', 'spectrum');
                 }
                 break;

@@ -23,7 +23,7 @@ export default {
         this.$bus.$on(window.$consts.EVENTS.UBUS_MESSAGE, (type, messages) => {
             switch (type) {
             case '$-storage-changed':
-                if (messages === 'Storage/example') {
+                if (messages === 'Storage/data/example') {
                     this.$store.dispatch('Storage/data/reload', 'example');
                 }
                 break;
