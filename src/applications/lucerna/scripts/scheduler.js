@@ -1,9 +1,10 @@
 print('MJS', 'Starting Lucerna script...', 1);
     let sens = null;
-    $res.DS18B20.search(function (sensor) {
+$res.DS18B20.search(function (sensor) {
     print('Sensor:', sensor);
     sens = sensor;
 });
+
 if (sens === null) {
     print('Sensor not found');
 } else {
