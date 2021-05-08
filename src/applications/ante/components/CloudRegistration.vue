@@ -29,6 +29,7 @@ export default {
     computed: {
         target () {
             let url = new URL(process.env.CLOUD_URL);
+            console.info('CLOUD URL >>>', process.env.CLOUD_URL);
             url.pathname = '/api/v1/device/pwa/deploy';
             return url;
         }
