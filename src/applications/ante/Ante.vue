@@ -106,7 +106,6 @@
 import ConfigHelper from './components/ConfigHelper.vue';
 import Settings from './components/Settings.vue';
 import Dashboard from './components/Dashboard.vue';
-import CloudRegistration from './components/CloudRegistration';
 
 export default {
     name: 'App',
@@ -145,11 +144,6 @@ export default {
                 path: '/',
                 name: 'Root',
                 component: Dashboard
-            },
-            {
-                name: 'CloudRegistration',
-                path: `/cloud/registration`,
-                component: CloudRegistration
             }
         ]);
 
